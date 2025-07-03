@@ -1,0 +1,29 @@
+export interface DashboardLayout {
+  i: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  minW?: number;
+  minH?: number;
+  maxW?: number;
+  maxH?: number;
+}
+
+export interface Dashboard {
+  id: string;
+  name: string;
+  description?: string;
+  layout: DashboardLayout[];
+  widgets: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface DashboardSettings {
+  theme: "light" | "dark";
+  gridCols: number;
+  gridRowHeight: number;
+  gridMargin: [number, number];
+  isEditable: boolean;
+}
