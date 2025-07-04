@@ -16,6 +16,14 @@ import {
   TrendingUp,
   TrendingDown,
   Minus,
+  AlertCircle,
+  Copy,
+  ChevronUp,
+  ChevronDown,
+  Undo2,
+  Redo2,
+  Check,
+  GripVertical,
   type LucideIcon,
 } from "lucide-react";
 
@@ -36,6 +44,14 @@ const iconMap = {
   "trending-up": TrendingUp,
   "trending-down": TrendingDown,
   "trending-neutral": Minus,
+  "alert-circle": AlertCircle,
+  copy: Copy,
+  "chevron-up": ChevronUp,
+  "chevron-down": ChevronDown,
+  undo: Undo2,
+  redo: Redo2,
+  check: Check,
+  "grip-vertical": GripVertical,
 } as const;
 
 export type IconName = keyof typeof iconMap;

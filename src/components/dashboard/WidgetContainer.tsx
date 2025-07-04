@@ -7,14 +7,67 @@ import type { Widget } from "../../types/widget";
 
 interface WidgetContainerProps {
   widget: Widget;
+  isSelected?: boolean;
 }
 
-export const WidgetContainer: React.FC<WidgetContainerProps> = ({ widget }) => {
-  const { isEditing } = useDashboardStore();
-  const { deleteWidget } = useWidgetStore();
+export const WidgetContainer: React.FC<WidgetContainerProps> = ({
+  widget,
+  isSelected = false,
+}) => {
+  const { isEditing, selectWidget, clearSelection } = useDashboardStore();
+  const { deleteWidget, addWidget } = useWidgetStore();
 
   const handleDelete = () => {
     deleteWidget(widget.id);
+  };
+
+  const handleCopy = () => {
+    const newWidget = addWidget({
+      type: widget.type,
+      title: `${widget.title} (Copy)`,
+      config: { ...widget.config },
+    });
+
+    // Add to current dashboard
+    const { currentDashboard, updateDashboard } = useDashboardStore.getState();
+    if (currentDashboard) {
+      const newLayout = {
+        i: newWidget.id,
+        x: 0,
+        y: 0,
+        w: 4,
+        h: 3,
+        minW: 3,
+        minH: 3,
+      };
+
+      updateDashboard(currentDashboard.id, {
+        widgets: [...currentDashboard.widgets, newWidget.id],
+        layout: [...currentDashboard.layout, newLayout],
+      });
+    }
+  };
+
+  const handleEdit = () => {
+    // TODO: Implement edit functionality
+    console.log("Edit widget:", widget.id);
+  };
+
+  const handleWidgetClick = (e: React.MouseEvent) => {
+    // Solo manejar selección en modo edición
+    if (isEditing) {
+      e.stopPropagation(); // Evitar propagación para no interferir con grid layout
+      if (isSelected) {
+        clearSelection(); // Deseleccionar si ya está seleccionado
+      } else {
+        selectWidget(widget.id); // Seleccionar si no está seleccionado
+      }
+    }
+  };
+
+  const handleButtonMouseDown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
   };
 
   const renderWidgetContent = () => {
@@ -22,51 +75,32 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({ widget }) => {
       case "chart":
         if (widget.config.chartType === "bar") {
           return (
-            <BarChart
-              data={widget.config.data}
-              title={widget.title}
-              height="100%"
-            />
+            <div className="chart-widget">
+              <BarChart data={widget.config.data} title="" height="100%" />
+            </div>
           );
         }
-        return <div className="text-muted">Chart type not implemented</div>;
+        return (
+          <div className="widget-error">
+            <Icon name="alert-circle" size={24} />
+            <span>Chart type not implemented</span>
+          </div>
+        );
 
       case "metric":
         return (
-          <div className="flex flex-col items-center justify-center h-full">
-            <div className="text-2xl font-bold text-primary mb-xs">
+          <div className="metric-widget">
+            <div className="metric-value">
               {widget.config.value}
               {widget.config.unit && (
-                <span className="text-lg text-secondary ml-xs">
-                  {widget.config.unit}
-                </span>
+                <span className="metric-unit">{widget.config.unit}</span>
               )}
             </div>
             {widget.config.trend && (
-              <div className="flex items-center gap-xs text-sm">
-                <Icon
-                  name={`trending-${widget.config.trend}`}
-                  size={16}
-                  color={
-                    widget.config.trend === "up"
-                      ? "var(--color-success)"
-                      : widget.config.trend === "down"
-                      ? "var(--color-danger)"
-                      : "var(--color-text-secondary)"
-                  }
-                />
+              <div className={`metric-trend ${widget.config.trend}`}>
+                <Icon name={`trending-${widget.config.trend}`} size={16} />
                 {widget.config.trendValue && (
-                  <span
-                    className={
-                      widget.config.trend === "up"
-                        ? "text-green-600"
-                        : widget.config.trend === "down"
-                        ? "text-red-600"
-                        : "text-secondary"
-                    }
-                  >
-                    {widget.config.trendValue}%
-                  </span>
+                  <span>{widget.config.trendValue}%</span>
                 )}
               </div>
             )}
@@ -75,65 +109,98 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({ widget }) => {
 
       case "table":
         return (
-          <div className="overflow-auto h-full">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b">
-                  {widget.config.columns.map((col) => (
-                    <th key={col.key} className="text-left p-xs font-medium">
-                      {col.title}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {widget.config.data.map((row, index) => (
-                  <tr key={index} className="border-b border-opacity-50">
+          <div className="table-widget">
+            <div className="table-container">
+              <table>
+                <thead>
+                  <tr>
                     {widget.config.columns.map((col) => (
-                      <td key={col.key} className="p-xs">
-                        {row[col.key]}
-                      </td>
+                      <th key={col.key}>{col.title}</th>
                     ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {widget.config.data.map((row: any, index: number) => (
+                    <tr key={index}>
+                      {widget.config.columns.map((col: any) => (
+                        <td key={col.key}>{String(row[col.key] || "")}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         );
 
       case "text":
         return (
           <div
-            className="h-full overflow-auto"
+            className="text-widget"
             style={{
-              fontSize: widget.config.fontSize || 14,
+              fontSize: widget.config.fontSize || 16,
               textAlign: widget.config.textAlign || "left",
             }}
           >
-            {widget.config.content}
+            {String(widget.config.content)}
           </div>
         );
 
       default:
-        return <div className="text-muted">Unknown widget type</div>;
+        return (
+          <div className="widget-error">
+            <Icon name="alert-circle" size={24} />
+            <span>Unknown widget type</span>
+          </div>
+        );
     }
   };
 
   return (
-    <div className="widget-container">
-      <div className="widget-header">
-        <h4 className="widget-title">{widget.title}</h4>
-        {isEditing && (
-          <div className="widget-actions">
+    <div
+      className={`widget-container ${isSelected ? "widget-selected" : ""}`}
+      onClick={handleWidgetClick}
+    >
+      {isEditing && (
+        <div className="floating-widget-header draggable-handle">
+          <div className="floating-widget-title-section">
+            <Icon name="grip-vertical" size={14} className="drag-icon" />
+            <h4 className="floating-widget-title">{widget.title}</h4>
+          </div>
+          <div
+            className="floating-widget-actions no-drag"
+            onMouseDown={handleButtonMouseDown}
+          >
             <button
-              className="widget-action-btn"
+              className="floating-action-btn copy"
+              onClick={handleCopy}
+              onMouseDown={handleButtonMouseDown}
+              title="Copy widget"
+            >
+              <Icon name="copy" size={14} />
+            </button>
+            <button
+              className="floating-action-btn edit"
+              onClick={handleEdit}
+              onMouseDown={handleButtonMouseDown}
+              title="Edit widget"
+            >
+              <Icon name="edit" size={14} />
+            </button>
+            <button
+              className="floating-action-btn delete"
               onClick={handleDelete}
+              onMouseDown={handleButtonMouseDown}
               title="Delete widget"
             >
-              <Icon name="trash" size={16} />
+              <Icon name="trash" size={14} />
             </button>
           </div>
-        )}
+        </div>
+      )}
+
+      <div className="widget-header">
+        <h4 className="widget-title">{widget.title}</h4>
       </div>
       <div className="widget-content">{renderWidgetContent()}</div>
     </div>

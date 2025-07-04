@@ -39,11 +39,12 @@ export const useGridLayout = () => {
       margin: settings.gridMargin,
       isDraggable: isEditing,
       isResizable: isEditing,
+      resizeHandles: isEditing ? ["se", "sw", "ne", "nw"] : [],
       onLayoutChange: handleLayoutChange,
       compactType: "vertical" as const,
       preventCollision: false,
       useCSSTransforms: true,
-      draggableHandle: isEditing ? undefined : ".no-drag",
+      draggableHandle: isEditing ? ".draggable-handle" : ".no-drag",
     };
   }, [settings, isEditing, handleLayoutChange]);
 

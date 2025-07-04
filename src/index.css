@@ -1,68 +1,139 @@
+/* Import CSS variables and component styles */
+@import "./styles/variables.css";
+@import "./styles/globals.css";
+@import "./styles/header.css";
+@import "./styles/edit-toolbar.css";
+@import "./styles/grid.css";
+@import "./styles/widgets.css";
+@import "./styles/floating-bar.css";
+@import "./styles/modal.css";
+
+/* Global Styles */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+html {
+  height: 100%;
+  color-scheme: light dark;
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+  height: 100%;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  transition: background-color var(--transition-normal),
+    color var(--transition-normal);
+  padding-top: 70px; /* Space for fixed header */
+}
+
+/* When editing mode is active, add space for toolbar */
+body.editing {
+  padding-top: 155px !important; /* 70px header + 85px toolbar */
+  background-color: var(--color-background-editing) !important;
+}
+
+#root {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
+/* Button Reset */
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
+  border: none;
+  background: none;
   font-family: inherit;
-  background-color: #1a1a1a;
+  font-size: inherit;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: none;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+/* Link Reset */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Input Reset */
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+  border: none;
+  outline: none;
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-hover);
+}
+
+/* Focus Styles */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Selection Styles */
+::selection {
+  background-color: var(--color-primary-light);
+  color: var(--color-text-primary);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  body {
+    padding-top: 60px; /* Mobile header height */
   }
-  a:hover {
-    color: #747bff;
+
+  body.editing {
+    padding-top: 130px !important; /* 60px header + 70px toolbar */
   }
-  button {
-    background-color: #f9f9f9;
+}
+
+/* Print styles */
+@media print {
+  body {
+    padding-top: 0 !important;
+  }
+
+  .app-header,
+  .edit-toolbar,
+  .floating-action-bar {
+    display: none !important;
   }
 }

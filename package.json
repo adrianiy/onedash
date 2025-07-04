@@ -16,6 +16,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-grid-layout": "^1.5.2",
+    "react-tooltip": "^5.29.1",
     "zustand": "^5.0.6"
   },
   "devDependencies": {

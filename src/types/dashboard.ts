@@ -18,6 +18,8 @@ export interface Dashboard {
   widgets: string[];
   createdAt: Date;
   updatedAt: Date;
+  isReadonly?: boolean;
+  originalId?: string;
 }
 
 export interface DashboardSettings {
