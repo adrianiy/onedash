@@ -135,6 +135,7 @@ export const EditToolbar: React.FC = () => {
       updateTempDashboard,
       updateDashboard,
       selectWidget,
+      openConfigSidebar,
     } = useDashboardStore.getState();
 
     // Add widget to current dashboard
@@ -169,6 +170,9 @@ export const EditToolbar: React.FC = () => {
 
       // Seleccionar el widget recién creado
       selectWidget(widget.id);
+
+      // Abrir automáticamente el sidebar de configuración
+      openConfigSidebar();
     }
   };
 
@@ -352,6 +356,15 @@ export const EditToolbar: React.FC = () => {
             <div className="edit-toolbar__section-buttons">
               <button
                 className="edit-toolbar__button"
+                onClick={handleAddMetric}
+                title="Añadir widget de métrica"
+              >
+                <Icon name="target" size={20} />
+                <span>Métrica</span>
+              </button>
+
+              <button
+                className="edit-toolbar__button"
                 onClick={handleAddTable}
                 onDragStart={handleDragStart}
                 draggable="true"
@@ -359,15 +372,6 @@ export const EditToolbar: React.FC = () => {
               >
                 <Icon name="table" size={20} />
                 <span>Tabla</span>
-              </button>
-
-              <button
-                className="edit-toolbar__button"
-                onClick={handleAddMetric}
-                title="Añadir widget de métrica"
-              >
-                <Icon name="target" size={20} />
-                <span>Métrica</span>
               </button>
 
               <button

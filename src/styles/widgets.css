@@ -512,6 +512,7 @@
 .placeholder-steps .step {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--spacing-sm);
   padding: var(--spacing-xs) 0;
   font-size: 0.875rem;
@@ -520,7 +521,7 @@
 
 .placeholder-steps .step-active {
   color: var(--color-primary);
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .placeholder-steps .step-completed {

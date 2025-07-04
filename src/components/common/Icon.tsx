@@ -26,6 +26,13 @@ import {
   GripVertical,
   Table,
   Target,
+  Database,
+  Eye,
+  Zap,
+  Calendar,
+  Tag,
+  MapPin,
+  Search,
   type LucideIcon,
 } from "lucide-react";
 
@@ -56,6 +63,13 @@ const iconMap = {
   "grip-vertical": GripVertical,
   table: Table,
   target: Target,
+  database: Database,
+  eye: Eye,
+  zap: Zap,
+  calendar: Calendar,
+  tag: Tag,
+  "map-pin": MapPin,
+  search: Search,
 } as const;
 
 export type IconName = keyof typeof iconMap;

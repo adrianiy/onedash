@@ -3,7 +3,7 @@
   position: fixed;
   top: 0;
   right: 0;
-  width: 400px;
+  width: 450px;
   height: 100vh;
   background-color: var(--color-surface);
   border-left: 1px solid var(--color-border);
@@ -27,47 +27,48 @@
   }
 }
 
-/* Sidebar Header */
-.sidebar-header {
+/* Widget Config Sidebar Header */
+.widget-config-sidebar__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--spacing-lg) var(--spacing-xxl);
+  padding: 0 var(--spacing-xxl);
+  height: 70px;
   border-bottom: 1px solid var(--color-border);
   background-color: var(--color-surface-secondary);
   flex-shrink: 0;
 }
 
-.sidebar-title {
+.widget-config-sidebar__title {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
   font-weight: 500;
 }
 
-.sidebar-title span {
+.widget-config-sidebar__title span {
   font-size: 1.175rem;
   color: var(--color-text-primary);
 }
 
 /* Colorear los iconos del título del sidebar según tipo de widget */
-.sidebar-title .lucide-table {
+.widget-config-sidebar__title .lucide-table {
   color: var(--color-widget-table);
 }
 
-.sidebar-title .lucide-chart-column {
+.widget-config-sidebar__title .lucide-chart-column {
   color: var(--color-widget-chart);
 }
 
-.sidebar-title .lucide-target {
+.widget-config-sidebar__title .lucide-target {
   color: var(--color-widget-metric);
 }
 
-.sidebar-title .lucide-square-pen {
+.widget-config-sidebar__title .lucide-square-pen {
   color: var(--color-widget-text);
 }
 
-.sidebar-close-btn {
+.widget-config-sidebar__close-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -81,13 +82,13 @@
   transition: all var(--transition-fast);
 }
 
-.sidebar-close-btn:hover {
+.widget-config-sidebar__close-btn:hover {
   background-color: var(--color-surface-hover);
   color: var(--color-text-primary);
 }
 
-/* Sidebar Content */
-.sidebar-content {
+/* Widget Config Sidebar Content */
+.widget-config-sidebar__content {
   flex: 1;
   overflow-y: auto;
   padding: var(--spacing-xxl);
@@ -97,16 +98,45 @@
 .config-section {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
 }
 
-.config-section h3 {
-  margin: 0;
-  font-size: 1.125rem;
+.config-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+}
+
+.config-section__title {
+  font-size: 1rem;
   font-weight: 600;
   color: var(--color-text-primary);
-  padding-bottom: var(--spacing-md);
-  border-bottom: 1px solid var(--color-border);
+}
+
+.config-section__action {
+  display: flex;
+}
+
+/* Botón primario para acciones en cabecera */
+.config-btn-primary {
+  background-color: #4361ee;
+  color: white;
+  border: none;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.config-btn-primary:hover {
+  background-color: #3a56d4;
 }
 
 /* Configuration Groups */
@@ -176,6 +206,84 @@
 .config-placeholder:hover {
   border-color: var(--color-border-hover);
   color: var(--color-text-secondary);
+}
+
+/* Table Config Styles */
+.table-config {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: 0;
+}
+
+.table-config__title-input {
+  margin-bottom: var(--spacing-xl);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.table-config__title-input::placeholder {
+  color: var(--color-text-muted);
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+.config-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--color-border);
+  margin: 0 calc(-1 * var(--spacing-xxl)) var(--spacing-lg);
+  padding: 0 var(--spacing-xxl);
+}
+
+.config-tab {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: none;
+  background: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all var(--transition-fast);
+  font-size: 0.85rem;
+}
+
+.config-tab:hover {
+  color: var(--color-text-secondary);
+}
+
+.config-tab--active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+  font-weight: 400;
+}
+
+.table-config__content {
+  min-height: 200px;
+}
+
+.table-config__placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  height: 200px;
+  padding: var(--spacing-xl);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-secondary);
+  background-color: var(--color-surface-secondary);
+  text-align: center;
+}
+
+.table-config__placeholder svg {
+  opacity: 0.6;
+}
+
+.table-config__placeholder span {
+  font-size: 0.9rem;
 }
 
 /* Coming Soon Message */
@@ -290,20 +398,27 @@
   border-left-color: var(--color-border);
 }
 
-[data-theme="dark"] .sidebar-header {
+[data-theme="dark"] .widget-config-sidebar__header {
   background-color: var(--color-surface);
   border-bottom-color: var(--color-border);
 }
 
 [data-theme="dark"] .config-input,
 [data-theme="dark"] .config-select,
-[data-theme="dark"] .config-textarea {
+[data-theme="dark"] .config-textarea,
+[data-theme="dark"] .table-config__title-input {
   background-color: var(--color-surface-secondary);
   border-color: var(--color-border);
   color: var(--color-text-primary);
 }
 
-[data-theme="dark"] .config-placeholder {
+[data-theme="dark"] .table-config__title-input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 0.5;
+}
+
+[data-theme="dark"] .config-placeholder,
+[data-theme="dark"] .table-config__placeholder {
   background-color: var(--color-surface-tertiary);
   border-color: var(--color-border);
 }
@@ -312,7 +427,16 @@
 @media (max-width: 768px) {
   .widget-config-sidebar {
     width: 100vw;
-    max-width: 400px;
+    max-width: 450px;
+  }
+
+  .widget-config-sidebar__content {
+    padding: var(--spacing-lg);
+  }
+
+  .config-tabs {
+    margin: 0 calc(-1 * var(--spacing-lg)) var(--spacing-lg);
+    padding: 0 var(--spacing-lg);
   }
 }
 
@@ -321,7 +445,7 @@
     width: 100vw;
   }
 
-  .sidebar-content {
+  .widget-config-sidebar__content {
     padding: var(--spacing-lg);
   }
 

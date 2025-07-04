@@ -2,6 +2,7 @@ import React from "react";
 import { useDashboardStore } from "../../store/dashboardStore";
 import { useWidgetStore } from "../../store/widgetStore";
 import { Icon } from "../common/Icon";
+import { TableConfig } from "../widgets/config/TableConfig";
 
 export const WidgetConfigSidebar: React.FC = () => {
   const {
@@ -57,6 +58,10 @@ export const WidgetConfigSidebar: React.FC = () => {
   };
 
   const renderWidgetConfig = () => {
+    if (widget.type === "table") {
+      return <TableConfig widget={widget} />;
+    }
+
     return (
       <div className="config-section">
         <div className="coming-soon-message">
@@ -71,13 +76,13 @@ export const WidgetConfigSidebar: React.FC = () => {
 
   return (
     <div className="widget-config-sidebar">
-      <div className="sidebar-header">
-        <div className="sidebar-title">
+      <div className="widget-config-sidebar__header">
+        <div className="widget-config-sidebar__title">
           <Icon name={getWidgetIcon(widget.type)} size={20} />
           <span>{getWidgetTitle(widget.type)}</span>
         </div>
         <button
-          className="sidebar-close-btn"
+          className="widget-config-sidebar__close-btn"
           onClick={handleClose}
           title="Cerrar panel"
         >
@@ -85,7 +90,9 @@ export const WidgetConfigSidebar: React.FC = () => {
         </button>
       </div>
 
-      <div className="sidebar-content">{renderWidgetConfig()}</div>
+      <div className="widget-config-sidebar__content">
+        {renderWidgetConfig()}
+      </div>
     </div>
   );
 };

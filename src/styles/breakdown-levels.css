@@ -1,0 +1,755 @@
+/* Estilos para los niveles de desglose */
+.data-config {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.breakdown-levels {
+  min-height: 100px;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  background-color: var(--color-surface-secondary);
+}
+
+/* Cabecera de desgloses */
+.breakdown-levels__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-xs) var(--spacing-xs);
+}
+
+.breakdown-levels__title {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-subtle, #64748b);
+  opacity: 0.7;
+}
+
+.breakdown-levels__add-button {
+  background: none;
+  border: none;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.breakdown-levels__add-button:hover {
+  color: var(--color-primary-hover);
+}
+
+/* Placeholder cuando no hay niveles */
+.breakdown-levels__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl) var(--spacing-md);
+  height: 120px;
+  text-align: center;
+}
+
+/* Placeholder vacío mejorado */
+.breakdown-levels__placeholder--empty {
+  border: 1px dashed rgba(var(--color-primary-rgb), 0.3);
+  background-color: rgba(var(--color-primary-rgb), 0.02);
+  transition: all var(--transition-fast);
+}
+
+/* Estilos para hacer el placeholder clickeable */
+.breakdown-levels__placeholder--clickable {
+  cursor: pointer;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+}
+
+.breakdown-levels__placeholder--clickable:hover {
+  border-color: var(--color-primary);
+}
+
+.breakdown-levels__placeholder--clickable:hover
+  .breakdown-levels__placeholder-icon {
+  color: var(--color-primary-hover);
+}
+
+.breakdown-levels__placeholder--clickable:hover p {
+  color: var(--color-primary);
+  opacity: 1;
+  font-style: normal;
+}
+
+.breakdown-levels__placeholder--empty:hover {
+  border-color: rgba(var(--color-primary-rgb), 0.5);
+  background-color: rgba(var(--color-primary-rgb), 0.04);
+}
+
+.breakdown-levels__placeholder-content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.breakdown-levels__placeholder-icon {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.breakdown-levels__placeholder p {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  opacity: 0.7;
+  margin: 0;
+  font-style: italic;
+}
+
+.breakdown-levels__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--color-text-muted);
+  font-style: italic;
+  font-size: 0.9rem;
+  margin: 0;
+  padding: var(--spacing-xl) 0;
+}
+
+/* Estilos de botones */
+.config-btn-outline {
+  background-color: var(--color-surface);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+
+.config-btn-outline:hover {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+/* Botones para añadir desgloses */
+.breakdown-add-container {
+  position: relative;
+}
+
+.breakdown-add-btn {
+  align-self: flex-start;
+  margin-top: var(--spacing-sm);
+}
+
+/* Botón a ancho completo */
+.breakdown-add-btn--wide {
+  width: 100%;
+  padding: var(--spacing-md);
+  margin-top: var(--spacing-md);
+  justify-content: center;
+}
+
+/* Estilos para el dropdown */
+.breakdown-dropdown {
+  width: 350px;
+  max-height: 500px;
+  overflow-y: auto;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  z-index: 1000;
+  position: absolute;
+  padding: 0;
+}
+
+/* Buscador sticky */
+.breakdown-search-container {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background-color: var(--color-surface);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.breakdown-search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.breakdown-search-icon {
+  position: absolute;
+  left: var(--spacing-sm);
+  color: var(--color-text-muted);
+}
+
+.breakdown-search-input {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm)
+    calc(var(--spacing-sm) * 2 + 16px);
+  border: none;
+  border-radius: var(--radius-md);
+  background-color: white;
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+}
+
+.breakdown-search-input:focus {
+  outline: none;
+}
+
+.breakdown-search-clear {
+  position: absolute;
+  right: var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  padding: 0;
+}
+
+.breakdown-search-clear:hover {
+  color: var(--color-text-primary);
+}
+
+/* Categorías de desglose */
+.breakdown-category {
+  margin-bottom: 8px; /* Separación entre categorías */
+}
+
+.breakdown-category:last-child {
+  margin-bottom: 0;
+}
+
+/* Encabezados con colores según categoría */
+.breakdown-category__header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) calc(var(--spacing-lg) + var(--spacing-xs));
+}
+
+.breakdown-category__header--purple {
+  background-color: rgba(147, 51, 234, 0.1); /* Color púrpura para geográfico */
+  border-bottom: 1px solid rgba(147, 51, 234, 0.2);
+  border-top: 1px solid rgba(147, 51, 234, 0.2);
+  border-radius: 3px 3px 0 0;
+}
+
+.breakdown-category__header--blue {
+  background-color: rgba(59, 130, 246, 0.1); /* Color azul para comercial */
+  border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+  border-top: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 3px 3px 0 0;
+}
+
+.breakdown-category__header--green {
+  background-color: rgba(34, 197, 94, 0.1); /* Color verde para temporal */
+  border-bottom: 1px solid rgb(22 163 74 / 0.2);
+  border-top: 1px solid rgb(22 163 74 / 0.2);
+  border-radius: 3px 3px 0 0;
+}
+
+.breakdown-category__title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.breakdown-category__title--purple {
+  color: #6a1baf; /* Texto púrpura */
+}
+
+.breakdown-category__title--blue {
+  color: #1a46a8; /* Texto azul */
+}
+
+.breakdown-category__title--green {
+  color: #107937; /* Texto verde */
+}
+
+.breakdown-category__description {
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.breakdown-category__description--purple {
+  color: rgba(147, 51, 234, 1); /* Tono púrpura más suave */
+}
+
+.breakdown-category__description--blue {
+  color: rgb(37 99 235 / 1); /* Tono azul más suave */
+}
+
+.breakdown-category__description--green {
+  color: rgb(22 164 74); /* Tono verde más suave */
+}
+
+/* Opciones de desglose */
+.breakdown-options {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-sm) 0;
+}
+
+.breakdown-option {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg) var(--spacing-lg); /* Más espacio vertical */
+  border: none; /* Eliminamos bordes entre opciones */
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.breakdown-option:hover {
+  background-color: var(--color-surface-hover);
+}
+
+/* Iconos con fondos de color */
+.breakdown-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+}
+
+.breakdown-icon-container--purple {
+  background-color: rgba(147, 51, 234, 0.08);
+}
+
+.breakdown-icon-container--blue {
+  background-color: rgba(59, 130, 246, 0.08);
+}
+
+.breakdown-icon-container--green {
+  background-color: rgba(34, 197, 94, 0.08);
+}
+
+.breakdown-icon--purple {
+  color: #7e22ce;
+}
+
+.breakdown-icon--blue {
+  color: #2563eb;
+}
+
+.breakdown-icon--green {
+  color: #16a34a;
+}
+
+.breakdown-option__title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--color-text-primary);
+}
+
+.breakdown-dropdown__content {
+  padding: var(--spacing-lg);
+}
+
+.breakdown-dropdown__content h4 {
+  margin: 0 0 var(--spacing-md);
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+}
+
+.breakdown-dropdown__content p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+/* Estilos para los niveles de desglose seleccionados */
+.breakdown-levels-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.breakdown-level {
+  position: relative;
+}
+
+.breakdown-level__content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.breakdown-level__content:hover {
+  border-color: #d1d5db;
+}
+
+/* Icono de grip */
+.breakdown-level__grip-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  padding: var(--spacing-xs);
+}
+
+.breakdown-level__grip-container:active {
+  cursor: grabbing;
+}
+
+.breakdown-level__grip {
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+/* Estilo para elementos siendo arrastrados */
+.breakdown-level--dragging {
+  opacity: 0.8;
+  box-shadow: var(--shadow-md);
+}
+
+.breakdown-level--dragging .breakdown-level__content {
+  background-color: #f3f4f6;
+  border-color: #60a5fa;
+}
+
+/* Estilo para número de índice */
+.breakdown-level__index {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: #6b7280;
+  flex-shrink: 0;
+  margin-right: var(--spacing-md);
+}
+
+/* Contenedor principal */
+.breakdown-level__main {
+  flex: 1;
+}
+
+/* Info del nivel */
+.breakdown-level__info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+/* Contenedor de icono con color de categoría */
+.breakdown-level__icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+}
+
+.breakdown-level__icon-container--purple {
+  background-color: rgba(147, 51, 234, 0.1);
+}
+
+.breakdown-level__icon-container--blue {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.breakdown-level__icon-container--green {
+  background-color: rgba(34, 197, 94, 0.1);
+}
+
+/* Iconos con colores */
+.breakdown-level__icon--purple {
+  color: #7e22ce;
+}
+
+.breakdown-level__icon--blue {
+  color: #2563eb;
+}
+
+.breakdown-level__icon--green {
+  color: #16a34a;
+}
+
+/* Nombre del nivel */
+.breakdown-level__name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #111827;
+}
+
+/* Botón de eliminar */
+.breakdown-level__remove {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.breakdown-level__remove:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .breakdown-levels {
+  background-color: var(--color-surface-tertiary);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .config-btn-outline {
+  background-color: var(--color-surface);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+[data-theme="dark"] .config-btn-outline:hover {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-hover);
+}
+
+[data-theme="dark"] .breakdown-dropdown {
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .breakdown-search-container {
+  background-color: var(--color-surface);
+  border-bottom-color: var(--color-border);
+}
+
+[data-theme="dark"] .breakdown-search-input {
+  background-color: #2a2a2a;
+  border: none;
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .breakdown-search-input:focus {
+  outline: none;
+}
+
+[data-theme="dark"] .breakdown-dropdown__content h4 {
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .breakdown-dropdown__content p {
+  color: var(--color-text-muted);
+}
+
+/* Dark theme para categorías y opciones */
+[data-theme="dark"] .breakdown-category__header--purple {
+  background-color: rgba(147, 51, 234, 0.15);
+  border-bottom-color: rgba(147, 51, 234, 0.3);
+}
+
+[data-theme="dark"] .breakdown-category__header--blue {
+  background-color: rgba(59, 130, 246, 0.15);
+  border-bottom-color: rgba(59, 130, 246, 0.3);
+}
+
+[data-theme="dark"] .breakdown-category__header--green {
+  background-color: rgba(34, 197, 94, 0.15);
+  border-bottom-color: rgba(34, 197, 94, 0.3);
+}
+
+[data-theme="dark"] .breakdown-category__title--purple {
+  color: #c084fc;
+}
+
+[data-theme="dark"] .breakdown-category__title--blue {
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .breakdown-category__title--green {
+  color: #4ade80;
+}
+
+[data-theme="dark"] .breakdown-category__description--purple {
+  color: rgba(192, 132, 252, 0.7); /* Tono púrpura más suave para dark mode */
+}
+
+[data-theme="dark"] .breakdown-category__description--blue {
+  color: rgba(96, 165, 250, 0.7); /* Tono azul más suave para dark mode */
+}
+
+[data-theme="dark"] .breakdown-category__description--green {
+  color: rgba(74, 222, 128, 0.7); /* Tono verde más suave para dark mode */
+}
+
+[data-theme="dark"] .breakdown-icon-container--purple {
+  background-color: rgba(147, 51, 234, 0.2);
+}
+
+[data-theme="dark"] .breakdown-icon-container--blue {
+  background-color: rgba(59, 130, 246, 0.2);
+}
+
+[data-theme="dark"] .breakdown-icon-container--green {
+  background-color: rgba(34, 197, 94, 0.2);
+}
+
+[data-theme="dark"] .breakdown-icon--purple {
+  color: #c084fc;
+}
+
+[data-theme="dark"] .breakdown-icon--blue {
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .breakdown-icon--green {
+  color: #4ade80;
+}
+
+[data-theme="dark"] .breakdown-option:hover {
+  background-color: var(--color-surface-hover);
+}
+
+[data-theme="dark"] .breakdown-option__title {
+  color: var(--color-text-primary);
+}
+
+/* Dark theme para niveles seleccionados */
+[data-theme="dark"] .breakdown-level__content {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+[data-theme="dark"] .breakdown-level__content:hover {
+  border-color: #4b5563;
+}
+
+[data-theme="dark"] .breakdown-level__grip {
+  color: #6b7280;
+}
+
+[data-theme="dark"] .breakdown-level__index {
+  color: #9ca3af;
+}
+
+[data-theme="dark"] .breakdown-level__name {
+  color: #f9fafb;
+}
+
+[data-theme="dark"] .breakdown-level__icon-container--purple {
+  background-color: rgba(147, 51, 234, 0.2);
+}
+
+[data-theme="dark"] .breakdown-level__icon-container--blue {
+  background-color: rgba(59, 130, 246, 0.2);
+}
+
+[data-theme="dark"] .breakdown-level__icon-container--green {
+  background-color: rgba(34, 197, 94, 0.2);
+}
+
+[data-theme="dark"] .breakdown-level__icon--purple {
+  color: #c084fc;
+}
+
+[data-theme="dark"] .breakdown-level__icon--blue {
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .breakdown-level__icon--green {
+  color: #4ade80;
+}
+
+[data-theme="dark"] .breakdown-level__remove {
+  color: #f87171;
+}
+
+[data-theme="dark"] .breakdown-level__remove:hover {
+  background-color: rgba(239, 68, 68, 0.2);
+}
+
+/* Estilos para tema oscuro - cabecera y placeholder */
+[data-theme="dark"] .breakdown-levels__title {
+  color: var(--color-text-subtle, #94a3b8);
+  opacity: 0.7;
+}
+
+[data-theme="dark"] .breakdown-levels__add-button {
+  color: var(--color-primary-light);
+}
+
+[data-theme="dark"] .breakdown-levels__add-button:hover {
+  color: var(--color-primary-hover);
+}
+
+[data-theme="dark"] .breakdown-levels__placeholder p {
+  color: var(--color-text-muted);
+  opacity: 0.6;
+}
+
+/* Tema oscuro para el placeholder vacío */
+[data-theme="dark"] .breakdown-levels__placeholder--empty {
+  border-color: rgba(var(--color-primary-rgb), 0.2);
+  background-color: rgba(var(--color-primary-rgb), 0.03);
+}
+
+[data-theme="dark"] .breakdown-levels__placeholder--empty:hover {
+  border-color: rgba(var(--color-primary-rgb), 0.3);
+  background-color: rgba(var(--color-primary-rgb), 0.05);
+}
+
+[data-theme="dark"] .breakdown-levels__placeholder-icon {
+  color: var(--color-primary-light);
+}
+
+/* Tema oscuro para placeholder clickeable */
+[data-theme="dark"] .breakdown-levels__placeholder--clickable:hover {
+  border-color: var(--color-primary-light);
+}
+
+[data-theme="dark"]
+  .breakdown-levels__placeholder--clickable:hover
+  .breakdown-levels__placeholder-icon {
+  color: var(--color-primary-hover);
+}
+
+[data-theme="dark"] .breakdown-levels__placeholder--clickable:hover p {
+  color: var(--color-primary-light);
+  opacity: 1;
+}
+
+/* Ajustes al texto en el placeholder */
+.breakdown-levels__placeholder--empty .breakdown-levels__placeholder-content p {
+  color: var(--color-primary);
+  opacity: 0.9;
+  font-style: normal;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+}
+
+[data-theme="dark"]
+  .breakdown-levels__placeholder--empty
+  .breakdown-levels__placeholder-content
+  p {
+  color: var(--color-primary-light);
+}
