@@ -21,24 +21,22 @@ export const useWidgetStore = create<WidgetState>()(
         widgets: [],
 
         addWidget: (widgetData) => {
-          const newWidget = {
+          const newWidget: Widget = {
             ...widgetData,
             id: generateId(),
             createdAt: new Date(),
             updatedAt: new Date(),
           } as Widget;
 
-          // @ts-expect-error - temporary fix for widget type issue
           set({ widgets: [...get().widgets, newWidget] });
 
           return newWidget;
         },
 
         updateWidget: (id, updates) => {
-          // @ts-expect-error - temporary fix for widget type issue
           const widgets = get().widgets.map((widget) =>
             widget.id === id
-              ? { ...widget, ...updates, updatedAt: new Date() }
+              ? ({ ...widget, ...updates, updatedAt: new Date() } as Widget)
               : widget
           );
           set({ widgets });

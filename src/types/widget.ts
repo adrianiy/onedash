@@ -23,6 +23,8 @@ export interface TableWidgetConfig {
   }>;
   data: Record<string, unknown>[];
   pagination?: boolean;
+  breakdownLevels?: string[];
+  dataSource?: string;
 }
 
 export interface TextWidgetConfig {
@@ -37,6 +39,7 @@ export interface BaseWidget {
   description?: string;
   createdAt: Date;
   updatedAt: Date;
+  isConfigured?: boolean;
 }
 
 export interface ChartWidget extends BaseWidget {

@@ -14,7 +14,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
   widget,
   isSelected = false,
 }) => {
-  const { isEditing, selectWidget, clearSelection } = useDashboardStore();
+  const { isEditing, selectWidget, openConfigSidebar } = useDashboardStore();
   const { deleteWidget, addWidget } = useWidgetStore();
 
   const handleDelete = () => {
@@ -49,18 +49,16 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
   };
 
   const handleEdit = () => {
-    // TODO: Implement edit functionality
-    console.log("Edit widget:", widget.id);
+    selectWidget(widget.id);
+    openConfigSidebar();
   };
 
   const handleWidgetClick = (e: React.MouseEvent) => {
     // Solo manejar selección en modo edición
     if (isEditing) {
       e.stopPropagation(); // Evitar propagación para no interferir con grid layout
-      if (isSelected) {
-        clearSelection(); // Deseleccionar si ya está seleccionado
-      } else {
-        selectWidget(widget.id); // Seleccionar si no está seleccionado
+      if (!isSelected) {
+        selectWidget(widget.id); // Seleccionar solo si no está ya seleccionado
       }
     }
   };
@@ -107,7 +105,56 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
           </div>
         );
 
-      case "table":
+      case "table": {
+        // Determine current configuration step
+        const hasBreakdownLevels =
+          widget.config.breakdownLevels &&
+          widget.config.breakdownLevels.length > 0;
+        const hasColumns =
+          widget.config.columns && widget.config.columns.length > 0;
+
+        // Show placeholder with conditional steps
+        if (!hasBreakdownLevels || !hasColumns) {
+          const getCurrentStep = () => {
+            if (!hasBreakdownLevels) {
+              return {
+                step: 1,
+                message: "Configurar niveles de desglose",
+                icon: "settings" as const,
+              };
+            }
+            if (!hasColumns) {
+              return {
+                step: 2,
+                message: "Configurar columnas",
+                icon: "grid" as const,
+              };
+            }
+            return {
+              step: 3,
+              message: "Configuración completa",
+              icon: "check" as const,
+            };
+          };
+
+          const currentStep = getCurrentStep();
+
+          return (
+            <div className="widget-placeholder">
+              <Icon name="table" size={48} />
+              <h3>Configura tu tabla</h3>
+              <div className="placeholder-steps">
+                <div className="step step-active">
+                  <Icon name={currentStep.icon} size={16} />
+                  <span>
+                    Paso {currentStep.step}: {currentStep.message}
+                  </span>
+                </div>
+              </div>
+            </div>
+          );
+        }
+
         return (
           <div className="table-widget">
             <div className="table-container">
@@ -120,18 +167,21 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {widget.config.data.map((row: any, index: number) => (
-                    <tr key={index}>
-                      {widget.config.columns.map((col: any) => (
-                        <td key={col.key}>{String(row[col.key] || "")}</td>
-                      ))}
-                    </tr>
-                  ))}
+                  {widget.config.data.map(
+                    (row: Record<string, unknown>, index: number) => (
+                      <tr key={index}>
+                        {widget.config.columns.map((col) => (
+                          <td key={col.key}>{String(row[col.key] || "")}</td>
+                        ))}
+                      </tr>
+                    )
+                  )}
                 </tbody>
               </table>
             </div>
           </div>
         );
+      }
 
       case "text":
         return (

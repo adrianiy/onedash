@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import type { Layout } from "react-grid-layout";
+import type { Layout, ReactGridLayoutProps } from "react-grid-layout";
 import { useDashboardStore } from "../store/dashboardStore";
 
 export const useGridLayout = () => {
@@ -39,7 +39,9 @@ export const useGridLayout = () => {
       margin: settings.gridMargin,
       isDraggable: isEditing,
       isResizable: isEditing,
-      resizeHandles: isEditing ? ["se", "sw", "ne", "nw"] : [],
+      resizeHandles: isEditing
+        ? (["se", "sw", "ne", "nw"] as ReactGridLayoutProps["resizeHandles"])
+        : [],
       onLayoutChange: handleLayoutChange,
       compactType: "vertical" as const,
       preventCollision: false,

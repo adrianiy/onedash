@@ -24,6 +24,8 @@ import {
   Redo2,
   Check,
   GripVertical,
+  Table,
+  Target,
   type LucideIcon,
 } from "lucide-react";
 
@@ -52,6 +54,8 @@ const iconMap = {
   redo: Redo2,
   check: Check,
   "grip-vertical": GripVertical,
+  table: Table,
+  target: Target,
 } as const;
 
 export type IconName = keyof typeof iconMap;

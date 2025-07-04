@@ -1,0 +1,335 @@
+/* Widget Configuration Sidebar */
+.widget-config-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 400px;
+  height: 100vh;
+  background-color: var(--color-surface);
+  border-left: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform var(--transition-slow);
+  animation: slideInFromRight var(--transition-slow) forwards;
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Sidebar Header */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-lg) var(--spacing-xxl);
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-surface-secondary);
+  flex-shrink: 0;
+}
+
+.sidebar-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-weight: 500;
+}
+
+.sidebar-title span {
+  font-size: 1.175rem;
+  color: var(--color-text-primary);
+}
+
+/* Colorear los iconos del título del sidebar según tipo de widget */
+.sidebar-title .lucide-table {
+  color: var(--color-widget-table);
+}
+
+.sidebar-title .lucide-chart-column {
+  color: var(--color-widget-chart);
+}
+
+.sidebar-title .lucide-target {
+  color: var(--color-widget-metric);
+}
+
+.sidebar-title .lucide-square-pen {
+  color: var(--color-widget-text);
+}
+
+.sidebar-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: none;
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.sidebar-close-btn:hover {
+  background-color: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+/* Sidebar Content */
+.sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-xxl);
+}
+
+/* Configuration Section */
+.config-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.config-section h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Configuration Groups */
+.config-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.config-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* Form Elements */
+.config-input,
+.config-select,
+.config-textarea {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  transition: all var(--transition-fast);
+  box-sizing: border-box;
+}
+
+.config-input:focus,
+.config-select:focus,
+.config-textarea:focus {
+  outline: none;
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+}
+
+.config-input:hover,
+.config-select:hover,
+.config-textarea:hover {
+  border-color: var(--color-border-hover);
+}
+
+.config-textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+/* Configuration Placeholder */
+.config-placeholder {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-lg);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  text-align: center;
+  background-color: var(--color-surface-secondary);
+  transition: all var(--transition-fast);
+}
+
+.config-placeholder:hover {
+  border-color: var(--color-border-hover);
+  color: var(--color-text-secondary);
+}
+
+/* Coming Soon Message */
+.coming-soon-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--spacing-3xl) var(--spacing-lg);
+  gap: var(--spacing-lg);
+}
+
+.coming-soon-message h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* Colorful icons in coming soon message */
+.coming-soon-message .lucide-table {
+  color: var(--color-widget-table);
+  background: rgba(96, 165, 250, 0.1);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-2xl);
+}
+
+.coming-soon-message .lucide-chart-column {
+  color: var(--color-widget-chart);
+  background: rgba(245, 158, 11, 0.1);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-2xl);
+}
+
+.coming-soon-message .lucide-target {
+  color: var(--color-widget-metric);
+  background: rgba(16, 185, 129, 0.1);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-2xl);
+}
+
+.coming-soon-message .lucide-square-pen {
+  color: var(--color-widget-text);
+  background: rgba(139, 92, 246, 0.1);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-2xl);
+}
+
+.coming-soon-message p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.coming-soon-message p:last-child {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* Configuration Actions */
+.config-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
+  margin-top: var(--spacing-lg);
+}
+
+.config-btn {
+  flex: 1;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+}
+
+.config-btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  border-color: var(--color-primary);
+}
+
+.config-btn-primary:hover {
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.config-btn-secondary {
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  border-color: var(--color-border);
+}
+
+.config-btn-secondary:hover {
+  background-color: var(--color-surface-hover);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-hover);
+}
+
+/* Dark Theme Adjustments */
+[data-theme="dark"] .widget-config-sidebar {
+  background-color: var(--color-surface);
+  border-left-color: var(--color-border);
+}
+
+[data-theme="dark"] .sidebar-header {
+  background-color: var(--color-surface);
+  border-bottom-color: var(--color-border);
+}
+
+[data-theme="dark"] .config-input,
+[data-theme="dark"] .config-select,
+[data-theme="dark"] .config-textarea {
+  background-color: var(--color-surface-secondary);
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .config-placeholder {
+  background-color: var(--color-surface-tertiary);
+  border-color: var(--color-border);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .widget-config-sidebar {
+    width: 100vw;
+    max-width: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .widget-config-sidebar {
+    width: 100vw;
+  }
+
+  .sidebar-content {
+    padding: var(--spacing-lg);
+  }
+
+  .config-actions {
+    flex-direction: column;
+  }
+
+  .config-btn {
+    width: 100%;
+  }
+}
