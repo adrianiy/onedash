@@ -76,6 +76,33 @@ const MetricSelector: React.FC<MetricSelectorProps> = ({
     }
   };
 
+  // Función para manejar los resultados de búsqueda
+  const handleSearchResultSelect = (
+    resultType: string,
+    options?: Record<string, unknown>
+  ) => {
+    // Lógica para manejar cada tipo de resultado
+    switch (resultType) {
+      case "importeNeto":
+        // Añadir métrica de importe neto
+        console.log("Seleccionado Importe Neto");
+        break;
+      case "importeNetoCrecimiento":
+        // Añadir métrica de importe neto (crecimiento)
+        console.log("Seleccionado Importe Neto (Crecimiento)");
+        break;
+      case "analisisMmttTttt":
+        // Añadir métricas de análisis MMTT y TTTT
+        console.log("Seleccionado Análisis MMTT y TTTT");
+        break;
+      default:
+        break;
+    }
+
+    // Limpiar la búsqueda después de seleccionar un resultado
+    setSearchQuery("");
+  };
+
   // Renderizar el componente según la pestaña activa
   const renderActiveTab = () => {
     switch (activeTab) {
@@ -124,7 +151,11 @@ const MetricSelector: React.FC<MetricSelectorProps> = ({
     >
       <div className="metric-selector__header">
         {/* Barra de búsqueda */}
-        <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+        <SearchBar
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          onSelectSearchResult={handleSearchResultSelect}
+        />
 
         {/* Botón de cerrar */}
         {onClose && (
