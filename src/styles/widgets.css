@@ -15,6 +15,12 @@
   z-index: 10;
   border-bottom: 1px solid var(--color-border);
   opacity: 0;
+  height: 48px; /* Altura fija para cálculos de padding */
+}
+
+/* Padding para widgets sin título cuando están seleccionados */
+.widget-content--floating-padding {
+  padding-top: 48px; /* Igual a la altura del floating header */
 }
 
 .editing .react-grid-item:hover .floating-widget-header {
@@ -34,7 +40,7 @@
 
 .floating-widget-title {
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--color-text-secondary);
   margin: 0;
 }
@@ -142,7 +148,7 @@
 .metric-unit {
   font-size: 1.5rem;
   color: var(--color-text-secondary);
-  font-weight: 600;
+  font-weight: 400;
   margin-left: var(--spacing-xs);
 }
 
@@ -154,7 +160,7 @@
   padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: var(--radius-full);
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .metric-trend.up {
@@ -235,7 +241,7 @@
 
 .text-widget h3 {
   font-size: 1.25rem;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .text-widget p {
@@ -244,7 +250,7 @@
 
 .text-widget strong {
   color: var(--color-text-primary);
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .text-widget em {
@@ -266,16 +272,10 @@
   border: 1px solid var(--color-border);
 }
 
-.table-widget table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.875rem;
-}
-
 .table-widget th {
   background-color: var(--color-surface-secondary);
   color: var(--color-text-secondary);
-  font-weight: 600;
+  font-weight: 400;
   text-align: left;
   padding: var(--spacing-md);
   border-bottom: 1px solid var(--color-border);
@@ -391,6 +391,12 @@
 }
 
 /* Dark theme adjustments */
+[data-theme="dark"] .floating-widget-header {
+  background-color: var(--color-surface-tertiary); /* Tono más oscuro */
+  border-bottom: 1px solid var(--color-border);
+  backdrop-filter: blur(4px);
+}
+
 [data-theme="dark"] .metric-trend.up {
   background-color: rgba(16, 185, 129, 0.2);
 }
@@ -450,4 +456,115 @@
 [data-theme="dark"] .widget-drag-handle:hover {
   background-color: var(--color-primary);
   border-color: var(--color-primary);
+}
+
+/* Widget Placeholder Styles */
+.widget-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: var(--spacing-xl);
+  text-align: center;
+  color: var(--color-text-muted);
+  gap: var(--spacing-lg);
+}
+
+.widget-placeholder h3 {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 1.125rem;
+  font-weight: 400;
+}
+
+/* Widget placeholder icons with specific colors */
+.widget-placeholder .lucide-table {
+  color: var(--color-widget-table);
+  background: rgba(96, 165, 250, 0.1);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-xl);
+}
+
+.widget-placeholder .lucide-chart-column {
+  color: var(--color-widget-chart);
+  background: rgba(245, 158, 11, 0.1);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-xl);
+}
+
+.widget-placeholder .lucide-target {
+  color: var(--color-widget-metric);
+  background: rgba(16, 185, 129, 0.1);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-xl);
+}
+
+.widget-placeholder .lucide-square-pen {
+  color: var(--color-widget-text);
+  background: rgba(139, 92, 246, 0.1);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-xl);
+}
+
+.placeholder-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  width: 100%;
+  max-width: 300px;
+}
+
+.placeholder-steps .step {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xs) 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.placeholder-steps .step-active {
+  color: var(--color-primary);
+  font-weight: 400;
+}
+
+.placeholder-steps .step-completed {
+  color: var(--color-success);
+  text-decoration: line-through;
+  opacity: 0.8;
+}
+
+.placeholder-steps .step-active span {
+  color: var(--color-primary);
+}
+
+/* Placeholder tip styles */
+.placeholder-tip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  background-color: rgba(66, 153, 225, 0.1);
+  border-radius: var(--radius-full);
+  padding: var(--spacing-md) var(--spacing-lg);
+  white-space: nowrap;
+  margin: 0 auto;
+}
+
+.placeholder-tip .lucide-info {
+  color: var(--color-info);
+  flex-shrink: 0;
+}
+
+.placeholder-tip p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-info);
+  font-weight: 400;
+}
+
+[data-theme="dark"] .placeholder-tip {
+  background-color: rgba(66, 153, 225, 0.15);
 }

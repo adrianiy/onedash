@@ -1,0 +1,271 @@
+/* Estilos para los items de columnas */
+.columns-list {
+  gap: var(
+    --spacing-sm
+  ); /* Sobreescribe el valor de gap para este caso específico */
+}
+
+/* Estilo base para el ítem de columna */
+.column-item {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-xs);
+  overflow: hidden;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.column-item__content {
+  cursor: pointer; /* Añadido específico para column-item */
+  border: none !important; /* Eliminamos el borde del contenido ya que ahora está en el contenedor principal */
+  border-radius: 0; /* Eliminamos el borde redondeado del contenido */
+}
+
+/* Estilo para elementos seleccionados - específico para column-item */
+.column-item--selected {
+  background-color: rgba(var(--color-primary-rgb), 0.08);
+  border-color: var(--color-primary);
+}
+
+.column-item--selected .column-item__content {
+  background-color: transparent;
+  border-color: transparent;
+}
+
+/* Botón de visibilidad */
+.column-item__visibility {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.column-item__visibility:hover {
+  background-color: rgba(var(--color-info-rgb), 0.1);
+  color: var(--color-info);
+}
+
+/* Estilos específicos para botón de visibilidad */
+
+/* Estilos para tema oscuro - específicos para column-item */
+[data-theme="dark"] .column-item--selected {
+  background-color: rgba(var(--color-primary-rgb), 0.15);
+  border-color: var(--color-primary);
+}
+
+[data-theme="dark"] .column-item--selected .column-item__content {
+  background-color: transparent;
+  border-color: transparent;
+}
+
+[data-theme="dark"] .column-item__visibility {
+  color: #9ca3af;
+}
+
+[data-theme="dark"] .column-item__visibility:hover {
+  background-color: rgba(var(--color-info-rgb), 0.2);
+  color: var(--color-info);
+}
+
+/* Estilos para columnas ocultas */
+.column-item--hidden {
+  border-style: dashed;
+  opacity: 0.7;
+}
+
+.column-item--hidden .column-item__content {
+  border: none;
+}
+
+.column-item--hidden .column-item__name {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+/* Estilos para la edición de nombre de columna */
+.column-item__name--editable {
+  cursor: text;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.column-item__name--editable::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -4px;
+  right: -4px;
+  bottom: 0;
+  background-color: transparent;
+  z-index: 0;
+  transition: background-color 0.2s ease;
+}
+
+.column-item__name--editable:hover::before {
+  background-color: rgba(var(--color-primary-rgb), 0.2);
+}
+
+/* Estilos para el contenedor de edición del nombre */
+.column-item__name-edit-wrapper {
+  width: 100%;
+  padding: 0;
+}
+
+.column-item__name-edit-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  max-width: 100%;
+}
+
+.column-item__name-input {
+  flex: 1;
+  font-size: inherit;
+  font-family: inherit;
+  border: none;
+  background: transparent;
+  color: var(--color-text-primary);
+  outline: none;
+}
+
+.column-item__name-input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Estilos para los botones de acción */
+.column-item__name-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  border-left: 1px solid var(--color-border);
+  padding-left: var(--spacing-xs);
+  margin-left: var(--spacing-xs);
+}
+
+.column-item__name-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.column-item__name-action:first-child {
+  color: var(--color-primary);
+}
+
+.column-item__name-action:last-child {
+  color: var(--color-text-secondary);
+}
+
+.column-item__name-action:hover {
+  background-color: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+.column-item__name-action:first-child:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+}
+
+.column-item__name-action:last-child:hover {
+  background-color: rgba(var(--color-danger-rgb), 0.1);
+  color: var(--color-danger);
+}
+
+/* Botón de expandir/contraer */
+.column-item__expand {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  opacity: 0;
+}
+
+.column-item__content:hover .column-item__expand {
+  opacity: 1;
+}
+
+.column-item__expand:hover {
+  background-color: rgba(var(--color-info-rgb), 0.1);
+  color: var(--color-info);
+}
+
+/* Estilos específicos para tema oscuro */
+[data-theme="dark"] .column-item__expand {
+  color: #9ca3af;
+}
+
+[data-theme="dark"] .column-item__expand:hover {
+  background-color: rgba(var(--color-info-rgb), 0.2);
+  color: var(--color-info);
+}
+
+/* Contenedor de chips expandible */
+.column-item__chips-container {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.25s ease, opacity 0.25s ease, padding 0.25s ease;
+  opacity: 0;
+  padding: 0 var(--spacing-md) 0 calc(var(--spacing-md) * 2 + 30px); /* Alineado con el nombre */
+  border-top: 0 solid transparent;
+  background-color: rgba(var(--color-primary-rgb), 0.03);
+}
+
+.column-item__chips-container--expanded {
+  max-height: 100px; /* Altura máxima para los chips */
+  opacity: 1;
+  padding-top: var(--spacing-sm);
+  padding-bottom: var(--spacing-sm);
+  border-top: 1px solid rgba(var(--color-primary-rgb), 0.1);
+}
+
+.column-item__chips-content {
+  padding-left: var(--spacing-sm);
+}
+
+/* Ajustes para tema oscuro en el contenedor de chips */
+[data-theme="dark"] .column-item__chips-container {
+  background-color: rgba(var(--color-primary-rgb), 0.05);
+}
+
+[data-theme="dark"] .column-item__chips-container--expanded {
+  border-top-color: rgba(var(--color-primary-rgb), 0.15);
+}
+
+/* Estilos para el texto seleccionado dentro del campo de edición */
+.column-item__name-input::selection {
+  background-color: var(--color-primary);
+  color: #ffffff; /* Color blanco para contrastar con el fondo */
+}
+
+[data-theme="dark"] .column-item__name-input {
+  background: transparent;
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .column-item__name-input::selection {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}

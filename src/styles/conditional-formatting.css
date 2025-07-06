@@ -1,0 +1,354 @@
+/* Estilos para el Dropdown de Formato Condicional */
+.conditional-format-dropdown {
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden; /* Para que el borde redondeado afecte a los hijos */
+}
+
+/* Estilos para el Formulario de Formato Condicional */
+.conditional-format-form {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-surface);
+  width: 360px; /* Definir el ancho aquí */
+}
+
+.conditional-format-form .form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.conditional-format-form .form-header h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.conditional-format-form .close-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.conditional-format-form .close-button:hover {
+  background-color: var(--color-surface-hover);
+}
+
+.conditional-format-form .form-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.conditional-format-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.conditional-format-form .form-group label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.conditional-format-form .form-group input[type="text"] {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  font-size: 14px;
+}
+
+.conditional-format-form .form-group input[type="text"]:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.2);
+}
+
+.form-group__header {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin-bottom: -4px; /* Reduce space to the controls */
+}
+
+.conditional-format-form .form-group--styling {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: center;
+}
+
+.color-input-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.color-indicator {
+  position: absolute;
+  bottom: 4px;
+  left: 5px;
+  right: 5px;
+  height: 4px;
+  border-radius: 2px;
+  transition: all var(--transition-fast);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.form-group--styling .style-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 42px;
+  border: none;
+  border-radius: 6px;
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative; /* Para el input oculto y el indicador */
+  padding-bottom: 8px; /* Espacio para la barra */
+}
+
+.form-group--styling .style-button:hover {
+  color: var(--color-primary);
+}
+
+.form-group--styling .style-button--active {
+  color: var(--color-primary);
+}
+
+.form-group--styling .style-button--active:hover {
+  color: var(--color-primary);
+}
+
+.form-group--styling .style-button--active svg {
+  stroke-width: 2.5;
+}
+
+.conditional-format-form .form-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.conditional-format-form .save-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.conditional-format-form .save-button:hover {
+  background-color: var(--color-primary-dark);
+}
+
+/* --- Conditional Format Chips --- */
+
+.format-rule-chip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  transition: all var(--transition-fast);
+}
+
+.format-rule-chip:hover {
+  border-color: var(--color-border-hover);
+  background-color: var(--color-surface-hover);
+}
+
+.format-rule-chip--disabled {
+  opacity: 0.6;
+  background-color: var(--color-surface-tertiary);
+}
+
+.format-rule-chip--disabled .format-description {
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+}
+
+.format-preview {
+  flex-shrink: 0;
+}
+
+.format-preview__sample {
+  min-width: 32px;
+  height: 24px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  line-height: 1;
+  padding: 0 4px;
+  white-space: nowrap;
+}
+
+.format-description {
+  flex-grow: 1;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  white-space: normal;
+}
+
+.format-description .format-rule {
+  color: var(--color-text-primary);
+  font-weight: 400;
+}
+
+.format-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.format-action-btn--edit {
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.format-rule-chip:hover .format-action-btn--edit {
+  opacity: 1;
+}
+
+.format-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.format-action-btn:hover {
+  background-color: rgba(var(--color-info-rgb), 0.1);
+  color: var(--color-info);
+}
+
+.format-action-btn--danger:hover {
+  background-color: rgba(var(--color-danger-rgb), 0.1);
+  color: var(--color-danger);
+}
+
+/* Toggle switch for format enable/disable */
+.format-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.format-toggle {
+  width: 24px;
+  height: 12px;
+  background-color: var(--color-border);
+  border-radius: 6px;
+  position: relative;
+  transition: background-color var(--transition-fast);
+}
+
+.format-toggle--active {
+  background-color: var(--color-primary);
+}
+
+.format-toggle__slider {
+  width: 8px;
+  height: 8px;
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform var(--transition-fast);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.format-toggle--active .format-toggle__slider {
+  transform: translateX(12px);
+}
+
+.format-toggle-btn:hover .format-toggle {
+  background-color: var(--color-border-hover);
+}
+
+.format-toggle-btn:hover .format-toggle--active {
+  background-color: var(--color-primary-hover);
+}
+
+/* Estilos para validación y errores */
+.form-group--error {
+  position: relative;
+}
+
+.form-group--error label {
+  color: var(--color-danger) !important;
+}
+
+.error-text {
+  color: var(--color-danger);
+  font-weight: bold;
+  margin-left: 4px;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--color-danger);
+  margin-top: 4px;
+}
+
+.conditional-format-form .form-group input[type="text"].error {
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 2px rgba(var(--color-danger-rgb), 0.2);
+}
+
+.conditional-format-form .form-group input[type="text"].error:focus {
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 2px rgba(var(--color-danger-rgb), 0.3);
+}

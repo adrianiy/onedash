@@ -1,0 +1,432 @@
+/* Estilos para el configurador de métricas */
+
+.metric-config {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-config-tabs {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-config-tabs__content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-md);
+}
+
+/* Estilos específicos para métricas */
+.metric-item__info-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  flex: 1;
+}
+
+.metric-item__badge-container {
+  display: flex;
+  align-items: flex-start;
+}
+
+.metric-item__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--spacing-xs);
+  border-radius: var(--radius-xs);
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metric-item__badge--primary {
+  background: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+}
+
+.metric-item__badge--secondary {
+  background: rgba(var(--color-secondary-rgb), 0.1);
+  color: var(--color-secondary);
+}
+
+/* Configuración de datos legacy (por si se necesita mantener) */
+.metric-data-config {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.metric-secondary-config {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.metric-clear-btn {
+  align-self: flex-start;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--color-surface-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.metric-clear-btn:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-hover);
+}
+
+/* Selector de métrica única */
+.metric-selector-single {
+  width: 100%;
+}
+
+.metric-selector-single__trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  min-height: 44px;
+}
+
+.metric-selector-single__trigger:hover {
+  border-color: var(--color-border-hover);
+  background: var(--color-surface-hover);
+}
+
+.metric-selector-single__trigger--selected {
+  border-color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb), 0.05);
+}
+
+.metric-selector-single__content {
+  flex: 1;
+  text-align: left;
+}
+
+.metric-selector-single__selected {
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.metric-selector-single__placeholder {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.metric-selector-single__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.metric-selector-single__clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.metric-selector-single__clear:hover {
+  background: rgba(var(--color-danger-rgb), 0.1);
+  color: var(--color-danger);
+}
+
+.metric-selector-single__chevron {
+  color: var(--color-text-muted);
+  transition: transform var(--transition-fast);
+}
+
+.metric-selector-single__trigger:hover .metric-selector-single__chevron {
+  transform: rotate(180deg);
+}
+
+/* Configuración de visualización */
+.metric-visualization-config {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+/* Selector de tamaño */
+.metric-size-selector {
+  width: 100%;
+}
+
+.metric-size-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+}
+
+.metric-size-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-lg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.metric-size-option:hover {
+  border-color: var(--color-border-hover);
+  background: var(--color-surface-hover);
+}
+
+.metric-size-option--active {
+  border-color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb), 0.05);
+}
+
+.metric-size-option__preview {
+  margin-bottom: var(--spacing-sm);
+}
+
+.metric-size-option__text {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  transition: font-size var(--transition-fast);
+}
+
+.metric-size-option__text--small {
+  font-size: 1.2rem;
+}
+
+.metric-size-option__text--medium {
+  font-size: 1.5rem;
+}
+
+.metric-size-option__text--large {
+  font-size: 2rem;
+}
+
+.metric-size-option__label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.metric-size-option__description {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+/* Formatos condicionales */
+.metric-conditional-formats {
+  width: 100%;
+}
+
+.metric-formats-header {
+  margin-bottom: var(--spacing-md);
+}
+
+.metric-add-format-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.metric-add-format-btn:hover {
+  background: var(--color-primary-hover);
+}
+
+.metric-formats-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.metric-format-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.metric-format-item--disabled {
+  opacity: 0.6;
+}
+
+.metric-format-preview {
+  flex-shrink: 0;
+}
+
+.metric-format-sample {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 500;
+  min-width: 50px;
+  text-align: center;
+}
+
+.metric-format-description {
+  flex: 1;
+  margin-left: var(--spacing-md);
+}
+
+.metric-format-rule {
+  font-size: 0.85rem;
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.metric-format-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.metric-format-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--color-text-muted);
+}
+
+.metric-format-action-btn:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+.metric-format-action-btn--edit:hover {
+  background: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+}
+
+.metric-format-action-btn--danger:hover {
+  background: rgba(var(--color-danger-rgb), 0.1);
+  color: var(--color-danger);
+}
+
+/* Toggle switch para formatos */
+.metric-format-toggle-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--spacing-xs);
+}
+
+.metric-format-toggle {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+  transition: background-color var(--transition-fast);
+}
+
+.metric-format-toggle--active {
+  background: var(--color-primary);
+}
+
+.metric-format-toggle__slider {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: var(--radius-full);
+  transition: transform var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.metric-format-toggle--active .metric-format-toggle__slider {
+  transform: translateX(16px);
+}
+
+/* Tema oscuro - Solo estilos específicos para métricas */
+[data-theme="dark"] .metric-clear-btn {
+  background: var(--color-surface-tertiary);
+}
+
+[data-theme="dark"] .metric-clear-btn:hover {
+  background: var(--color-surface-secondary);
+}
+
+[data-theme="dark"] .metric-selector-single__trigger {
+  background: var(--color-surface-secondary);
+}
+
+[data-theme="dark"] .metric-selector-single__trigger:hover {
+  background: var(--color-surface-tertiary);
+}
+
+[data-theme="dark"] .metric-selector-single__trigger--selected {
+  background: rgba(var(--color-primary-rgb), 0.15);
+}
+
+[data-theme="dark"] .metric-size-option {
+  background: var(--color-surface-secondary);
+}
+
+[data-theme="dark"] .metric-size-option:hover {
+  background: var(--color-surface-tertiary);
+}
+
+[data-theme="dark"] .metric-size-option--active {
+  background: rgba(var(--color-primary-rgb), 0.2);
+}
+
+[data-theme="dark"] .metric-format-item {
+  background: var(--color-surface-secondary);
+}
+
+[data-theme="dark"] .metric-format-action-btn:hover {
+  background: var(--color-surface-tertiary);
+}
+
+[data-theme="dark"] .metric-format-toggle {
+  background: var(--color-surface-tertiary);
+}
+
+[data-theme="dark"] .metric-format-toggle--active {
+  background: var(--color-primary);
+}

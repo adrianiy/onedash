@@ -2,7 +2,13 @@ import React from "react";
 import { useDashboardStore } from "../../store/dashboardStore";
 import { useWidgetStore } from "../../store/widgetStore";
 import { Icon } from "../common/Icon";
-import { BarChart } from "../charts/BarChart";
+import {
+  ChartWidget,
+  MetricWidget,
+  TableWidget,
+  TextWidget,
+  ErrorWidget,
+} from "../widgets/render";
 import type { Widget } from "../../types/widget";
 
 interface WidgetContainerProps {
@@ -14,7 +20,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
   widget,
   isSelected = false,
 }) => {
-  const { isEditing, selectWidget, clearSelection } = useDashboardStore();
+  const { isEditing, selectWidget, openConfigSidebar } = useDashboardStore();
   const { deleteWidget, addWidget } = useWidgetStore();
 
   const handleDelete = () => {
@@ -49,18 +55,16 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
   };
 
   const handleEdit = () => {
-    // TODO: Implement edit functionality
-    console.log("Edit widget:", widget.id);
+    selectWidget(widget.id);
+    openConfigSidebar();
   };
 
   const handleWidgetClick = (e: React.MouseEvent) => {
     // Solo manejar selección en modo edición
     if (isEditing) {
       e.stopPropagation(); // Evitar propagación para no interferir con grid layout
-      if (isSelected) {
-        clearSelection(); // Deseleccionar si ya está seleccionado
-      } else {
-        selectWidget(widget.id); // Seleccionar si no está seleccionado
+      if (!isSelected) {
+        selectWidget(widget.id); // Seleccionar solo si no está ya seleccionado
       }
     }
   };
@@ -73,86 +77,15 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
   const renderWidgetContent = () => {
     switch (widget.type) {
       case "chart":
-        if (widget.config.chartType === "bar") {
-          return (
-            <div className="chart-widget">
-              <BarChart data={widget.config.data} title="" height="100%" />
-            </div>
-          );
-        }
-        return (
-          <div className="widget-error">
-            <Icon name="alert-circle" size={24} />
-            <span>Chart type not implemented</span>
-          </div>
-        );
-
+        return <ChartWidget widget={widget} />;
       case "metric":
-        return (
-          <div className="metric-widget">
-            <div className="metric-value">
-              {widget.config.value}
-              {widget.config.unit && (
-                <span className="metric-unit">{widget.config.unit}</span>
-              )}
-            </div>
-            {widget.config.trend && (
-              <div className={`metric-trend ${widget.config.trend}`}>
-                <Icon name={`trending-${widget.config.trend}`} size={16} />
-                {widget.config.trendValue && (
-                  <span>{widget.config.trendValue}%</span>
-                )}
-              </div>
-            )}
-          </div>
-        );
-
+        return <MetricWidget widget={widget} />;
       case "table":
-        return (
-          <div className="table-widget">
-            <div className="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    {widget.config.columns.map((col) => (
-                      <th key={col.key}>{col.title}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {widget.config.data.map((row: any, index: number) => (
-                    <tr key={index}>
-                      {widget.config.columns.map((col: any) => (
-                        <td key={col.key}>{String(row[col.key] || "")}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        );
-
+        return <TableWidget widget={widget} />;
       case "text":
-        return (
-          <div
-            className="text-widget"
-            style={{
-              fontSize: widget.config.fontSize || 16,
-              textAlign: widget.config.textAlign || "left",
-            }}
-          >
-            {String(widget.config.content)}
-          </div>
-        );
-
+        return <TextWidget widget={widget} />;
       default:
-        return (
-          <div className="widget-error">
-            <Icon name="alert-circle" size={24} />
-            <span>Unknown widget type</span>
-          </div>
-        );
+        return <ErrorWidget />;
     }
   };
 
@@ -199,10 +132,54 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
         </div>
       )}
 
-      <div className="widget-header">
-        <h4 className="widget-title">{widget.title}</h4>
-      </div>
-      <div className="widget-content">{renderWidgetContent()}</div>
+      {/* Solo mostrar el encabezado si el widget tiene título y la configuración permite mostrarlo */}
+      {(() => {
+        // Para widgets de tabla, verificar la configuración de visualización
+        if (widget.type === "table") {
+          const visualization = widget.config.visualization || {};
+          const showTitle = visualization.showTitle !== false;
+
+          return widget.title && showTitle ? (
+            <div className="widget-header">
+              <h4 className="widget-title">{widget.title}</h4>
+            </div>
+          ) : null;
+        }
+
+        // Para otros tipos de widgets, mostrar el título si existe
+        return widget.title ? (
+          <div className="widget-header">
+            <h4 className="widget-title">{widget.title}</h4>
+          </div>
+        ) : null;
+      })()}
+
+      {(() => {
+        // Determinar si debemos mostrar el título del widget
+        let shouldShowTitle = false;
+
+        if (widget.type === "table") {
+          const visualization = widget.config.visualization || {};
+          const showTitle = visualization.showTitle !== false;
+          shouldShowTitle = !!(widget.title && showTitle);
+        } else {
+          shouldShowTitle = !!widget.title;
+        }
+
+        // Determinar si necesitamos padding para el floating header
+        const needsFloatingPadding =
+          isEditing && isSelected && !shouldShowTitle;
+
+        return (
+          <div
+            className={`widget-content ${
+              needsFloatingPadding ? "widget-content--floating-padding" : ""
+            }`}
+          >
+            {renderWidgetContent()}
+          </div>
+        );
+      })()}
     </div>
   );
 };

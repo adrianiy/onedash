@@ -5,7 +5,7 @@
   left: 0;
   right: 0;
   width: 100%;
-  height: 85px;
+  height: 100px; /* Aumentado para dar más espacio */
   background-color: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
   z-index: 999;
@@ -22,24 +22,49 @@
   gap: var(--spacing-sm);
 }
 
+/* Toolbar Sections */
+.edit-toolbar__section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.edit-toolbar__section-buttons {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.edit-toolbar__section-title {
+  font-size: 0.55rem;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+  font-weight: 500;
+  line-height: 1;
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  width: 100%;
+}
+
 .edit-toolbar__button {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-md);
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
   border: none;
   border-radius: var(--radius-md);
   background-color: transparent;
   color: var(--color-text-primary);
   font-size: 0.75rem;
-  font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
   white-space: nowrap;
   min-width: 60px;
-  min-height: 60px;
+  min-height: 55px;
 }
 
 .edit-toolbar__button:hover {
@@ -80,9 +105,31 @@
   background-color: rgba(239, 68, 68, 0.2);
 }
 
+.edit-toolbar__button--config {
+  color: var(--color-primary);
+  border: 1px solid transparent;
+  flex-direction: row;
+  gap: var(--spacing-sm);
+  margin-left: auto;
+  min-width: auto;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  height: 60px;
+}
+
+.edit-toolbar__button--config:hover {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.edit-toolbar__button--config:active {
+  background-color: var(--color-primary-light);
+  transform: scale(0.98);
+}
+
 .edit-toolbar__separator {
   width: 1px;
-  height: 50px;
+  height: 80px;
   background-color: var(--color-border);
   margin: 0 var(--spacing-sm);
 }
@@ -121,6 +168,10 @@
     display: none;
   }
 
+  .edit-toolbar__section-title {
+    display: none;
+  }
+
   .edit-toolbar__separator {
     height: 40px;
     margin: 0 var(--spacing-xs);
@@ -154,6 +205,25 @@
 
 [data-theme="dark"] .edit-toolbar__button:hover {
   background-color: var(--color-surface-hover);
+}
+
+/* Asegurar que el botón de peligro tenga color rojo en tema oscuro */
+[data-theme="dark"] .edit-toolbar__button--danger {
+  color: var(--color-danger);
+}
+
+[data-theme="dark"] .edit-toolbar__button--danger:hover {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: var(--color-danger);
+}
+
+/* Drag and Drop */
+.edit-toolbar__button[draggable="true"] {
+  cursor: grab;
+}
+
+.edit-toolbar__button[draggable="true"]:active {
+  cursor: grabbing;
 }
 
 [data-theme="dark"] .edit-toolbar__separator {

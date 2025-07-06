@@ -1,0 +1,441 @@
+/* Estilos para los niveles de desglose */
+.data-config {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+/* Estilos específicos de botones para breakdown */
+.config-btn-outline {
+  background-color: var(--color-surface);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+
+.config-btn-outline:hover {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+/* Botones para añadir desgloses */
+.breakdown-add-container {
+  position: relative;
+}
+
+.breakdown-add-btn {
+  align-self: flex-start;
+  margin-top: var(--spacing-sm);
+}
+
+/* Botón a ancho completo */
+.breakdown-add-btn--wide {
+  width: 100%;
+  padding: var(--spacing-md);
+  margin-top: var(--spacing-md);
+  justify-content: center;
+}
+
+/* Estilos para el dropdown */
+.breakdown-dropdown {
+  width: 350px;
+  max-height: 500px;
+  overflow-y: auto;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  z-index: 1000;
+  position: absolute;
+  padding: 0;
+}
+
+/* Buscador sticky */
+.breakdown-search-container {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background-color: var(--color-surface);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.breakdown-search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.breakdown-search-icon {
+  position: absolute;
+  left: var(--spacing-sm);
+  color: var(--color-text-muted);
+}
+
+.breakdown-search-input {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm)
+    calc(var(--spacing-sm) * 2 + 16px);
+  border: none;
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+}
+
+.breakdown-search-input:focus {
+  outline: none;
+}
+
+.breakdown-search-clear {
+  position: absolute;
+  right: var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  padding: 0;
+}
+
+.breakdown-search-clear:hover {
+  color: var(--color-text-primary);
+}
+
+/* Categorías de desglose */
+.breakdown-category {
+  margin-bottom: 8px; /* Separación entre categorías */
+}
+
+.breakdown-category:last-child {
+  margin-bottom: 0;
+}
+
+/* Encabezados con colores según categoría */
+.breakdown-category__header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) calc(var(--spacing-lg) + var(--spacing-xs));
+}
+
+.breakdown-category__header--purple {
+  background-color: rgba(147, 51, 234, 0.1); /* Color púrpura para geográfico */
+  border-bottom: 1px solid rgba(147, 51, 234, 0.2);
+  border-top: 1px solid rgba(147, 51, 234, 0.2);
+  border-radius: 3px 3px 0 0;
+}
+
+.breakdown-category__header--blue {
+  background-color: rgba(59, 130, 246, 0.1); /* Color azul para comercial */
+  border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+  border-top: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 3px 3px 0 0;
+}
+
+.breakdown-category__header--green {
+  background-color: rgba(34, 197, 94, 0.1); /* Color verde para temporal */
+  border-bottom: 1px solid rgb(22 163 74 / 0.2);
+  border-top: 1px solid rgb(22 163 74 / 0.2);
+  border-radius: 3px 3px 0 0;
+}
+
+.breakdown-category__title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.breakdown-category__title--purple {
+  color: #6a1baf; /* Texto púrpura */
+}
+
+.breakdown-category__title--blue {
+  color: #1a46a8; /* Texto azul */
+}
+
+.breakdown-category__title--green {
+  color: #107937; /* Texto verde */
+}
+
+.breakdown-category__description {
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.breakdown-category__description--purple {
+  color: rgba(147, 51, 234, 1); /* Tono púrpura más suave */
+}
+
+.breakdown-category__description--blue {
+  color: rgb(37 99 235 / 1); /* Tono azul más suave */
+}
+
+.breakdown-category__description--green {
+  color: rgb(22 164 74); /* Tono verde más suave */
+}
+
+/* Opciones de desglose */
+.breakdown-options {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-sm) 0;
+}
+
+.breakdown-option {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg) var(--spacing-lg); /* Más espacio vertical */
+  border: none; /* Eliminamos bordes entre opciones */
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.breakdown-option:hover {
+  background-color: var(--color-surface-hover);
+}
+
+/* Iconos con fondos de color */
+.breakdown-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+}
+
+.breakdown-icon-container--purple {
+  background-color: rgba(147, 51, 234, 0.08);
+}
+
+.breakdown-icon-container--blue {
+  background-color: rgba(59, 130, 246, 0.08);
+}
+
+.breakdown-icon-container--green {
+  background-color: rgba(34, 197, 94, 0.08);
+}
+
+.breakdown-icon--purple {
+  color: #7e22ce;
+}
+
+.breakdown-icon--blue {
+  color: #2563eb;
+}
+
+.breakdown-icon--green {
+  color: #16a34a;
+}
+
+.breakdown-option__title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--color-text-primary);
+}
+
+.breakdown-dropdown__content {
+  padding: var(--spacing-lg);
+}
+
+.breakdown-dropdown__content h4 {
+  margin: 0 0 var(--spacing-md);
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+}
+
+.breakdown-dropdown__content p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+/* Contenedor de icono con color de categoría */
+.breakdown-level__icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+}
+
+.breakdown-level__icon-container--purple {
+  background-color: rgba(147, 51, 234, 0.1);
+}
+
+.breakdown-level__icon-container--blue {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.breakdown-level__icon-container--green {
+  background-color: rgba(34, 197, 94, 0.1);
+}
+
+/* Iconos con colores */
+.breakdown-level__icon--purple {
+  color: #7e22ce;
+}
+
+.breakdown-level__icon--blue {
+  color: #2563eb;
+}
+
+.breakdown-level__icon--green {
+  color: #16a34a;
+}
+
+/* Nombre del nivel */
+.breakdown-level__name {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--color-text-primary);
+}
+
+/* Dark theme adjustments - ahora en config-panel.css para los estilos comunes */
+[data-theme="dark"] .config-btn-outline {
+  background-color: var(--color-surface);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+[data-theme="dark"] .config-btn-outline:hover {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-hover);
+}
+
+[data-theme="dark"] .breakdown-dropdown {
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .breakdown-search-container {
+  background-color: var(--color-surface);
+  border-bottom-color: var(--color-border);
+}
+
+[data-theme="dark"] .breakdown-search-input {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: none;
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .breakdown-search-input:focus {
+  outline: none;
+}
+
+[data-theme="dark"] .breakdown-dropdown__content h4 {
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .breakdown-dropdown__content p {
+  color: var(--color-text-muted);
+}
+
+/* Dark theme para categorías y opciones */
+[data-theme="dark"] .breakdown-category__header--purple {
+  background-color: rgba(147, 51, 234, 0.15);
+  border-bottom-color: rgba(147, 51, 234, 0.3);
+}
+
+[data-theme="dark"] .breakdown-category__header--blue {
+  background-color: rgba(59, 130, 246, 0.15);
+  border-bottom-color: rgba(59, 130, 246, 0.3);
+}
+
+[data-theme="dark"] .breakdown-category__header--green {
+  background-color: rgba(34, 197, 94, 0.15);
+  border-bottom-color: rgba(34, 197, 94, 0.3);
+}
+
+[data-theme="dark"] .breakdown-category__title--purple {
+  color: #c084fc;
+}
+
+[data-theme="dark"] .breakdown-category__title--blue {
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .breakdown-category__title--green {
+  color: #4ade80;
+}
+
+[data-theme="dark"] .breakdown-category__description--purple {
+  color: rgba(192, 132, 252, 0.7); /* Tono púrpura más suave para dark mode */
+}
+
+[data-theme="dark"] .breakdown-category__description--blue {
+  color: rgba(96, 165, 250, 0.7); /* Tono azul más suave para dark mode */
+}
+
+[data-theme="dark"] .breakdown-category__description--green {
+  color: rgba(74, 222, 128, 0.7); /* Tono verde más suave para dark mode */
+}
+
+[data-theme="dark"] .breakdown-icon-container--purple {
+  background-color: rgba(147, 51, 234, 0.2);
+}
+
+[data-theme="dark"] .breakdown-icon-container--blue {
+  background-color: rgba(59, 130, 246, 0.2);
+}
+
+[data-theme="dark"] .breakdown-icon-container--green {
+  background-color: rgba(34, 197, 94, 0.2);
+}
+
+[data-theme="dark"] .breakdown-icon--purple {
+  color: #c084fc;
+}
+
+[data-theme="dark"] .breakdown-icon--blue {
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .breakdown-icon--green {
+  color: #4ade80;
+}
+
+[data-theme="dark"] .breakdown-option:hover {
+  background-color: var(--color-surface-hover);
+}
+
+[data-theme="dark"] .breakdown-option__title {
+  color: var(--color-text-primary);
+}
+
+/* Dark theme para niveles seleccionados - estilos base ahora en config-panel.css */
+[data-theme="dark"] .breakdown-level__icon-container--purple {
+  background-color: rgba(147, 51, 234, 0.2);
+}
+
+[data-theme="dark"] .breakdown-level__icon-container--blue {
+  background-color: rgba(59, 130, 246, 0.2);
+}
+
+[data-theme="dark"] .breakdown-level__icon-container--green {
+  background-color: rgba(34, 197, 94, 0.2);
+}
+
+[data-theme="dark"] .breakdown-level__icon--purple {
+  color: #c084fc;
+}
+
+[data-theme="dark"] .breakdown-level__icon--blue {
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .breakdown-level__icon--green {
+  color: #4ade80;
+}
+
+/* Estilos para tema oscuro - cabecera y placeholder ahora en config-panel.css */
+[data-theme="dark"] .breakdown-levels__placeholder p {
+  color: var(--color-text-muted);
+  opacity: 0.6;
+}

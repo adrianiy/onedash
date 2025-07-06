@@ -17,6 +17,7 @@ interface DashboardState {
   isEditing: boolean;
   hasUnsavedChanges: boolean;
   selectedWidgetId: string | null;
+  isConfigSidebarOpen: boolean;
 
   // Actions
   createDashboard: (
@@ -37,6 +38,8 @@ interface DashboardState {
   updateSettings: (settings: Partial<DashboardSettings>) => void;
   selectWidget: (widgetId: string) => void;
   clearSelection: () => void;
+  openConfigSidebar: () => void;
+  closeConfigSidebar: () => void;
   initializeIfNeeded: () => void;
 }
 
@@ -60,6 +63,7 @@ export const useDashboardStore = create<DashboardState>()(
         isEditing: false,
         hasUnsavedChanges: false,
         selectedWidgetId: null,
+        isConfigSidebarOpen: false,
 
         createDashboard: (dashboardData) => {
           const newDashboard: Dashboard = {
@@ -248,7 +252,15 @@ export const useDashboardStore = create<DashboardState>()(
         },
 
         clearSelection: () => {
-          set({ selectedWidgetId: null });
+          set({ selectedWidgetId: null, isConfigSidebarOpen: false });
+        },
+
+        openConfigSidebar: () => {
+          set({ isConfigSidebarOpen: true });
+        },
+
+        closeConfigSidebar: () => {
+          set({ isConfigSidebarOpen: false });
         },
 
         initializeIfNeeded: () => {

@@ -1,0 +1,423 @@
+/* Estilos para CustomColorPicker */
+.custom-color-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.custom-color-picker__label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin-bottom: 4px;
+}
+
+/* Color actual */
+.custom-color-picker__current {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background-color: var(--color-surface-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.custom-color-picker__current-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.custom-color-picker__current-value {
+  font-size: 12px;
+  font-family: "SF Mono", Monaco, "Inconsolata", "Roboto Mono", Consolas,
+    "Courier New", monospace;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+}
+
+/* Paleta de colores predefinidos */
+.custom-color-picker__presets {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 8px;
+  background-color: var(--color-surface);
+}
+
+.custom-color-picker__presets-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 6px;
+}
+
+.custom-color-picker__preset {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+  background: none;
+  padding: 0;
+}
+
+.custom-color-picker__preset:hover {
+  transform: scale(1.1);
+  border-color: var(--color-border-hover);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.custom-color-picker__preset--selected {
+  border: 2px solid var(--color-primary);
+  transform: scale(1.05);
+}
+
+.custom-color-picker__preset--selected::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  box-shadow: 0 0 0 2px white;
+}
+
+/* Estilos especiales para el botón transparente */
+.custom-color-picker__preset[style*="transparent"] {
+  background: linear-gradient(
+      45deg,
+      #ccc 25%,
+      transparent 25%,
+      transparent 75%,
+      #ccc 75%
+    ),
+    linear-gradient(45deg, #ccc 25%, white 25%, white 75%, #ccc 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 4px 4px;
+  position: relative;
+}
+
+.custom-color-picker__preset[style*="transparent"]::before {
+  content: "∅";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--color-text-secondary);
+  z-index: 1;
+}
+
+[data-theme="dark"] .custom-color-picker__preset[style*="transparent"] {
+  background: linear-gradient(
+      45deg,
+      #555 25%,
+      transparent 25%,
+      transparent 75%,
+      #555 75%
+    ),
+    linear-gradient(45deg, #555 25%, #333 25%, #333 75%, #555 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 4px 4px;
+}
+
+/* Input hex manual */
+.custom-color-picker__hex-input {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.custom-color-picker__hex-field {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  font-size: 12px;
+  font-family: "SF Mono", Monaco, "Inconsolata", "Roboto Mono", Consolas,
+    "Courier New", monospace;
+  text-transform: uppercase;
+}
+
+.custom-color-picker__hex-field:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.2);
+}
+
+.custom-color-picker__hex-field::placeholder {
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+
+/* Selector avanzado */
+.custom-color-picker__advanced {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.custom-color-picker__advanced-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--color-surface);
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.custom-color-picker__advanced-toggle:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+.custom-color-picker__advanced-content {
+  padding: 12px;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+}
+
+/* Estilos para react-colorful */
+.custom-color-picker .react-colorful {
+  width: 100%;
+  height: 120px;
+}
+
+.custom-color-picker .react-colorful__saturation {
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  border-bottom: none;
+}
+
+.custom-color-picker .react-colorful__hue {
+  height: 20px;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+}
+
+.custom-color-picker .react-colorful__pointer {
+  width: 16px;
+  height: 16px;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.custom-color-picker .react-colorful__saturation-pointer {
+  width: 16px;
+  height: 16px;
+}
+
+.custom-color-picker .react-colorful__hue-pointer {
+  width: 16px;
+  height: 16px;
+}
+
+/* Tema oscuro */
+[data-theme="dark"] .custom-color-picker__current {
+  background-color: var(--color-surface-tertiary);
+}
+
+[data-theme="dark"] .custom-color-picker__presets {
+  background-color: var(--color-surface-secondary);
+}
+
+[data-theme="dark"] .custom-color-picker__hex-field {
+  background-color: var(--color-surface-secondary);
+}
+
+[data-theme="dark"] .custom-color-picker__advanced-toggle {
+  background: var(--color-surface-secondary);
+}
+
+[data-theme="dark"] .custom-color-picker__advanced-toggle:hover {
+  background: var(--color-surface-tertiary);
+}
+
+[data-theme="dark"] .custom-color-picker__advanced-content {
+  background: var(--color-surface-secondary);
+}
+
+/* Ajustes para colores claros en tema oscuro */
+[data-theme="dark"] .custom-color-picker__preset--selected::after {
+  box-shadow: 0 0 0 2px var(--color-surface);
+}
+
+/* Estilos para la modal del color picker */
+.color-picker-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(2px);
+}
+
+.color-picker-modal {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-2xl);
+  border: 1px solid var(--color-border);
+  min-width: 320px;
+  max-width: 400px;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: modalSlideIn 0.2s ease-out;
+}
+
+.color-picker-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.color-picker-modal__header h5 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.color-picker-modal__close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.color-picker-modal__close:hover {
+  background-color: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+.color-picker-modal__content {
+  padding: 20px;
+  overflow-y: auto;
+  max-height: calc(90vh - 80px);
+}
+
+/* Animación de entrada de la modal */
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Tema oscuro para modales */
+[data-theme="dark"] .color-picker-modal {
+  background: var(--color-surface-secondary);
+}
+
+[data-theme="dark"] .color-picker-modal__header {
+  background: var(--color-surface-secondary);
+}
+
+[data-theme="dark"] .color-picker-modal__close:hover {
+  background-color: var(--color-surface-tertiary);
+}
+
+/* Estilos específicos para el dropdown del color picker */
+.color-picker-dropdown {
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-surface);
+  padding: 16px;
+  min-width: 280px;
+}
+
+[data-theme="dark"] .color-picker-dropdown {
+  background: var(--color-surface-secondary);
+}
+
+/* Footer con botones de acción */
+.custom-color-picker__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+  margin-top: var(--spacing-md);
+}
+
+.custom-color-picker__button {
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-size: 0.8rem;
+  font-weight: 400;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: none;
+  color: var(--color-text-secondary);
+}
+
+.custom-color-picker__button:hover {
+  color: var(--color-text-primary);
+}
+
+.custom-color-picker__button--cancel {
+  color: var(--color-text-secondary);
+}
+
+.custom-color-picker__button--cancel:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-secondary);
+}
+
+.custom-color-picker__button--accept {
+  color: var(--color-primary);
+}
+
+.custom-color-picker__button--accept:hover {
+  color: var(--color-primary-hover);
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+}
+
+/* Tema oscuro para botones */
+[data-theme="dark"] .custom-color-picker__button--cancel:hover {
+  background-color: var(--color-surface-tertiary);
+}
+
+[data-theme="dark"] .custom-color-picker__button--accept {
+  color: var(--color-primary-light);
+}
+
+[data-theme="dark"] .custom-color-picker__button--accept:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.2);
+}

@@ -3,10 +3,20 @@
 @import "./styles/globals.css";
 @import "./styles/header.css";
 @import "./styles/edit-toolbar.css";
+@import "./styles/widget-config-sidebar.css";
 @import "./styles/grid.css";
 @import "./styles/widgets.css";
 @import "./styles/floating-bar.css";
 @import "./styles/modal.css";
+@import "./styles/config-panel.css";
+@import "./styles/breakdown-levels.css";
+@import "./styles/columns-config.css";
+@import "./styles/column-item.css";
+@import "./styles/visualization-config.css";
+@import "./styles/conditional-formatting.css";
+@import "./styles/custom-color-picker.css";
+@import "./styles/metric-config.css";
+@import "./styles/metric-widget.css";
 
 /* Global Styles */
 *,
@@ -42,12 +52,10 @@ body {
   color: var(--color-text-primary);
   transition: background-color var(--transition-normal),
     color var(--transition-normal);
-  padding-top: 70px; /* Space for fixed header */
 }
 
-/* When editing mode is active, add space for toolbar */
+/* When editing mode is active */
 body.editing {
-  padding-top: 155px !important; /* 70px header + 85px toolbar */
   background-color: var(--color-background-editing) !important;
 }
 
@@ -83,23 +91,45 @@ select {
   outline: none;
 }
 
-/* Scrollbar Styles */
+/* Scrollbar Styles - Minimalistas y flotantes */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+/* Hacer que los elementos con scroll no reserven espacio para scrollbar */
+.widget-config-sidebar__content,
+.table-container,
+.text-widget,
+div[style*="overflow"] {
+  overflow-y: auto;
+}
+
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 5px;
+  height: 5px;
+  background-color: transparent;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-surface-secondary);
+  background: transparent;
+  margin: 3px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border);
+  background-color: rgba(var(--color-border-rgb), 0.4);
   border-radius: var(--radius-full);
+  transition: background-color 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-border-hover);
+  background-color: rgba(var(--color-border-hover-rgb), 0.6);
+}
+
+/* Ocultar scrollbar cuando no está en uso pero mantener funcionalidad */
+::-webkit-scrollbar-thumb:vertical:active,
+::-webkit-scrollbar-thumb:horizontal:active {
+  background-color: rgba(var(--color-border-hover-rgb), 0.7);
 }
 
 /* Focus Styles */
@@ -116,18 +146,12 @@ select {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  body {
-    padding-top: 60px; /* Mobile header height */
-  }
-
-  body.editing {
-    padding-top: 130px !important; /* 60px header + 70px toolbar */
-  }
+  /* Se eliminó el padding-top del body */
 }
 
 /* Print styles */
 @media print {
-  body {
+  .dashboard-container {
     padding-top: 0 !important;
   }
 

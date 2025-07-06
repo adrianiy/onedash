@@ -1,0 +1,357 @@
+/* Estilos para el widget de tabla */
+
+.table-widget {
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.table-container {
+  flex: 1;
+  overflow: auto;
+  border-radius: var(--radius-md);
+}
+
+/* Estilos para la tabla */
+.table-widget__table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.9rem;
+  min-width: 100%;
+}
+
+/* Cabecera de la tabla */
+.table-widget__header {
+  position: sticky;
+  top: 0;
+  background-color: var(--color-surface);
+  z-index: 1;
+}
+
+.table-widget__th {
+  padding: var(--spacing-sm) var(--spacing-md);
+  text-align: left;
+  font-weight: 500;
+  color: var(--color-text-subtle);
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.table-widget__th--sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.table-widget__th--sortable:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.05);
+}
+
+/* Estilos específicos para la columna de desglose */
+.table-widget__th--breakdown {
+  background-color: rgba(var(--color-primary-rgb), 0.07);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.table-widget__th--breakdown:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.12);
+}
+
+.table-widget__sort-icon {
+  margin-left: var(--spacing-xs);
+  opacity: 0.7;
+  vertical-align: middle;
+}
+
+/* Celdas de la tabla */
+.table-widget__td {
+  padding: var(--spacing-sm) var(--spacing-md);
+  transition: background-color 0.2s ease;
+  text-align: left; /* Asegurar que por defecto las celdas estén alineadas a la izquierda */
+}
+
+/* Alineación condicional: solo aplicar a columnas no-primera */
+.table-widget__table--center .table-widget__th:not(:first-child),
+.table-widget__table--center .table-widget__td:not(:first-child),
+.table-widget__table--center .table-widget__total-cell:not(:first-child) {
+  text-align: center;
+}
+
+.table-widget__table--right .table-widget__th:not(:first-child),
+.table-widget__table--right .table-widget__td:not(:first-child),
+.table-widget__table--right .table-widget__total-cell:not(:first-child) {
+  text-align: right;
+}
+
+/* Estilos para las celdas de desglose */
+.table-widget__breakdown-cell {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.table-widget__breakdown-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.table-widget__breakdown-value {
+  font-weight: 500;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+}
+
+.table-widget__level-spacer {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px; /* Mismo espaciado que el botón de expansión */
+}
+
+.table-widget__expand-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px; /* Aumentamos la separación entre el chevron y el texto */
+  border: none;
+  background: transparent;
+  color: var(--color-text-subtle);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.table-widget__expand-btn:hover {
+  color: var(--color-primary);
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  border-radius: var(--radius-sm);
+}
+
+/* Filas de la tabla */
+.table-widget__tr {
+  transition: background-color 0.2s ease;
+}
+
+.table-widget__tr:hover .table-widget__td {
+  background-color: rgba(var(--color-primary-rgb), 0.03) !important;
+}
+
+.table-widget__tr--selected .table-widget__td {
+  background-color: rgba(var(--color-primary-rgb), 0.08) !important;
+}
+
+.table-widget__tr--selected:hover .table-widget__td {
+  background-color: rgba(var(--color-primary-rgb), 0.12) !important;
+}
+
+/* Estilos para niveles anidados */
+.table-widget__level-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-border);
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+/* Pie de tabla con totales */
+.table-widget__footer {
+  position: sticky;
+  bottom: 0;
+  background-color: var(--color-surface);
+  font-weight: 500;
+  z-index: 1;
+}
+
+.table-widget__total-cell {
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+  font-weight: 700;
+}
+
+.table-widget__total-label {
+  font-weight: 700;
+  color: var(--color-text-primary);
+  display: inline-block;
+}
+
+/* Estilos específicos para fila de totales en la parte superior */
+.table-widget__total-row--top {
+  background-color: var(--color-background);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table-widget__total-row--top .table-widget__total-cell--header {
+  padding: var(--spacing-md);
+  border-top: none;
+  border-bottom: 1px solid var(--color-border);
+  font-weight: 700;
+  background-color: var(--color-background);
+}
+
+/* Tema oscuro para totales superiores */
+[data-theme="dark"] .table-widget__total-row--top {
+  background-color: var(--color-surface);
+}
+
+[data-theme="dark"]
+  .table-widget__total-row--top
+  .table-widget__total-cell--header {
+  background-color: var(--color-surface);
+  border-bottom-color: var(--color-border);
+}
+
+/* Paginación */
+.table-widget__pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm);
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-surface-secondary);
+}
+
+.table-widget__page-info {
+  font-size: 0.85rem;
+  color: var(--color-text-subtle);
+}
+
+.table-widget__pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.table-widget__page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.table-widget__page-btn:hover:not(:disabled) {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  border-color: var(--color-primary);
+}
+
+.table-widget__page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Opciones de visualización */
+
+/* Modo compacto */
+.table-widget__table--compact .table-widget__td,
+.table-widget__table--compact .table-widget__th {
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-size: 0.8rem;
+}
+
+.table-widget__table--compact .table-widget__expand-btn {
+  width: 14px;
+  height: 14px;
+}
+
+/* Filas alternas */
+.table-widget__tr--alternate {
+  background-color: rgba(var(--color-primary-rgb), 0.05);
+}
+
+[data-theme="dark"] .table-widget__tr--alternate {
+  background-color: rgba(var(--color-primary-rgb), 0.08);
+}
+
+.table-widget__tr--alternate:hover .table-widget__td {
+  background-color: rgba(var(--color-primary-rgb), 0.05) !important;
+}
+
+[data-theme="dark"] .table-widget__tr--alternate:hover .table-widget__td {
+  background-color: rgba(var(--color-primary-rgb), 0.15) !important;
+}
+
+.table-widget__tr--alternate.table-widget__tr--selected .table-widget__td {
+  background-color: rgba(var(--color-primary-rgb), 0.12) !important;
+}
+
+[data-theme="dark"]
+  .table-widget__tr--alternate.table-widget__tr--selected
+  .table-widget__td {
+  background-color: rgba(var(--color-primary-rgb), 0.18) !important;
+}
+
+/* Bordes de tabla */
+.table-widget__table--bordered {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.table-widget__table--bordered .table-widget__td,
+.table-widget__table--bordered .table-widget__th {
+  border-bottom: 1px solid var(--color-border);
+}
+
+[data-theme="dark"] .table-widget__table--bordered {
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .table-widget__table--bordered .table-widget__td,
+[data-theme="dark"] .table-widget__table--bordered .table-widget__th {
+  border-color: var(--color-border);
+}
+
+.table-widget__table--borderless .table-widget__td,
+.table-widget__table--borderless .table-widget__th {
+  border: none;
+}
+
+.table-widget__table--borderless .table-widget__th {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table-widget__table--borderless
+  .table-widget__footer
+  .table-widget__total-cell {
+  border-top: 1px solid var(--color-border);
+}
+
+/* Tema oscuro */
+[data-theme="dark"] .table-widget__table {
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .table-widget__header {
+  background-color: var(--color-surface-secondary);
+}
+
+[data-theme="dark"] .table-widget__th {
+  color: var(--color-text-subtle);
+  border-bottom-color: var(--color-border);
+}
+
+[data-theme="dark"] .table-widget__td {
+  border-bottom-color: var(--color-border);
+}
+
+[data-theme="dark"] .table-widget__tr:hover .table-widget__td {
+  background-color: rgba(var(--color-primary-rgb), 0.1) !important;
+}
+
+[data-theme="dark"] .table-widget__footer {
+  background-color: var(--color-surface-secondary);
+}
+
+[data-theme="dark"] .table-widget__pagination {
+  background-color: var(--color-surface-tertiary);
+}

@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useDashboardStore } from "../store/dashboardStore";
 import { DashboardGrid } from "../components/dashboard/DashboardGrid";
+import { WidgetConfigSidebar } from "../components/layout/WidgetConfigSidebar";
 
 export const Dashboard: React.FC = () => {
   const { isEditing } = useDashboardStore();
@@ -21,6 +22,7 @@ export const Dashboard: React.FC = () => {
   return (
     <div className={`dashboard-container ${isEditing ? "editing" : ""}`}>
       <DashboardGrid />
+      <WidgetConfigSidebar />
     </div>
   );
 };
