@@ -1,3 +1,5 @@
+import type { MetricDefinition } from "./metricConfig";
+
 export type WidgetType = "chart" | "metric" | "table" | "text";
 export type ChartType = "bar" | "line" | "pie" | "scatter" | "area";
 
@@ -16,11 +18,7 @@ export interface MetricWidgetConfig {
 }
 
 export interface TableWidgetConfig {
-  columns: Array<{
-    key: string;
-    title: string;
-    width?: number;
-  }>;
+  columns: MetricDefinition[];
   data: Record<string, unknown>[];
   pagination?: boolean;
   breakdownLevels?: string[];

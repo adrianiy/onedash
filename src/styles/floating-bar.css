@@ -12,13 +12,13 @@
   box-shadow: var(--shadow-md);
   overflow: hidden;
   padding: var(--spacing-xs);
-  width: 64px; /* Ancho fijo para evitar cambios */
+  width: 44px; /* Ancho fijo para evitar cambios */
   transition: left var(--transition-slow), opacity var(--transition-slow),
     height var(--transition-normal);
 }
 
 .floating-action-bar--collapsed {
-  height: 58px; /* Solo altura suficiente para el botón toggle */
+  height: 42px; /* Solo altura suficiente para el botón toggle */
 }
 
 .floating-action-bar--sidebar-open {
@@ -29,7 +29,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-lg);
+  padding: var(--spacing-sm);
   border: none;
   background-color: transparent;
   color: var(--color-text-primary);
@@ -61,7 +61,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-lg) var(--spacing-md);
+  padding: var(--spacing-sm);
   border: none;
   background-color: transparent;
   color: var(--color-text-secondary);
@@ -141,7 +141,7 @@
   align-items: center;
   justify-content: space-between;
   height: 70px;
-  padding: 0 var(--spacing-xl);
+  padding: 0 var(--spacing-xxl);
   border-bottom: 1px solid var(--color-border);
   background-color: var(--color-surface-secondary);
 }

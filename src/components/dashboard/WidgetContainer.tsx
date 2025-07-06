@@ -113,43 +113,15 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
         const hasColumns =
           widget.config.columns && widget.config.columns.length > 0;
 
-        // Show placeholder with conditional steps
+        // Show placeholder if table is not fully configured
         if (!hasBreakdownLevels || !hasColumns) {
-          const getCurrentStep = () => {
-            if (!hasBreakdownLevels) {
-              return {
-                step: 1,
-                message: "Configurar niveles de desglose",
-                icon: "settings" as const,
-              };
-            }
-            if (!hasColumns) {
-              return {
-                step: 2,
-                message: "Configurar columnas",
-                icon: "grid" as const,
-              };
-            }
-            return {
-              step: 3,
-              message: "Configuración completa",
-              icon: "check" as const,
-            };
-          };
-
-          const currentStep = getCurrentStep();
-
           return (
             <div className="widget-placeholder">
               <Icon name="table" size={48} />
-              <h3>Configura tu tabla</h3>
-              <div className="placeholder-steps">
-                <div className="step step-active">
-                  <Icon name={currentStep.icon} size={16} />
-                  <span>
-                    Paso {currentStep.step}: {currentStep.message}
-                  </span>
-                </div>
+              <h3>Tabla sin configurar</h3>
+              <div className="placeholder-tip">
+                <Icon name="info" size={16} />
+                <p>Configura desgloses y columnas o carga un preset</p>
               </div>
             </div>
           );

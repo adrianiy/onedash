@@ -7,11 +7,14 @@
   --color-surface-secondary: rgb(249 250 251 / var(--tw-bg-opacity, 1));
   --color-surface-tertiary: #e5e7eb;
   --color-border: #e5e7eb;
+  --color-border-secondary: #d5d5d5;
+  --color-border-rgb: 229, 231, 235;
   --color-border-hover: #d1d5db;
+  --color-border-hover-rgb: 209, 213, 219;
   --color-border-focus: #3b82f6;
 
   /* Text Colors */
-  --color-text-primary: #111827;
+  --color-text-primary: #404042;
   --color-text-secondary: #6b7280;
   --color-text-muted: #9ca3af;
   --color-text-inverse: #ffffff;
@@ -30,7 +33,8 @@
   --color-warning-rgb: 245, 158, 11;
   --color-danger: #ef4444;
   --color-danger-rgb: 239, 68, 68;
-  --color-info: #06b6d4;
+  --color-info: #3b82f6;
+  --color-info-dark: #1d4ed8;
   --color-info-rgb: 6, 182, 212;
 
   /* Widget Type Colors */
@@ -101,7 +105,9 @@
   --color-surface-secondary: #1e293b;
   --color-surface-tertiary: #0f172a;
   --color-border: #334155;
+  --color-border-rgb: 51, 65, 85;
   --color-border-hover: #475569;
+  --color-border-hover-rgb: 71, 85, 105;
   --color-border-focus: #3b82f6;
 
   --color-text-primary: #fafafa;
@@ -123,5 +129,6 @@
   --color-danger: #ef4444;
   --color-danger-rgb: 239, 68, 68;
   --color-info: #06b6d4;
+  --color-info-dark: #0369a1;
   --color-info-rgb: 6, 182, 212;
 }

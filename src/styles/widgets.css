@@ -34,7 +34,7 @@
 
 .floating-widget-title {
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--color-text-secondary);
   margin: 0;
 }
@@ -142,7 +142,7 @@
 .metric-unit {
   font-size: 1.5rem;
   color: var(--color-text-secondary);
-  font-weight: 600;
+  font-weight: 400;
   margin-left: var(--spacing-xs);
 }
 
@@ -154,7 +154,7 @@
   padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: var(--radius-full);
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .metric-trend.up {
@@ -235,7 +235,7 @@
 
 .text-widget h3 {
   font-size: 1.25rem;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .text-widget p {
@@ -244,7 +244,7 @@
 
 .text-widget strong {
   color: var(--color-text-primary);
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .text-widget em {
@@ -275,7 +275,7 @@
 .table-widget th {
   background-color: var(--color-surface-secondary);
   color: var(--color-text-secondary);
-  font-weight: 600;
+  font-weight: 400;
   text-align: left;
   padding: var(--spacing-md);
   border-bottom: 1px solid var(--color-border);
@@ -469,7 +469,7 @@
   margin: 0;
   color: var(--color-text-secondary);
   font-size: 1.125rem;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 /* Widget placeholder icons with specific colors */
@@ -532,4 +532,33 @@
 
 .placeholder-steps .step-active span {
   color: var(--color-primary);
+}
+
+/* Placeholder tip styles */
+.placeholder-tip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  background-color: rgba(66, 153, 225, 0.1);
+  border-radius: var(--radius-full);
+  padding: var(--spacing-md) var(--spacing-lg);
+  white-space: nowrap;
+  margin: 0 auto;
+}
+
+.placeholder-tip .lucide-info {
+  color: var(--color-info);
+  flex-shrink: 0;
+}
+
+.placeholder-tip p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-info);
+  font-weight: 400;
+}
+
+[data-theme="dark"] .placeholder-tip {
+  background-color: rgba(66, 153, 225, 0.15);
 }

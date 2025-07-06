@@ -1,0 +1,823 @@
+/* Estilos para el selector de métricas */
+
+.metric-selector {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 600px; /* Tamaño vertical fijo en lugar de max-height */
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+/* Cabecera con buscador y botón de cierre */
+.metric-selector__header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  z-index: 5;
+}
+
+/* Barra de búsqueda */
+.metric-selector__search-bar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  flex: 1;
+  background-color: var(--color-surface);
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.metric-selector__search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.metric-selector__search-container svg {
+  position: absolute;
+  left: var(--spacing-sm);
+  color: var(--color-text-muted);
+}
+
+.metric-selector__search-input {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm)
+    calc(var(--spacing-sm) * 2 + 16px);
+  border: none;
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+  box-shadow: none;
+  transition: all 0.2s ease;
+}
+
+.metric-selector__search-input:focus {
+  outline: none;
+}
+
+.metric-selector__search-input::placeholder {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* Barra de pestañas */
+.metric-selector__tabs {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.metric-selector__tab-list {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+}
+
+.metric-selector__tab-list::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+
+.metric-selector__tab {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  font-weight: 400;
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  position: relative;
+  transition: all var(--transition-fast);
+  border-bottom: 2px solid transparent;
+}
+
+.metric-selector__tab:hover:not(.metric-selector__tab--active) {
+  color: var(--color-text-secondary);
+}
+
+.metric-selector__tab--active {
+  color: var(--color-primary);
+  font-weight: 400;
+  border-bottom-color: var(--color-primary);
+}
+
+.metric-selector__tab-counter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-surface-secondary);
+  color: var(--color-text-muted);
+  border-radius: var(--radius-full);
+  min-width: 20px;
+  height: 20px;
+  padding: 0 var(--spacing-xs);
+  font-size: 0.75rem;
+  line-height: 1;
+  font-weight: 500;
+}
+
+.metric-selector__tab--active .metric-selector__tab-counter {
+  background-color: rgba(var(--color-primary-rgb), 0.15);
+  color: var(--color-primary);
+}
+
+/* Indicador de campo requerido */
+.metric-selector__required-indicator {
+  color: var(--color-danger) !important;
+  margin-left: var(--spacing-xs);
+  font-weight: bold;
+}
+
+/* Estilos para el texto informativo de valores por defecto */
+.metric-selector__option-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-selector__default-tip {
+  color: var(--color-info);
+  font-size: 0.75rem;
+  display: block;
+  margin-top: 2px;
+  line-height: 1;
+}
+
+/* Contenido del selector */
+.metric-selector__content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-md) var(--spacing-lg);
+  min-height: 200px;
+  transition: padding-right var(--transition-normal);
+  position: relative;
+}
+
+/* Eliminamos el padding para que el sidebar no mueva el contenido */
+.metric-selector__content--with-sidebar {
+  /* padding-left: 320px; */
+}
+
+.metric-selector__tab-content {
+  height: 100%;
+  overflow-y: auto; /* Añadir scroll vertical a cada pestaña cuando sea necesario */
+  padding-right: var(--spacing-xs); /* Espacio para el scrollbar */
+  position: relative; /* Para posicionamiento del panel de modificadores */
+  display: flex; /* Habilitar layout flexible */
+  flex-direction: column; /* Apilar elementos verticalmente */
+  transition: padding-right 0.3s ease-in-out; /* Transición suave para el padding */
+}
+
+/* Añadir padding al contenido cuando el panel de modificadores está activo */
+.metric-selector.with-modifiers-panel .metric-selector__tab-content {
+  padding-right: 280px; /* Ancho del panel de modificadores */
+}
+
+/* Clase para el checkbox-group principal que ocupa todo el ancho disponible */
+.metric-selector__tab-content > .metric-selector__checkbox-group {
+  width: 100%;
+  flex: 1;
+}
+
+/* Grupos de checkboxes */
+.metric-selector__checkbox-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-sm) 0;
+  gap: var(--spacing-sm);
+}
+
+.metric-selector__checkbox-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.metric-selector__checkbox-item:hover {
+  background-color: var(--color-surface-secondary);
+}
+
+/* Resaltar el fondo cuando el ítem está activo */
+.metric-selector__checkbox-item:has(input[type="checkbox"]:checked) {
+  background-color: rgba(var(--color-primary-rgb), 0.08);
+}
+
+.metric-selector__checkbox-item:active {
+  transform: translateY(0px);
+}
+
+/* Estilos para el checkbox */
+.metric-selector__checkbox-item input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--color-border-secondary);
+  border-radius: 4px;
+  background-color: transparent;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+  margin-top: var(--spacing-xs);
+  margin-right: var(--spacing-md);
+  flex-shrink: 0;
+}
+
+.metric-selector__checkbox-item input[type="checkbox"]:checked {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.metric-selector__checkbox-item input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 6px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.metric-selector__checkbox-item input[type="checkbox"]:hover:not(:disabled) {
+  border-color: var(--color-primary);
+}
+
+.metric-selector__checkbox-item input[type="checkbox"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--color-surface-secondary);
+}
+
+/* Estilos para el contenido */
+.metric-selector__option-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: var(--spacing-xs) 0;
+}
+
+/* Estilos para la etiqueta */
+.metric-selector__option-content label {
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  font-weight: 400;
+}
+
+/* Estilo cuando el checkbox está seleccionado */
+.metric-selector__checkbox-item:has(input[type="checkbox"]:checked)
+  .metric-selector__option-content
+  label {
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+/* Para checkboxes deshabilitados */
+.metric-selector__checkbox-item:has(input[type="checkbox"]:disabled)
+  .metric-selector__option-content
+  label {
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.metric-selector__custom-input {
+  width: 60px;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 0.875rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  margin-left: auto;
+  background-color: var(--color-surface-secondary);
+  color: var(--color-text-primary);
+  transition: all 0.2s ease;
+}
+
+.metric-selector__custom-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.2);
+}
+
+/* Footer */
+.metric-selector__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+}
+
+.metric-selector__summary-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  background: none;
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--color-info);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.metric-selector__summary-button:hover {
+  color: var(--color-info-dark);
+}
+
+.metric-selector__add-button,
+.metric-selector__select-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.metric-selector__add-button:hover:not(:disabled),
+.metric-selector__select-button:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.metric-selector__add-button:disabled,
+.metric-selector__select-button:disabled {
+  background-color: var(--color-surface-secondary);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+  opacity: 0.5;
+  transform: none;
+}
+
+/* Sidebar */
+.metric-selector__sidebar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 58px; /* Espacio para el footer */
+  width: 300px;
+  height: auto; /* Altura automática basada en top y bottom */
+  background-color: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  z-index: 5;
+  box-shadow: 5px 0 15px rgba(0, 0, 0, 0.05);
+  transform: translateX(0);
+  opacity: 1;
+  animation: slidein 0.3s ease forwards;
+}
+
+@keyframes slidein {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.metric-selector__sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.metric-selector__sidebar-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.metric-selector__close-button {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: var(--spacing-sm);
+}
+
+.metric-selector__close-button:hover {
+  color: var(--color-text-primary);
+}
+
+.metric-selector__sidebar-content {
+  flex: 1;
+  padding: var(--spacing-md);
+  padding-top: 0;
+  overflow-y: auto;
+}
+
+.metric-selector__no-selections {
+  color: var(--color-text-muted);
+  text-align: center;
+  font-style: italic;
+  margin: var(--spacing-xl) 0;
+}
+
+/* Estado vacío mejorado */
+.metric-selector__empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl) var(--spacing-md);
+  text-align: center;
+  min-height: 200px;
+}
+
+.metric-selector__empty-hint {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  margin-top: var(--spacing-xs);
+}
+
+.metric-selector__requirements-info {
+  text-align: left;
+  margin-top: var(--spacing-md);
+  padding: 0 var(--spacing-md);
+}
+
+.metric-selector__requirements-list {
+  list-style-type: none;
+  padding: 0;
+  margin: var(--spacing-sm) 0;
+}
+
+.metric-selector__requirement-item {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  padding: var(--spacing-xs) 0;
+  position: relative;
+  padding-left: var(--spacing-md);
+}
+
+.metric-selector__requirement-item:before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--color-warning);
+}
+
+/* Contenedor sticky para el resumen estadístico */
+.metric-selector__summary-stats-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: var(--color-surface);
+  padding-top: var(--spacing-lg);
+  margin-top: -var(--spacing-sm);
+  padding-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+/* Resumen estadístico */
+.metric-selector__summary-stats {
+  background-color: var(--color-surface-secondary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.metric-selector__stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.metric-selector__stat-value {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.metric-selector__stat-label {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.metric-selector__stat-distribution {
+  display: flex;
+  justify-content: space-around;
+  margin-top: var(--spacing-xs);
+}
+
+.metric-selector__distribution-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 var(--spacing-xs);
+}
+
+.metric-selector__distribution-count {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.metric-selector__distribution-label {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+/* Grupos de métricas */
+.metric-selector__group {
+  margin-bottom: var(--spacing-lg);
+}
+
+.metric-selector__group-header {
+  margin-bottom: var(--spacing-xs);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.metric-selector__group-title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-xs) 0;
+}
+
+.metric-selector__group-count {
+  background-color: var(--color-surface-secondary);
+  color: var(--color-text-muted);
+  border-radius: var(--radius-full);
+  min-width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--spacing-xs);
+  font-size: 0.75rem;
+  line-height: 1;
+  font-weight: 500;
+}
+
+/* Tarjetas de métricas */
+.metric-selector__group-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.metric-selector__metric-card {
+  background-color: var(--color-surface-secondary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm);
+  transition: all var(--transition-fast);
+}
+
+.metric-selector__metric-card:hover {
+  background-color: rgba(var(--color-secondary-rgb), 0.12);
+}
+
+.metric-selector__metric-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xs);
+}
+
+.metric-selector__metric-title {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--color-text-primary);
+}
+
+.metric-selector__metric-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-xs);
+}
+
+/* Chips de métricas */
+.metric-selector__chips-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
+.metric-selector__chip {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm);
+  overflow: hidden;
+  background-color: transparent;
+  margin-bottom: var(--spacing-xs);
+}
+
+.metric-selector__chip-title {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+  line-height: 1.4;
+}
+
+.metric-selector__chip-indicator {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.metric-selector__chip-modifiers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.metric-selector__metric-tag,
+.metric-selector__chip-tag {
+  font-size: 0.75rem;
+  padding: 2px var(--spacing-xs);
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+.metric-selector__metric-tag {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-text-secondary);
+}
+
+/* Códigos de color para cada tipo de modificador */
+.metric-selector__chip-tag--saleType {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+}
+
+.metric-selector__chip-tag--scope {
+  background-color: rgba(var(--color-success-rgb), 0.1);
+  color: var(--color-success);
+}
+
+.metric-selector__chip-tag--timeframe {
+  background-color: rgba(var(--color-info-rgb), 0.1);
+  color: var(--color-info);
+}
+
+.metric-selector__chip-tag--comparison {
+  background-color: rgba(var(--color-warning-rgb), 0.1);
+  color: var(--color-warning);
+}
+
+.metric-selector__chip-tag--calculation {
+  background-color: rgba(var(--color-secondary-rgb), 0.1);
+  color: var(--color-secondary);
+}
+
+/* Panel de modificadores al seleccionar un indicador */
+.metric-selector__modifiers-panel {
+  position: fixed;
+  z-index: 100;
+  width: 280px;
+  top: 97px; /* Posición fija después de cabecera y pestañas */
+  right: 0;
+  height: calc(
+    100% - 155px
+  ); /* Altura ajustada para no solapar con cabecera y footer */
+  background-color: var(--color-surface-secondary);
+  border-left: 1px solid var(--color-border);
+  padding: 0;
+  overflow-y: auto;
+  animation: slide-in-right 0.3s ease-in-out forwards;
+}
+
+/* Estilos especiales para elementos en el panel de modificadores */
+.metric-selector__modifiers-panel .metric-selector__checkbox-item:hover {
+  background-color: rgba(var(--color-secondary-rgb), 0.08);
+}
+
+.metric-selector__modifiers-panel
+  .metric-selector__checkbox-item:has(input[type="checkbox"]:checked) {
+  background-color: rgba(var(--color-primary-rgb), 0.08);
+}
+
+.metric-selector__modifiers-panel
+  .metric-selector__checkbox-item:has(input[type="checkbox"]:checked):hover {
+  background-color: rgba(var(--color-primary-rgb), 0.12);
+}
+
+/* Cuando el contenedor principal tiene el panel activo */
+.metric-selector.with-modifiers-panel .metric-selector__modifiers-panel {
+  right: 0;
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.metric-selector__modifiers-section {
+  padding: var(--spacing-md) var(--spacing-md) 0;
+}
+
+.metric-selector__modifiers-section h4 {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-sm) 0;
+  padding-bottom: var(--spacing-xs);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+/* Dark theme adjustments for modifiers panel */
+[data-theme="dark"] .metric-selector__modifiers-panel {
+  background-color: var(--color-surface-tertiary);
+  border-left-color: var(--color-border);
+}
+
+[data-theme="dark"] .metric-selector__modifiers-section h4 {
+  color: var(--color-text-secondary);
+  border-bottom-color: var(--color-border);
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .metric-selector {
+  background-color: var(--color-surface);
+}
+
+[data-theme="dark"] .metric-selector__search-input {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .metric-selector__search-input:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .metric-selector__tab-counter {
+  background-color: var(--color-surface-tertiary);
+}
+
+[data-theme="dark"]
+  .metric-selector__tab--active
+  .metric-selector__tab-counter {
+  background-color: rgba(var(--color-primary-rgb), 0.25);
+}
+
+[data-theme="dark"] .metric-selector__summary-button:hover {
+  color: var(--color-info-dark);
+  background-color: rgba(var(--color-info-rgb), 0.1);
+}
+
+[data-theme="dark"] .metric-selector__sidebar {
+  background-color: var(--color-surface);
+  border-right-color: var(--color-border);
+  box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Modo de selección única */
+.metric-selector--single
+  .metric-selector__checkbox-label
+  input[type="checkbox"]:checked
+  ~ * {
+  color: var(--color-primary);
+  font-weight: 500;
+}

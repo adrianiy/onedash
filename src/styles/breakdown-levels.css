@@ -6,7 +6,7 @@
 }
 
 .breakdown-levels {
-  min-height: 100px;
+  min-height: 150px;
   border: 1px dashed var(--color-border);
   border-radius: var(--radius-md);
   padding: var(--spacing-md);
@@ -53,68 +53,8 @@
 
 /* Placeholder cuando no hay niveles */
 .breakdown-levels__placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-xl) var(--spacing-md);
   height: 120px;
-  text-align: center;
-}
-
-/* Placeholder vacío mejorado */
-.breakdown-levels__placeholder--empty {
-  border: 1px dashed rgba(var(--color-primary-rgb), 0.3);
-  background-color: rgba(var(--color-primary-rgb), 0.02);
   transition: all var(--transition-fast);
-}
-
-/* Estilos para hacer el placeholder clickeable */
-.breakdown-levels__placeholder--clickable {
-  cursor: pointer;
-  width: 100%;
-  background: none;
-  border: none;
-  padding: 0;
-  text-align: left;
-}
-
-.breakdown-levels__placeholder--clickable:hover {
-  border-color: var(--color-primary);
-}
-
-.breakdown-levels__placeholder--clickable:hover
-  .breakdown-levels__placeholder-icon {
-  color: var(--color-primary-hover);
-}
-
-.breakdown-levels__placeholder--clickable:hover p {
-  color: var(--color-primary);
-  opacity: 1;
-  font-style: normal;
-}
-
-.breakdown-levels__placeholder--empty:hover {
-  border-color: rgba(var(--color-primary-rgb), 0.5);
-  background-color: rgba(var(--color-primary-rgb), 0.04);
-}
-
-.breakdown-levels__placeholder-content {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
-
-.breakdown-levels__placeholder-icon {
-  color: var(--color-primary);
-  flex-shrink: 0;
-}
-
-.breakdown-levels__placeholder p {
-  font-size: 0.85rem;
-  color: var(--color-text-muted);
-  opacity: 0.7;
-  margin: 0;
-  font-style: italic;
 }
 
 .breakdown-levels__empty {
@@ -201,7 +141,7 @@
     calc(var(--spacing-sm) * 2 + 16px);
   border: none;
   border-radius: var(--radius-md);
-  background-color: white;
+  background-color: var(--color-surface);
   font-size: 0.9rem;
   color: var(--color-text-primary);
 }
@@ -496,7 +436,7 @@
 .breakdown-level__name {
   font-size: 0.9rem;
   font-weight: 500;
-  color: #111827;
+  color: var(--color-text-primary);
 }
 
 /* Botón de eliminar */
@@ -705,51 +645,4 @@
 [data-theme="dark"] .breakdown-levels__placeholder p {
   color: var(--color-text-muted);
   opacity: 0.6;
-}
-
-/* Tema oscuro para el placeholder vacío */
-[data-theme="dark"] .breakdown-levels__placeholder--empty {
-  border-color: rgba(var(--color-primary-rgb), 0.2);
-  background-color: rgba(var(--color-primary-rgb), 0.03);
-}
-
-[data-theme="dark"] .breakdown-levels__placeholder--empty:hover {
-  border-color: rgba(var(--color-primary-rgb), 0.3);
-  background-color: rgba(var(--color-primary-rgb), 0.05);
-}
-
-[data-theme="dark"] .breakdown-levels__placeholder-icon {
-  color: var(--color-primary-light);
-}
-
-/* Tema oscuro para placeholder clickeable */
-[data-theme="dark"] .breakdown-levels__placeholder--clickable:hover {
-  border-color: var(--color-primary-light);
-}
-
-[data-theme="dark"]
-  .breakdown-levels__placeholder--clickable:hover
-  .breakdown-levels__placeholder-icon {
-  color: var(--color-primary-hover);
-}
-
-[data-theme="dark"] .breakdown-levels__placeholder--clickable:hover p {
-  color: var(--color-primary-light);
-  opacity: 1;
-}
-
-/* Ajustes al texto en el placeholder */
-.breakdown-levels__placeholder--empty .breakdown-levels__placeholder-content p {
-  color: var(--color-primary);
-  opacity: 0.9;
-  font-style: normal;
-  font-weight: 500;
-  transition: all var(--transition-fast);
-}
-
-[data-theme="dark"]
-  .breakdown-levels__placeholder--empty
-  .breakdown-levels__placeholder-content
-  p {
-  color: var(--color-primary-light);
 }

@@ -18,19 +18,16 @@ export const TableConfigTabs: React.FC<TableConfigTabsProps> = ({ widget }) => {
     {
       id: "data",
       label: "Datos",
-      icon: "database",
       component: DataConfig,
     },
     {
       id: "visualization",
       label: "Vista",
-      icon: "eye",
       component: VisualizationConfig,
     },
     {
       id: "events",
       label: "Eventos",
-      icon: "zap",
       component: EventsConfig,
     },
   ];

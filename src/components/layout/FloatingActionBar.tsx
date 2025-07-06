@@ -45,7 +45,7 @@ export const FloatingActionBar: React.FC<FloatingActionBarProps> = ({
           onClick={onToggleSidebar}
           data-tooltip-id="dashboard-tooltip"
         >
-          <Icon name="menu" size={20} />
+          <Icon name="layout-dashboard" size={20} />
         </button>
 
         <div className="floating-action-bar__separator" />
@@ -55,7 +55,7 @@ export const FloatingActionBar: React.FC<FloatingActionBarProps> = ({
           onClick={toggleCollapsed}
           data-tooltip-id="toggle-tooltip"
         >
-          <Icon name={isCollapsed ? "chevron-up" : "chevron-down"} size={16} />
+          <Icon name={isCollapsed ? "menu" : "chevron-down"} size={16} />
         </button>
       </div>
 
@@ -67,7 +67,7 @@ export const FloatingActionBar: React.FC<FloatingActionBarProps> = ({
       <Tooltip id="dashboard-tooltip" content="Dashboards" place="right" />
       <Tooltip
         id="toggle-tooltip"
-        content={isCollapsed ? "Expandir" : "Contraer"}
+        content={isCollapsed ? "Expandir menú" : "Contraer menú"}
         place="right"
       />
     </>

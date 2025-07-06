@@ -1,34 +1,9 @@
 import React from "react";
-import { Icon } from "../../common/Icon";
 import type { Widget } from "../../../types/widget";
-
-// Tipos para los iconos
-type IconName =
-  | "close"
-  | "settings"
-  | "target"
-  | "bar-chart"
-  | "line-chart"
-  | "pie-chart"
-  | "plus"
-  | "edit"
-  | "trash"
-  | "sun"
-  | "moon"
-  | "save"
-  | "menu"
-  | "grid"
-  | "trending-up"
-  | "trending-down"
-  | "table"
-  | "database"
-  | "eye"
-  | "zap";
 
 export interface ConfigTab {
   id: string;
   label: string;
-  icon: IconName;
   component: React.ComponentType<{ widget: Widget }>;
 }
 
@@ -55,7 +30,6 @@ export const ConfigTabs: React.FC<ConfigTabsProps> = ({
           }`}
           onClick={() => onTabChange(tab.id)}
         >
-          <Icon name={tab.icon} size={18} />
           <span>{tab.label}</span>
         </button>
       ))}

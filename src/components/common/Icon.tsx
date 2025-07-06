@@ -33,6 +33,10 @@ import {
   Tag,
   MapPin,
   Search,
+  Info,
+  Pen,
+  Palette,
+  LayoutDashboard,
   type LucideIcon,
 } from "lucide-react";
 
@@ -70,6 +74,10 @@ const iconMap = {
   tag: Tag,
   "map-pin": MapPin,
   search: Search,
+  info: Info,
+  pen: Pen,
+  palette: Palette,
+  "layout-dashboard": LayoutDashboard,
 } as const;
 
 export type IconName = keyof typeof iconMap;
@@ -99,6 +107,7 @@ export const Icon: React.FC<IconProps> = ({
       size={size}
       className={className}
       color={color}
+      strokeWidth={1.1} // Bordes más finos para un aspecto minimalista
       aria-hidden="true"
     />
   );

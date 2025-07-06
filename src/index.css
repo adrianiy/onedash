@@ -9,6 +9,7 @@
 @import "./styles/floating-bar.css";
 @import "./styles/modal.css";
 @import "./styles/breakdown-levels.css";
+@import "./styles/columns-config.css";
 
 /* Global Styles */
 *,
@@ -83,23 +84,45 @@ select {
   outline: none;
 }
 
-/* Scrollbar Styles */
+/* Scrollbar Styles - Minimalistas y flotantes */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+/* Hacer que los elementos con scroll no reserven espacio para scrollbar */
+.widget-config-sidebar__content,
+.table-container,
+.text-widget,
+div[style*="overflow"] {
+  overflow-y: auto;
+}
+
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 5px;
+  height: 5px;
+  background-color: transparent;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-surface-secondary);
+  background: transparent;
+  margin: 3px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border);
+  background-color: rgba(var(--color-border-rgb), 0.4);
   border-radius: var(--radius-full);
+  transition: background-color 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-border-hover);
+  background-color: rgba(var(--color-border-hover-rgb), 0.6);
+}
+
+/* Ocultar scrollbar cuando no está en uso pero mantener funcionalidad */
+::-webkit-scrollbar-thumb:vertical:active,
+::-webkit-scrollbar-thumb:horizontal:active {
+  background-color: rgba(var(--color-border-hover-rgb), 0.7);
 }
 
 /* Focus Styles */

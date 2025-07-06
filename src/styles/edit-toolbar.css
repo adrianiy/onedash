@@ -92,19 +92,6 @@
   color: inherit;
 }
 
-/* Iconos más finos en el toolbar */
-.edit-toolbar__button svg {
-  stroke-width: 1.5;
-}
-
-.edit-toolbar__button:hover svg {
-  stroke-width: 1.5;
-}
-
-.edit-toolbar__button:active svg {
-  stroke-width: 1.5;
-}
-
 .edit-toolbar__button--danger {
   color: var(--color-danger);
 }
