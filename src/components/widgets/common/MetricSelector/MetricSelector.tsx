@@ -63,7 +63,7 @@ const MetricSelector: React.FC<MetricSelectorProps> = ({
     isPanelVisible,
     isCompatibleModifier,
     getModifierLabel,
-  } = useMetricSelector(mode, initialTab);
+  } = useMetricSelector(mode, initialTab, selectedMetric);
 
   // Función para manejar la selección según el modo
   const handleSelect = () => {

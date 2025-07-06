@@ -192,7 +192,7 @@ export const EditToolbar: React.FC = () => {
       isConfigured: false,
     });
 
-    addWidgetToBoard(newMetricWidget, { w: 3, h: 3, minW: 2, minH: 2 });
+    addWidgetToBoard(newMetricWidget, { w: 4, h: 4, minW: 3, minH: 3 });
   };
 
   const handleAddChart = () => {

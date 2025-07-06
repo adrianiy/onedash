@@ -41,11 +41,8 @@ export const IndicatorsTab: React.FC<MetricTabProps> = ({
             value={indicator}
             checked={selectedIndicators.includes(indicator as IndicatorType)}
             onChange={handleChange}
-            disabled={
-              mode === "single" &&
-              selectedIndicators.length > 0 &&
-              !selectedIndicators.includes(indicator as IndicatorType)
-            }
+            mode={mode}
+            radioGroupName="metric-selector-indicators"
           />
         ))}
       </div>

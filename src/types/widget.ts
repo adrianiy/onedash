@@ -26,7 +26,20 @@ export interface ChartWidgetConfig {
 }
 
 export interface MetricWidgetConfig {
-  value: number | string;
+  // Métricas principales
+  primaryMetric?: MetricDefinition;
+  secondaryMetric?: MetricDefinition;
+
+  // Tamaño visual (por defecto medium)
+  size?: "small" | "medium" | "large";
+
+  // Configuración visual
+  visualization?: {
+    conditionalFormats?: ConditionalFormatRule[];
+  };
+
+  // Compatibilidad con mock actual (deprecado)
+  value?: number | string;
   unit?: string;
   trend?: "up" | "down" | "neutral";
   trendValue?: number;

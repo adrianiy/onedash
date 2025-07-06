@@ -4,6 +4,7 @@ import { useDashboardStore } from "../../store/dashboardStore";
 import { useWidgetStore } from "../../store/widgetStore";
 import { Icon } from "../common/Icon";
 import { TableConfig } from "../widgets/config/TableConfig";
+import { MetricConfig } from "../widgets/config/MetricConfig";
 
 export const WidgetConfigSidebar: React.FC = () => {
   const {
@@ -136,6 +137,10 @@ export const WidgetConfigSidebar: React.FC = () => {
   const renderWidgetConfig = () => {
     if (widget.type === "table") {
       return <TableConfig widget={widget} />;
+    }
+
+    if (widget.type === "metric") {
+      return <MetricConfig widget={widget} />;
     }
 
     return (

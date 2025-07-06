@@ -353,3 +353,113 @@
 [data-theme="dark"] .viz-remove-button:hover {
   background-color: rgba(var(--color-danger-rgb), 0.15);
 }
+
+/* Estilos específicos para configurador de métricas */
+.viz-metric-configurator {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-lg) 0;
+  margin-bottom: var(--spacing-lg);
+}
+
+.viz-metric-preview {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: var(--spacing-xl);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.viz-metric-sample {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.viz-metric-sample--small {
+  transform: scale(0.8);
+}
+
+.viz-metric-sample--medium {
+  transform: scale(1);
+}
+
+.viz-metric-sample--large {
+  transform: scale(1.3);
+}
+
+.viz-metric-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.viz-metric-placeholder--primary {
+  order: 1;
+}
+
+.viz-metric-placeholder--secondary {
+  order: 2;
+}
+
+.viz-metric-placeholder__value {
+  width: 80px;
+  height: 24px;
+  background-color: rgba(var(--color-primary-rgb), 0.2);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--spacing-xs);
+}
+
+.viz-metric-placeholder__label {
+  width: 60px;
+  height: 12px;
+  background-color: rgba(var(--color-secondary-rgb), 0.15);
+  border-radius: var(--radius-sm);
+}
+
+/* Controles de métricas */
+.viz-metric-controls {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+  align-items: center;
+}
+
+.viz-metric-controls--bottom {
+  margin-top: var(--spacing-md);
+}
+
+/* Responsive para dispositivos pequeños */
+@media (max-width: 768px) {
+  .viz-metric-controls {
+    gap: var(--spacing-md);
+  }
+
+  .viz-metric-preview {
+    padding: var(--spacing-lg);
+  }
+
+  .viz-metric-sample--large {
+    transform: scale(1.1);
+  }
+}
+
+/* Tema oscuro para métricas */
+[data-theme="dark"] .viz-metric-preview {
+  background-color: var(--color-surface-secondary);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .viz-metric-placeholder__value {
+  background-color: rgba(var(--color-primary-rgb), 0.3);
+}
+
+[data-theme="dark"] .viz-metric-placeholder__label {
+  background-color: rgba(var(--color-secondary-rgb), 0.25);
+}

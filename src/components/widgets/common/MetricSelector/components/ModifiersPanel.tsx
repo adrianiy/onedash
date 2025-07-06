@@ -51,11 +51,8 @@ export const ModifiersPanel: React.FC<MetricModifiersPanelProps> = ({
                     onChange={(value, isChecked) =>
                       handleChange("saleType", value, isChecked)
                     }
-                    disabled={
-                      mode === "single" &&
-                      selectedModifiers.saleType.length > 0 &&
-                      !selectedModifiers.saleType.includes(option.value)
-                    }
+                    mode={mode}
+                    radioGroupName="metric-selector-saleType"
                     hasDefaultTip={
                       willApplyDefaultValue("saleType") &&
                       option.value === getDefaultValue("saleType")
@@ -88,11 +85,8 @@ export const ModifiersPanel: React.FC<MetricModifiersPanelProps> = ({
                     onChange={(value, isChecked) =>
                       handleChange("scope", value, isChecked)
                     }
-                    disabled={
-                      mode === "single" &&
-                      selectedModifiers.scope.length > 0 &&
-                      !selectedModifiers.scope.includes(option.value)
-                    }
+                    mode={mode}
+                    radioGroupName="metric-selector-scope"
                     hasDefaultTip={
                       willApplyDefaultValue("scope") &&
                       option.value === getDefaultValue("scope")
@@ -119,11 +113,8 @@ export const ModifiersPanel: React.FC<MetricModifiersPanelProps> = ({
                   onChange={(value, isChecked) =>
                     handleChange("comparison", value, isChecked)
                   }
-                  disabled={
-                    mode === "single" &&
-                    selectedModifiers.comparison.length > 0 &&
-                    !selectedModifiers.comparison.includes(option.value)
-                  }
+                  mode={mode}
+                  radioGroupName="metric-selector-comparison"
                   hasDefaultTip={
                     willApplyDefaultValue("comparison") &&
                     option.value === getDefaultValue("comparison")

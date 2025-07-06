@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import type {
   IndicatorType,
   MetricDefinition,
@@ -15,7 +15,8 @@ import type { SelectedModifiers } from "./types";
  */
 export const useMetricSelector = (
   mode: "single" | "multiple",
-  initialTab = "indicators"
+  initialTab = "indicators",
+  initialMetric?: MetricDefinition
 ) => {
   // Estado para las pestañas
   const [activeTab, setActiveTab] = useState<string>(initialTab);
@@ -42,6 +43,50 @@ export const useMetricSelector = (
   const [customValues, setCustomValues] = useState<Record<string, unknown>>({
     comparison_a_n_value: 1, // Representa 1 año de diferencia (por defecto)
   });
+
+  // Efecto para inicializar valores basándose en la métrica inicial
+  useEffect(() => {
+    if (initialMetric) {
+      // Extraer el indicador de la métrica
+      setSelectedIndicators([initialMetric.indicator]);
+
+      // Extraer los modificadores de la métrica
+      const modifiers: SelectedModifiers = {
+        saleType: initialMetric.modifiers.saleType
+          ? [initialMetric.modifiers.saleType]
+          : [],
+        scope: initialMetric.modifiers.scope
+          ? [initialMetric.modifiers.scope]
+          : [],
+        timeframe: initialMetric.modifiers.timeframe
+          ? [initialMetric.modifiers.timeframe]
+          : [],
+        comparison: initialMetric.modifiers.comparison
+          ? [
+              typeof initialMetric.modifiers.comparison === "object"
+                ? "a-n"
+                : initialMetric.modifiers.comparison,
+            ]
+          : [],
+        calculation: initialMetric.modifiers.calculation
+          ? [initialMetric.modifiers.calculation]
+          : [],
+      };
+      setSelectedModifiers(modifiers);
+
+      // Si hay un valor a-n, configurar el valor personalizado
+      if (
+        initialMetric.modifiers.comparison &&
+        typeof initialMetric.modifiers.comparison === "object" &&
+        initialMetric.modifiers.comparison.type === "a-n"
+      ) {
+        setCustomValues({
+          ...customValues,
+          comparison_a_n_value: initialMetric.modifiers.comparison.value,
+        });
+      }
+    }
+  }, [initialMetric]);
 
   // Usar el hook para generar métricas
   const { generatedMetrics } = useMetricGeneration({

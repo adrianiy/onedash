@@ -40,6 +40,8 @@ export interface CheckboxItemProps {
   disabled?: boolean;
   hasDefaultTip?: boolean;
   defaultTipText?: string;
+  mode?: "single" | "multiple";
+  radioGroupName?: string;
 }
 
 export interface MetricTabProps {

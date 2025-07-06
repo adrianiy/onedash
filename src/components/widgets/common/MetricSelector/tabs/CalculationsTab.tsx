@@ -37,11 +37,8 @@ export const CalculationsTab: React.FC<MetricTabProps> = ({
             value={option.value}
             checked={selectedModifiers.calculation.includes(option.value)}
             onChange={handleChange}
-            disabled={
-              mode === "single" &&
-              selectedModifiers.calculation.length > 0 &&
-              !selectedModifiers.calculation.includes(option.value)
-            }
+            mode={mode}
+            radioGroupName="metric-selector-calculation"
             hasDefaultTip={
               willApplyDefaultValue &&
               willApplyDefaultValue("calculation") &&

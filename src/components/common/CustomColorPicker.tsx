@@ -4,6 +4,8 @@ import { HexColorPicker } from "react-colorful";
 interface CustomColorPickerProps {
   value: string;
   onChange: (color: string) => void;
+  onAccept?: (color: string) => void;
+  onCancel?: () => void;
   label?: string;
 }
 
@@ -44,6 +46,8 @@ const PRESET_COLORS = [
 export const CustomColorPicker: React.FC<CustomColorPickerProps> = ({
   value,
   onChange,
+  onAccept,
+  onCancel,
 }) => {
   const [hexInput, setHexInput] = useState(value);
 
@@ -124,6 +128,30 @@ export const CustomColorPicker: React.FC<CustomColorPickerProps> = ({
           className="custom-color-picker__hex-field"
         />
       </div>
+
+      {/* Footer con botones de acción */}
+      {(onAccept || onCancel) && (
+        <div className="custom-color-picker__footer">
+          {onCancel && (
+            <button
+              type="button"
+              className="custom-color-picker__button custom-color-picker__button--cancel"
+              onClick={onCancel}
+            >
+              Cancelar
+            </button>
+          )}
+          {onAccept && (
+            <button
+              type="button"
+              className="custom-color-picker__button custom-color-picker__button--accept"
+              onClick={() => onAccept(value)}
+            >
+              Aceptar
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 };

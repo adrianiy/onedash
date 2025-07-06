@@ -336,7 +336,7 @@ export const TableColumnsConfig: React.FC<TableColumnsConfigProps> = ({
       }`}
     >
       <ConfigDropdown
-        className="columns-dropdown"
+        className="metrics-dropdown"
         setIsOpenRef={setDropdownOpenRef}
         offsetDistance={20}
         triggerElement={({ ref, onClick, referenceProps }) =>

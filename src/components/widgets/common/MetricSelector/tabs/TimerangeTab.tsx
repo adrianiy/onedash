@@ -35,11 +35,8 @@ export const TimerangeTab: React.FC<MetricTabProps> = ({
             value={option.value}
             checked={selectedModifiers.timeframe.includes(option.value)}
             onChange={handleChange}
-            disabled={
-              mode === "single" &&
-              selectedModifiers.timeframe.length > 0 &&
-              !selectedModifiers.timeframe.includes(option.value)
-            }
+            mode={mode}
+            radioGroupName="metric-selector-timeframe"
           />
         ))}
       </div>
