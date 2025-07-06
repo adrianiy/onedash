@@ -1,69 +1,10 @@
-/* Estilos para la configuración de columnas */
-.columns-config {
-  min-height: 150px;
-  border: 1px dashed var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-md);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-  background-color: var(--color-surface-secondary);
-}
-
-/* Cabecera de columnas */
-.columns-config__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-xs) var(--spacing-xs);
-}
-
-.columns-config__title {
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--color-text-subtle, #64748b);
-  opacity: 0.7;
-}
-
-.columns-config__add-button {
-  background: none;
-  border: none;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--color-primary);
-  cursor: pointer;
-  transition: color var(--transition-fast);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.columns-config__add-button:hover {
-  color: var(--color-primary-hover);
-}
-
-/* Placeholder */
-.columns-config__placeholder {
-  height: 120px;
-  transition: all var(--transition-fast);
-}
-
+/* Estilos específicos para la configuración de columnas */
 .columns-config__placeholder-message,
 .columns-config-dropdown__placeholder-message {
   color: var(--color-text-muted);
   font-style: italic;
   text-align: center;
   padding: var(--spacing-md);
-}
-
-/* Lista de columnas */
-.columns-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
 }
 
 /* Estilos para el dropdown */
@@ -85,23 +26,18 @@
   padding: var(--spacing-md);
 }
 
-/* Tema oscuro */
-[data-theme="dark"] .columns-config {
-  background-color: var(--color-surface-tertiary);
-  border-color: var(--color-border);
+/* Tema oscuro - estilos base ahora en config-panel.css */
+
+/* Estilos específicos para tema oscuro */
+[data-theme="dark"] .columns-config__action-button--danger {
+  background-color: var(--color-danger);
+  color: white;
 }
 
-[data-theme="dark"] .columns-config__title {
-  color: var(--color-text-subtle, #94a3b8);
-  opacity: 0.7;
-}
-
-[data-theme="dark"] .columns-config__add-button {
-  color: var(--color-primary-light);
-}
-
-[data-theme="dark"] .columns-config__add-button:hover {
-  color: var(--color-primary-hover);
+[data-theme="dark"] .columns-config__action-button--danger:hover {
+  background-color: var(--color-danger);
+  opacity: 0.9;
+  color: white;
 }
 
 [data-theme="dark"] .columns-dropdown {

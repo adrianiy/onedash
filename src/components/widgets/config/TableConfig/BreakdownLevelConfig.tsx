@@ -104,17 +104,23 @@ export const BreakdownLevelConfig: React.FC<BreakdownLevelConfigProps> = ({
     })
   );
 
-  // Filtrar categorías basado en el texto de búsqueda
-  const filteredCategories = searchText
-    ? breakdownCategories
-        .map((category) => ({
-          ...category,
-          options: category.options.filter((option) =>
-            option.name.toLowerCase().includes(searchText.toLowerCase())
-          ),
-        }))
-        .filter((category) => category.options.length > 0)
-    : breakdownCategories;
+  // Filtrar categorías basado en el texto de búsqueda y opciones ya seleccionadas
+  const filteredCategories = breakdownCategories
+    .map((category) => ({
+      ...category,
+      options: category.options.filter((option) => {
+        // Filtrar por búsqueda si hay texto
+        const matchesSearch =
+          !searchText ||
+          option.name.toLowerCase().includes(searchText.toLowerCase());
+
+        // Filtrar opciones ya seleccionadas
+        const notAlreadySelected = !breakdownLevels.includes(option.id);
+
+        return matchesSearch && notAlreadySelected;
+      }),
+    }))
+    .filter((category) => category.options.length > 0);
 
   // Manejador para seleccionar una opción
   const handleSelectOption = (option: { id: string }) => {
@@ -156,7 +162,7 @@ export const BreakdownLevelConfig: React.FC<BreakdownLevelConfigProps> = ({
           items={breakdownLevels}
           strategy={verticalListSortingStrategy}
         >
-          <div className="breakdown-levels-list">
+          <div className="breakdown-levels-list config-panel__items-list">
             {breakdownLevels.map((levelId, index) => {
               const option = findOptionById(levelId);
               const category = findCategoryByOptionId(levelId);
@@ -181,18 +187,24 @@ export const BreakdownLevelConfig: React.FC<BreakdownLevelConfigProps> = ({
   };
 
   return (
-    <div className="breakdown-levels">
+    <div
+      className={`breakdown-levels config-panel ${
+        breakdownLevels.length > 0 ? "config-panel--resizable" : ""
+      }`}
+    >
       <ConfigDropdown
         className="breakdown-dropdown"
         setIsOpenRef={setDropdownOpenRef}
         triggerElement={({ ref, onClick, referenceProps }) =>
           breakdownLevels.length > 0 ? (
             <>
-              <div className="breakdown-levels__header">
-                <span className="breakdown-levels__title">DESGLOSE</span>
+              <div className="breakdown-levels__header config-panel__header">
+                <span className="breakdown-levels__title config-panel__title">
+                  DESGLOSE
+                </span>
                 <button
                   ref={ref}
-                  className="breakdown-levels__add-button"
+                  className="breakdown-levels__add-button config-panel__add-button"
                   onClick={onClick}
                   {...referenceProps}
                 >
@@ -208,7 +220,7 @@ export const BreakdownLevelConfig: React.FC<BreakdownLevelConfigProps> = ({
               onClick={onClick}
               referenceProps={referenceProps}
               forwardedRef={ref}
-              className="breakdown-levels__placeholder"
+              className="breakdown-levels__placeholder config-panel__placeholder"
             />
           )
         }

@@ -5,71 +5,7 @@
   gap: var(--spacing-lg);
 }
 
-.breakdown-levels {
-  min-height: 150px;
-  border: 1px dashed var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-md);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-  background-color: var(--color-surface-secondary);
-}
-
-/* Cabecera de desgloses */
-.breakdown-levels__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-xs) var(--spacing-xs);
-}
-
-.breakdown-levels__title {
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--color-text-subtle, #64748b);
-  opacity: 0.7;
-}
-
-.breakdown-levels__add-button {
-  background: none;
-  border: none;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--color-primary);
-  cursor: pointer;
-  transition: color var(--transition-fast);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.breakdown-levels__add-button:hover {
-  color: var(--color-primary-hover);
-}
-
-/* Placeholder cuando no hay niveles */
-.breakdown-levels__placeholder {
-  height: 120px;
-  transition: all var(--transition-fast);
-}
-
-.breakdown-levels__empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: var(--color-text-muted);
-  font-style: italic;
-  font-size: 0.9rem;
-  margin: 0;
-  padding: var(--spacing-xl) 0;
-}
-
-/* Estilos de botones */
+/* Estilos específicos de botones para breakdown */
 .config-btn-outline {
   background-color: var(--color-surface);
   color: var(--color-primary);
@@ -320,84 +256,6 @@
   color: var(--color-text-muted);
 }
 
-/* Estilos para los niveles de desglose seleccionados */
-.breakdown-levels-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-}
-
-.breakdown-level {
-  position: relative;
-}
-
-.breakdown-level__content {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-md) var(--spacing-lg);
-  border-radius: var(--radius-md);
-  background-color: var(--color-surface);
-  border: 1px solid #e5e7eb;
-  transition: all 0.2s ease;
-}
-
-.breakdown-level__content:hover {
-  border-color: #d1d5db;
-}
-
-/* Icono de grip */
-.breakdown-level__grip-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: grab;
-  padding: var(--spacing-xs);
-}
-
-.breakdown-level__grip-container:active {
-  cursor: grabbing;
-}
-
-.breakdown-level__grip {
-  color: #9ca3af;
-  flex-shrink: 0;
-}
-
-/* Estilo para elementos siendo arrastrados */
-.breakdown-level--dragging {
-  opacity: 0.8;
-  box-shadow: var(--shadow-md);
-}
-
-.breakdown-level--dragging .breakdown-level__content {
-  background-color: #f3f4f6;
-  border-color: #60a5fa;
-}
-
-/* Estilo para número de índice */
-.breakdown-level__index {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  color: #6b7280;
-  flex-shrink: 0;
-  margin-right: var(--spacing-md);
-}
-
-/* Contenedor principal */
-.breakdown-level__main {
-  flex: 1;
-}
-
-/* Info del nivel */
-.breakdown-level__info {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
-
 /* Contenedor de icono con color de categoría */
 .breakdown-level__icon-container {
   display: flex;
@@ -435,34 +293,11 @@
 /* Nombre del nivel */
 .breakdown-level__name {
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--color-text-primary);
 }
 
-/* Botón de eliminar */
-.breakdown-level__remove {
-  background: none;
-  border: none;
-  color: #ef4444;
-  cursor: pointer;
-  padding: var(--spacing-xs);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.breakdown-level__remove:hover {
-  background-color: rgba(239, 68, 68, 0.1);
-}
-
-/* Dark theme adjustments */
-[data-theme="dark"] .breakdown-levels {
-  background-color: var(--color-surface-tertiary);
-  border-color: var(--color-border);
-}
-
+/* Dark theme adjustments - ahora en config-panel.css para los estilos comunes */
 [data-theme="dark"] .config-btn-outline {
   background-color: var(--color-surface);
   color: var(--color-primary);
@@ -485,7 +320,7 @@
 }
 
 [data-theme="dark"] .breakdown-search-input {
-  background-color: #2a2a2a;
+  background-color: rgba(255, 255, 255, 0.05);
   border: none;
   color: var(--color-text-primary);
 }
@@ -574,28 +409,7 @@
   color: var(--color-text-primary);
 }
 
-/* Dark theme para niveles seleccionados */
-[data-theme="dark"] .breakdown-level__content {
-  background-color: #1f2937;
-  border-color: #374151;
-}
-
-[data-theme="dark"] .breakdown-level__content:hover {
-  border-color: #4b5563;
-}
-
-[data-theme="dark"] .breakdown-level__grip {
-  color: #6b7280;
-}
-
-[data-theme="dark"] .breakdown-level__index {
-  color: #9ca3af;
-}
-
-[data-theme="dark"] .breakdown-level__name {
-  color: #f9fafb;
-}
-
+/* Dark theme para niveles seleccionados - estilos base ahora en config-panel.css */
 [data-theme="dark"] .breakdown-level__icon-container--purple {
   background-color: rgba(147, 51, 234, 0.2);
 }
@@ -620,28 +434,7 @@
   color: #4ade80;
 }
 
-[data-theme="dark"] .breakdown-level__remove {
-  color: #f87171;
-}
-
-[data-theme="dark"] .breakdown-level__remove:hover {
-  background-color: rgba(239, 68, 68, 0.2);
-}
-
-/* Estilos para tema oscuro - cabecera y placeholder */
-[data-theme="dark"] .breakdown-levels__title {
-  color: var(--color-text-subtle, #94a3b8);
-  opacity: 0.7;
-}
-
-[data-theme="dark"] .breakdown-levels__add-button {
-  color: var(--color-primary-light);
-}
-
-[data-theme="dark"] .breakdown-levels__add-button:hover {
-  color: var(--color-primary-hover);
-}
-
+/* Estilos para tema oscuro - cabecera y placeholder ahora en config-panel.css */
 [data-theme="dark"] .breakdown-levels__placeholder p {
   color: var(--color-text-muted);
   opacity: 0.6;

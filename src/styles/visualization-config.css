@@ -1,0 +1,355 @@
+/* Estilos para la configuración de visualización con notación BEM específica */
+
+.viz-config {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-sm) 0;
+}
+
+/* Configurador de tabla con controles visuales */
+.viz-table-configurator {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+}
+
+/* Preview de la tabla */
+.viz-table-preview {
+  width: calc(100% - 48px);
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  margin: var(--spacing-md) 0;
+}
+
+.viz-table-sample {
+  width: 100%;
+  font-size: 0.8rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--color-border);
+}
+
+.viz-table-sample th,
+.viz-table-sample td {
+  padding: 0.5rem 1rem;
+  text-align: left;
+}
+
+.viz-table-sample th {
+  background-color: var(--color-surface-secondary);
+  font-weight: 500;
+}
+
+.viz-table-sample tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Variantes de tabla */
+.viz-table-sample--compact th,
+.viz-table-sample--compact td {
+  padding: 0.45rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+.viz-table-sample--bordered th,
+.viz-table-sample--bordered td {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.viz-table-sample--alternating tbody tr:nth-child(even) {
+  background-color: var(--color-surface-secondary);
+}
+
+.viz-table-sample--right th:not(:first-child) .viz-table-placeholder,
+.viz-table-sample--right td:not(:first-child) .viz-table-placeholder {
+  justify-self: flex-end;
+}
+
+.viz-table-sample--center th:not(:first-child) .viz-table-placeholder,
+.viz-table-sample--center td:not(:first-child) .viz-table-placeholder {
+  justify-self: center;
+}
+
+/* Alineación: primera columna siempre alineada a la izquierda */
+.viz-table-sample--center th:not(:first-child),
+.viz-table-sample--center td:not(:first-child) {
+  text-align: center;
+}
+
+.viz-table-sample--right th:not(:first-child),
+.viz-table-sample--right td:not(:first-child) {
+  text-align: right;
+}
+
+.viz-table-sample th:first-child,
+.viz-table-sample td:first-child {
+  text-align: left;
+}
+
+/* Estilos para placeholders visuales */
+.viz-table-placeholder {
+  height: 10px;
+  border-radius: var(--radius-sm);
+  background-color: rgba(var(--color-secondary-rgb), 0.15);
+  width: 100%;
+  margin: 2px 0;
+}
+
+.viz-table-placeholder--header {
+  background-color: rgba(var(--color-secondary-rgb), 0.25);
+  height: 12px;
+}
+
+.viz-table-placeholder--short {
+  width: 60%;
+}
+
+.viz-table-placeholder--medium {
+  width: 75%;
+}
+
+.viz-table-placeholder--long {
+  width: 90%;
+}
+
+[data-theme="dark"] .viz-table-placeholder {
+  background-color: rgba(var(--color-secondary-rgb), 0.25);
+}
+
+[data-theme="dark"] .viz-table-placeholder--header {
+  background-color: rgba(var(--color-secondary-rgb), 0.35);
+}
+
+/* Controles visuales */
+.viz-table-controls {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.viz-table-controls--top {
+  width: calc(100% - 48px);
+  justify-content: space-between;
+}
+
+.viz-table-controls--right {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  flex-direction: column;
+  transform: translateY(-50%);
+  width: 36px;
+}
+
+.viz-table-controls--bottom {
+  justify-content: flex-start; /* Alinear a la izquierda */
+}
+
+.viz-alignment-controls {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+/* Botones de control */
+.viz-control-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0;
+  background: var(--color-surface);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  color: var(--color-text-secondary);
+}
+
+.viz-control-with-label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+}
+
+.viz-control-label {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--color-text-primary);
+  user-select: none;
+}
+
+.viz-control-btn:hover {
+  background: var(--color-surface-secondary);
+  color: var(--color-text-primary);
+}
+
+.viz-control-btn--active {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+}
+
+.viz-control-btn--active:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.2);
+  color: var(--color-primary);
+}
+
+.viz-control-btn--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Fila de Total */
+.viz-total-row {
+  padding: var(--spacing-xl) 0 var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  margin: var(--spacing-lg) 0 var(--spacing-md);
+  width: 100%;
+}
+
+.viz-total-row-controls {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+/* Formatos condicionales */
+.viz-conditional-formats {
+  width: 100%;
+}
+
+.viz-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+}
+
+.viz-section-title {
+  font-size: 0.8rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.viz-add-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 0.75rem;
+  border: none;
+  background: none;
+  color: var(--color-primary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background-color 0.15s ease;
+}
+
+.viz-add-button:hover {
+  color: var(--color-primary-hover);
+}
+
+.viz-empty-formats {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: var(--spacing-md) 0;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.viz-formats-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.viz-format-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+}
+
+.viz-format-item span {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.viz-remove-button {
+  background: none;
+  border: none;
+  color: var(--color-danger);
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-sm);
+  transition: background-color 0.15s ease;
+}
+
+.viz-remove-button:hover {
+  background-color: rgba(var(--color-danger-rgb), 0.1);
+}
+
+/* Tema oscuro */
+[data-theme="dark"] .viz-table-sample {
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .viz-table-sample th,
+[data-theme="dark"] .viz-table-sample td {
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .viz-table-sample th {
+  background-color: var(--color-surface-tertiary);
+}
+
+[data-theme="dark"] .viz-table-sample--alternating tbody tr:nth-child(even) {
+  background-color: var(--color-surface-tertiary);
+}
+
+[data-theme="dark"] .viz-control-btn {
+  background: var(--color-surface-secondary);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .viz-control-btn:hover {
+  background: var(--color-surface-tertiary);
+}
+
+[data-theme="dark"] .viz-control-btn--active {
+  background-color: rgba(var(--color-primary-rgb), 0.2);
+  color: var(--color-primary-light);
+}
+
+[data-theme="dark"] .viz-control-btn--active:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.3);
+}
+
+[data-theme="dark"] .viz-conditional-formats {
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .viz-format-item {
+  background-color: var(--color-surface-secondary);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .viz-remove-button:hover {
+  background-color: rgba(var(--color-danger-rgb), 0.15);
+}

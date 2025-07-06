@@ -1,10 +1,13 @@
-import React, { type ReactNode } from "react";
+import React, { type ReactNode, useState } from "react";
+import { Icon } from "../../common/Icon";
 
 interface ConfigSectionProps {
   title: string;
   children: ReactNode;
   className?: string;
   actionButton?: ReactNode;
+  defaultCollapsed?: boolean;
+  useVizStyles?: boolean;
 }
 
 export const ConfigSection: React.FC<ConfigSectionProps> = ({
@@ -12,16 +15,47 @@ export const ConfigSection: React.FC<ConfigSectionProps> = ({
   children,
   className = "",
   actionButton,
+  defaultCollapsed = true,
+  useVizStyles = false,
 }) => {
+  const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
+
+  const toggleCollapse = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
+  // Determinar qué conjunto de clases usar
+  const baseClass = useVizStyles ? "viz-section" : "config-section";
+  const collapsedClass = `${baseClass}--collapsed`;
+  const headerClass = `${baseClass}__header`;
+  const titleContainerClass = `${baseClass}__title-container`;
+  const collapseIconClass = `${baseClass}__collapse-icon`;
+  const titleClass = `${baseClass}__title`;
+  const actionClass = `${baseClass}__action`;
+  const contentClass = `${baseClass}__content`;
+
   return (
-    <div className={`config-section ${className}`}>
-      <div className="config-section__header">
-        <div className="config-section__title">{title}</div>
+    <div
+      className={`${baseClass} ${className} ${
+        isCollapsed ? collapsedClass : ""
+      }`}
+    >
+      <div className={headerClass} onClick={toggleCollapse}>
+        <div className={titleContainerClass}>
+          <Icon
+            name={isCollapsed ? "chevron-right" : "chevron-down"}
+            size={14}
+            className={collapseIconClass}
+          />
+          <div className={titleClass}>{title}</div>
+        </div>
         {actionButton && (
-          <div className="config-section__action">{actionButton}</div>
+          <div className={actionClass} onClick={(e) => e.stopPropagation()}>
+            {actionButton}
+          </div>
         )}
       </div>
-      <div className="config-section__content">{children}</div>
+      {!isCollapsed && <div className={contentClass}>{children}</div>}
     </div>
   );
 };

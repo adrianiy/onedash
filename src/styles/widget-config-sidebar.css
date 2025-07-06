@@ -438,8 +438,12 @@
 .config-tabs {
   display: flex;
   border-bottom: 1px solid var(--color-border);
-  margin: 0 calc(-1 * var(--spacing-xxl)) var(--spacing-sm);
+  margin: 0 calc(-1 * var(--spacing-xxl)) 0;
   padding: 0 var(--spacing-xxl);
+  position: sticky;
+  top: 0;
+  background-color: var(--color-surface);
+  z-index: 10;
 }
 
 .config-tab {
@@ -468,6 +472,7 @@
 
 .table-config__content {
   min-height: 200px;
+  padding-top: var(--spacing-sm);
 }
 
 .table-config__placeholder {
@@ -600,6 +605,11 @@
 }
 
 /* Dark Theme Adjustments */
+[data-theme="dark"] .config-tabs {
+  background-color: var(--color-surface);
+  border-bottom-color: var(--color-border);
+}
+
 [data-theme="dark"] .widget-config-sidebar {
   background-color: var(--color-surface);
   border-left-color: var(--color-border);

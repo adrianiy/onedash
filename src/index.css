@@ -8,8 +8,13 @@
 @import "./styles/widgets.css";
 @import "./styles/floating-bar.css";
 @import "./styles/modal.css";
+@import "./styles/config-panel.css";
 @import "./styles/breakdown-levels.css";
 @import "./styles/columns-config.css";
+@import "./styles/column-item.css";
+@import "./styles/visualization-config.css";
+@import "./styles/conditional-formatting.css";
+@import "./styles/custom-color-picker.css";
 
 /* Global Styles */
 *,

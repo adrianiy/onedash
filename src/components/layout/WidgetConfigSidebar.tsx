@@ -105,16 +105,32 @@ export const WidgetConfigSidebar: React.FC = () => {
     }
   };
 
+  // Comprobar si hay TANTO columnas COMO niveles de desglose configurados
+  const hasColumnsAndBreakdowns = () => {
+    if (widget.type === "table") {
+      const columns = widget.config.columns || [];
+      const breakdownLevels = widget.config.breakdownLevels || [];
+      return columns.length > 0 && breakdownLevels.length > 0;
+    }
+    return false;
+  };
+
   // Manejar cargar configuración
   const handleLoadConfig = () => {
     console.log("Cargar configuración - Por implementar");
-    // Implementar lógica de carga de configuración
+    // Mostrar alerta al usuario
+    alert(
+      "La funcionalidad de carga de configuración aún no está disponible. Estamos trabajando en ello."
+    );
   };
 
   // Manejar guardar configuración
   const handleSaveConfig = () => {
     console.log("Guardar configuración - Por implementar");
-    // Implementar lógica de guardado de configuración
+    // Mostrar alerta al usuario
+    alert(
+      "La funcionalidad de guardado de configuración aún no está disponible. Estamos trabajando en ello."
+    );
   };
 
   const renderWidgetConfig = () => {
@@ -178,7 +194,10 @@ export const WidgetConfigSidebar: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <div className="widget-config-sidebar__title-container">
+                <div
+                  className="widget-config-sidebar__title-container"
+                  onClick={handleEditTitle}
+                >
                   <span>{getWidgetTitle()}</span>
                 </div>
               )}
@@ -207,7 +226,7 @@ export const WidgetConfigSidebar: React.FC = () => {
                 <button
                   className="widget-config-sidebar__config-action"
                   onClick={handleSaveConfig}
-                  disabled
+                  disabled={!hasColumnsAndBreakdowns()}
                 >
                   Guardar
                 </button>

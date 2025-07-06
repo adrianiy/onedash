@@ -15,6 +15,12 @@
   z-index: 10;
   border-bottom: 1px solid var(--color-border);
   opacity: 0;
+  height: 48px; /* Altura fija para cálculos de padding */
+}
+
+/* Padding para widgets sin título cuando están seleccionados */
+.widget-content--floating-padding {
+  padding-top: 48px; /* Igual a la altura del floating header */
 }
 
 .editing .react-grid-item:hover .floating-widget-header {
@@ -266,12 +272,6 @@
   border: 1px solid var(--color-border);
 }
 
-.table-widget table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.875rem;
-}
-
 .table-widget th {
   background-color: var(--color-surface-secondary);
   color: var(--color-text-secondary);
@@ -391,6 +391,12 @@
 }
 
 /* Dark theme adjustments */
+[data-theme="dark"] .floating-widget-header {
+  background-color: var(--color-surface-tertiary); /* Tono más oscuro */
+  border-bottom: 1px solid var(--color-border);
+  backdrop-filter: blur(4px);
+}
+
 [data-theme="dark"] .metric-trend.up {
   background-color: rgba(16, 185, 129, 0.2);
 }

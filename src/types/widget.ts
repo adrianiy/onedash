@@ -3,6 +3,21 @@ import type { MetricDefinition } from "./metricConfig";
 export type WidgetType = "chart" | "metric" | "table" | "text";
 export type ChartType = "bar" | "line" | "pie" | "scatter" | "area";
 
+export interface ConditionalFormatRule {
+  id: string;
+  columnId: string;
+  columnName: string; // Guardar el nombre para mostrarlo fácilmente
+  condition: "greater_than" | "less_than" | "equals" | "contains";
+  value: string | number;
+  style: {
+    backgroundColor: string;
+    textColor: string;
+    fontWeight?: "bold" | "normal";
+    fontStyle?: "italic" | "normal";
+  };
+  isEnabled: boolean;
+}
+
 export interface ChartWidgetConfig {
   chartType: ChartType;
   dataSource?: string;
@@ -18,11 +33,33 @@ export interface MetricWidgetConfig {
 }
 
 export interface TableWidgetConfig {
-  columns: MetricDefinition[];
+  columns: (MetricDefinition & { visible?: boolean })[];
   data: Record<string, unknown>[];
   pagination?: boolean;
   breakdownLevels?: string[];
   dataSource?: string;
+  visualization?: {
+    showTitle?: boolean;
+    compact?: boolean;
+    showBorders?: boolean;
+    alternateRowColors?: boolean;
+    showPagination?: boolean;
+    textAlign?: "left" | "center" | "right";
+    totalRow?: "top" | "bottom" | "none";
+    conditionalFormats?: ConditionalFormatRule[];
+  };
+  conditionalFormatting?: {
+    columnId: string;
+    conditions: Array<{
+      operator: ">" | "<" | "=" | ">=" | "<=";
+      value: number;
+      style: {
+        color?: string;
+        backgroundColor?: string;
+        fontWeight?: string;
+      };
+    }>;
+  }[];
 }
 
 export interface TextWidgetConfig {

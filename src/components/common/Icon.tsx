@@ -21,6 +21,9 @@ import {
   Copy,
   ChevronUp,
   ChevronDown,
+  ChevronRight,
+  ChevronsUpDown,
+  ChevronsDownUp,
   Undo2,
   Redo2,
   Check,
@@ -29,6 +32,7 @@ import {
   Target,
   Database,
   Eye,
+  EyeOff,
   Zap,
   Calendar,
   Tag,
@@ -38,10 +42,31 @@ import {
   Pen,
   Palette,
   LayoutDashboard,
+  Type,
+  Heading,
+  Bold,
+  Italic,
+  PaintBucket,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  Minimize,
+  Layers,
+  Grid,
+  ListOrdered,
+  PanelTop,
+  PanelBottom,
   type LucideIcon,
 } from "lucide-react";
 
-const iconMap = {
+// Tabler Icons imports
+import {
+  IconTable,
+  IconBoxAlignTop,
+  IconBoxAlignBottom,
+} from "@tabler/icons-react";
+
+const lucideIconMap = {
   "bar-chart": BarChart3,
   "line-chart": LineChart,
   "pie-chart": PieChart,
@@ -63,6 +88,9 @@ const iconMap = {
   copy: Copy,
   "chevron-up": ChevronUp,
   "chevron-down": ChevronDown,
+  "chevron-right": ChevronRight,
+  "chevrons-up-down": ChevronsUpDown,
+  "chevrons-down-up": ChevronsDownUp,
   undo: Undo2,
   redo: Redo2,
   check: Check,
@@ -71,6 +99,7 @@ const iconMap = {
   target: Target,
   database: Database,
   eye: Eye,
+  "eye-off": EyeOff,
   zap: Zap,
   calendar: Calendar,
   tag: Tag,
@@ -79,10 +108,30 @@ const iconMap = {
   info: Info,
   pen: Pen,
   palette: Palette,
+  "paint-bucket": PaintBucket,
   "layout-dashboard": LayoutDashboard,
+  type: Type,
+  heading: Heading,
+  bold: Bold,
+  italic: Italic,
+  "align-left": AlignLeft,
+  "align-center": AlignCenter,
+  "align-right": AlignRight,
+  minimize: Minimize,
+  layers: Layers,
+  "border-grid": Grid,
+  "list-ordered": ListOrdered,
+  "panel-top": PanelTop,
+  "panel-bottom": PanelBottom,
 } as const;
 
-export type IconName = keyof typeof iconMap;
+const tablerIconMap = {
+  "table-striped": IconTable,
+  "box-align-top": IconBoxAlignTop,
+  "box-align-bottom": IconBoxAlignBottom,
+} as const;
+
+export type IconName = keyof typeof lucideIconMap | keyof typeof tablerIconMap;
 
 interface IconProps {
   name: IconName;
@@ -97,15 +146,32 @@ export const Icon: React.FC<IconProps> = ({
   className = "",
   color,
 }) => {
-  const IconComponent: LucideIcon = iconMap[name];
+  // Verificar si es un icono de Tabler
+  if (name in tablerIconMap) {
+    const TablerIconComponent =
+      tablerIconMap[name as keyof typeof tablerIconMap];
+    return (
+      <TablerIconComponent
+        size={size}
+        className={className}
+        color={color}
+        stroke={1.1} // Bordes más finos para un aspecto minimalista
+        aria-hidden="true"
+      />
+    );
+  }
 
-  if (!IconComponent) {
+  // Si no, usar iconos de Lucide
+  const LucideIconComponent: LucideIcon =
+    lucideIconMap[name as keyof typeof lucideIconMap];
+
+  if (!LucideIconComponent) {
     console.warn(`Icon "${name}" not found`);
     return null;
   }
 
   return (
-    <IconComponent
+    <LucideIconComponent
       size={size}
       className={className}
       color={color}

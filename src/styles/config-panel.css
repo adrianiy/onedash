@@ -1,0 +1,392 @@
+/* Estilos compartidos para paneles de configuración */
+
+/* Contenedor principal */
+.config-panel {
+  min-height: 150px;
+  max-height: 500px;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  padding-top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  background-color: var(--color-surface-secondary);
+  overflow: overlay;
+  position: relative;
+}
+
+/* Panel redimensionable - solo se aplica cuando hay elementos */
+.config-panel--resizable {
+  resize: vertical;
+}
+
+/* Estilo para indicar que es redimensionable - solo para paneles redimensionables */
+.config-panel--resizable::after {
+  content: "";
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid var(--color-border);
+  border-bottom: 2px solid var(--color-border);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Cabecera del panel */
+.config-panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-xs) var(--spacing-xs);
+  background-color: var(--color-surface-secondary);
+  padding-top: var(--spacing-md);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.config-panel__title {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-subtle, #64748b);
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+}
+
+.config-panel__counter {
+  font-size: 0.7rem;
+  color: var(--color-text-subtle);
+  margin-left: var(--spacing-xs);
+  opacity: 0.8;
+}
+
+.config-panel__add-button {
+  background: none;
+  border: none;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.config-panel__add-button:hover {
+  color: var(--color-primary-hover);
+}
+
+/* Acciones en masa */
+.config-panel__actions {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.config-panel__action-button {
+  background: none;
+  border: none;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+  display: flex;
+  align-items: center;
+}
+
+.config-panel__action-button:hover {
+  color: var(--color-primary-hover);
+}
+
+.config-panel__action-button--danger {
+  color: var(--color-danger);
+  border-radius: var(--radius-sm);
+  border: none;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+}
+
+.config-panel__action-button--danger:hover {
+  color: var(--color-danger);
+  opacity: 0.9;
+}
+
+/* Placeholder */
+.config-panel__placeholder {
+  height: 120px;
+  margin-top: var(--spacing-md);
+  transition: all var(--transition-fast);
+}
+
+.config-panel__placeholder-message {
+  color: var(--color-text-muted);
+  font-style: italic;
+  text-align: center;
+  padding: var(--spacing-md);
+}
+
+.config-panel__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--color-text-muted);
+  font-style: italic;
+  font-size: 0.9rem;
+  margin: 0;
+  padding: var(--spacing-xl) 0;
+}
+
+/* Lista de items */
+.config-panel__items-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  overflow: visible;
+}
+
+/* Estilos para los ítems del panel */
+.config-item {
+  position: relative;
+}
+
+.config-item__content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.config-item__content:hover {
+  border-color: #d1d5db;
+}
+
+/* Icono de grip */
+.config-item__grip-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  padding: var(--spacing-xs);
+}
+
+.config-item__grip-container:active {
+  cursor: grabbing;
+}
+
+.config-item__grip {
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+/* Estilo para elementos siendo arrastrados */
+.config-item--dragging {
+  opacity: 0.8;
+  box-shadow: var(--shadow-md);
+}
+
+.config-item--dragging .config-item__content {
+  background-color: #f3f4f6;
+  border-color: #60a5fa;
+}
+
+/* Estilo para número de índice */
+.config-item__index {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: #6b7280;
+  flex-shrink: 0;
+  margin-right: var(--spacing-md);
+}
+
+/* Contenedor principal */
+.config-item__main {
+  flex: 1;
+}
+
+/* Info del ítem */
+.config-item__info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+/* Nombre del ítem */
+.config-item__name {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--color-text-primary);
+}
+
+/* Botón de eliminar */
+.config-item__remove {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.config-item__remove:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* Tema oscuro - Ajustes generales */
+[data-theme="dark"] .config-panel {
+  background-color: var(--color-surface-tertiary);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .config-panel__header {
+  background-color: var(--color-surface-tertiary);
+}
+
+[data-theme="dark"] .config-panel__title {
+  color: var(--color-text-subtle, #94a3b8);
+}
+
+[data-theme="dark"] .config-panel__add-button {
+  color: var(--color-primary-light);
+}
+
+[data-theme="dark"] .config-panel__add-button:hover {
+  color: var(--color-primary-hover);
+}
+
+/* Tema oscuro para acciones */
+[data-theme="dark"] .config-panel__action-button {
+  color: var(--color-primary-light);
+}
+
+[data-theme="dark"] .config-panel__action-button:hover {
+  color: var(--color-primary-hover);
+}
+
+[data-theme="dark"] .config-panel__action-button--danger {
+  color: var(--color-danger);
+}
+
+[data-theme="dark"] .config-panel__action-button--danger:hover {
+  opacity: 0.9;
+}
+
+/* Tema oscuro para ítems */
+[data-theme="dark"] .config-item__content {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+[data-theme="dark"] .config-item__content:hover {
+  border-color: #4b5563;
+}
+
+[data-theme="dark"] .config-item__grip {
+  color: #6b7280;
+}
+
+[data-theme="dark"] .config-item__index {
+  color: #9ca3af;
+}
+
+[data-theme="dark"] .config-item__name {
+  color: #f9fafb;
+}
+
+[data-theme="dark"] .config-item__remove {
+  color: #f87171;
+}
+
+[data-theme="dark"] .config-item__remove:hover {
+  background-color: rgba(239, 68, 68, 0.2);
+}
+
+/* Estilos para ConfigSection colapsable - estilo propio con notación BEM */
+.viz-section {
+  margin-bottom: var(--spacing-sm);
+  transition: all 0.2s ease;
+}
+
+.viz-section--collapsed {
+  margin-bottom: var(--spacing-xs);
+}
+
+.viz-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-xs) 0;
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.2s ease;
+}
+
+.viz-section__header:hover {
+  opacity: 0.9;
+}
+
+.viz-section__title-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.viz-section__collapse-icon {
+  color: var(--color-text-subtle);
+  transition: transform 0.2s ease;
+}
+
+.viz-section__title {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.viz-section__content {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Tema oscuro para ConfigSection */
+[data-theme="dark"] .viz-section__title {
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .viz-section__collapse-icon {
+  color: var(--color-text-muted);
+}

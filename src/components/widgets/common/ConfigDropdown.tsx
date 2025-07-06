@@ -9,6 +9,8 @@ import {
   useClick,
   useRole,
   useDismiss,
+  FloatingPortal,
+  autoUpdate,
 } from "@floating-ui/react";
 
 interface ConfigDropdownProps {
@@ -25,6 +27,7 @@ interface ConfigDropdownProps {
   className?: string;
   // Acceso al setter del estado para controlar externamente
   setIsOpenRef?: React.MutableRefObject<((isOpen: boolean) => void) | null>;
+  onOpenChange?: (isOpen: boolean) => void;
 }
 
 export const ConfigDropdown: React.FC<ConfigDropdownProps> = ({
@@ -34,14 +37,23 @@ export const ConfigDropdown: React.FC<ConfigDropdownProps> = ({
   offsetDistance = 10,
   className = "",
   setIsOpenRef,
+  onOpenChange,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (onOpenChange) {
+      onOpenChange(open);
+    }
+  };
 
   const { refs, floatingStyles, context } = useFloating({
     placement,
     open: isOpen,
-    onOpenChange: setIsOpen,
+    onOpenChange: handleOpenChange,
     middleware: [offset(offsetDistance), flip(), shift()],
+    whileElementsMounted: autoUpdate,
   });
 
   const click = useClick(context);
@@ -76,14 +88,19 @@ export const ConfigDropdown: React.FC<ConfigDropdownProps> = ({
       })}
 
       {isOpen && (
-        <div
-          ref={refs.setFloating}
-          style={floatingStyles}
-          className={`config-dropdown ${className}`}
-          {...getFloatingProps()}
-        >
-          {children}
-        </div>
+        <FloatingPortal>
+          <div
+            ref={refs.setFloating}
+            style={{
+              ...floatingStyles,
+              zIndex: 1000,
+            }}
+            className={`config-dropdown ${className}`}
+            {...getFloatingProps()}
+          >
+            {children}
+          </div>
+        </FloatingPortal>
       )}
     </>
   );

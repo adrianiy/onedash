@@ -207,6 +207,16 @@
   background-color: var(--color-surface-hover);
 }
 
+/* Asegurar que el botón de peligro tenga color rojo en tema oscuro */
+[data-theme="dark"] .edit-toolbar__button--danger {
+  color: var(--color-danger);
+}
+
+[data-theme="dark"] .edit-toolbar__button--danger:hover {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: var(--color-danger);
+}
+
 /* Drag and Drop */
 .edit-toolbar__button[draggable="true"] {
   cursor: grab;

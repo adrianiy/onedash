@@ -48,27 +48,29 @@ export const BreakdownItem: React.FC<BreakdownItemProps> = ({
     <div
       ref={setNodeRef}
       style={style}
-      className={`breakdown-level ${
-        isDragging ? "breakdown-level--dragging" : ""
+      className={`breakdown-level config-item ${
+        isDragging ? "breakdown-level--dragging config-item--dragging" : ""
       }`}
     >
-      <div className="breakdown-level__content">
+      <div className="breakdown-level__content config-item__content">
         <div
           {...attributes}
           {...listeners}
-          className="breakdown-level__grip-container"
+          className="breakdown-level__grip-container config-item__grip-container"
         >
           <Icon
             name="grip-vertical"
             size={14}
-            className="breakdown-level__grip"
+            className="breakdown-level__grip config-item__grip"
           />
         </div>
 
-        <div className="breakdown-level__index">{index + 1}</div>
+        <div className="breakdown-level__index config-item__index">
+          {index + 1}
+        </div>
 
-        <div className="breakdown-level__main">
-          <div className="breakdown-level__info">
+        <div className="breakdown-level__main config-item__main">
+          <div className="breakdown-level__info config-item__info">
             <div
               className={`breakdown-level__icon-container breakdown-level__icon-container--${category.color}`}
             >
@@ -78,13 +80,15 @@ export const BreakdownItem: React.FC<BreakdownItemProps> = ({
                 className={`breakdown-level__icon breakdown-level__icon--${category.color}`}
               />
             </div>
-            <div className="breakdown-level__name">{option.name}</div>
+            <div className="breakdown-level__name config-item__name">
+              {option.name}
+            </div>
           </div>
         </div>
 
         <button
           onClick={() => onRemove(id)}
-          className="breakdown-level__remove"
+          className="breakdown-level__remove config-item__remove"
           title="Eliminar nivel"
         >
           <Icon name="trash" size={14} />
