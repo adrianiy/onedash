@@ -4,6 +4,7 @@ import type { ConfigTab } from "../../common/ConfigTabs";
 import { ConfigTabs } from "../../common/ConfigTabs";
 import { DataConfig } from "./DataConfig";
 import { VisualizationConfig } from "./VisualizationConfig";
+import { EventsConfig } from "./EventsConfig";
 
 interface MetricConfigTabsProps {
   widget: MetricWidget;
@@ -25,6 +26,11 @@ export const MetricConfigTabs: React.FC<MetricConfigTabsProps> = ({
       label: "Visualización",
       component: VisualizationConfig as React.ComponentType<{ widget: Widget }>,
     },
+    {
+      id: "events",
+      label: "Eventos",
+      component: EventsConfig as React.ComponentType<{ widget: Widget }>,
+    },
   ];
 
   const renderTabContent = () => {
@@ -33,6 +39,8 @@ export const MetricConfigTabs: React.FC<MetricConfigTabsProps> = ({
         return <DataConfig widget={widget} />;
       case "visualization":
         return <VisualizationConfig widget={widget} />;
+      case "events":
+        return <EventsConfig widget={widget} />;
       default:
         return null;
     }

@@ -430,3 +430,38 @@
 [data-theme="dark"] .metric-format-toggle--active {
   background: var(--color-primary);
 }
+
+/* Estilos para placeholder de eventos */
+.metric-config__placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xxl);
+  text-align: center;
+  gap: var(--spacing-md);
+  color: var(--color-text-muted);
+  height: 100%;
+  min-height: 300px;
+}
+
+.metric-config__placeholder span {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.metric-config__placeholder p {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  max-width: 400px;
+}
+
+/* Tema oscuro para placeholder */
+[data-theme="dark"] .metric-config__placeholder span {
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .metric-config__placeholder p {
+  color: var(--color-text-muted);
+}

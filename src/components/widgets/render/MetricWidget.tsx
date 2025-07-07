@@ -127,9 +127,10 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
           )}
         </div>
 
-        {/* Footer con métrica secundaria */}
-        {metricData.secondary && (
-          <div className="metric-widget__footer">
+        {/* Footer con título del widget y métrica secundaria */}
+        <div className="metric-widget__footer">
+          <div className="metric-widget__title">{widget.title}</div>
+          {metricData.secondary && (
             <div
               className="metric-widget__secondary-value"
               style={getConditionalStyle(
@@ -142,8 +143,8 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
                 metricData.secondary.calculation
               )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Compatibilidad con mock actual (deprecado) */}
         {!widget.config.primaryMetric && widget.config.value && (
