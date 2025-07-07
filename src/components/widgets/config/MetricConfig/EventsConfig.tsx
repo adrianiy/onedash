@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Icon } from "../../../common/Icon";
 import { useWidgetStore } from "../../../../store/widgetStore";
-import { useVariableStore } from "../../../../store/variableStore";
-import type { MetricWidget } from "../../../../types/widget";
-import type { WidgetEvent } from "../../../../types/variables";
-import { generateId } from "../../../../utils/helpers";
+import type { MetricWidget, WidgetEvent } from "../../../../types/widget";
 
 interface EventsConfigProps {
   widget: MetricWidget;
@@ -20,7 +17,6 @@ interface VariableMapping {
 
 export const EventsConfig: React.FC<EventsConfigProps> = ({ widget }) => {
   const updateWidget = useWidgetStore((state) => state.updateWidget);
-  const variableDefinitions = useVariableStore((state) => state.definitions);
 
   const [isClickEventEnabled, setIsClickEventEnabled] = useState(false);
   const [variableMappings, setVariableMappings] = useState<VariableMapping[]>(
@@ -40,7 +36,7 @@ export const EventsConfig: React.FC<EventsConfigProps> = ({ widget }) => {
         id: "primary_indicator",
         label: "Indicador Principal",
         value: metric.indicator,
-        variableId: "selected_indicator",
+        variableId: "indicator",
         isSelected: false,
       });
 
@@ -89,12 +85,13 @@ export const EventsConfig: React.FC<EventsConfigProps> = ({ widget }) => {
       if (clickEvent) {
         setIsClickEventEnabled(true);
         // Mark variables as selected if they exist in the event
+        const keys = clickEvent.setVariables
+          ? Object.keys(clickEvent.setVariables)
+          : [];
         setVariableMappings((prev) =>
           prev.map((mapping) => ({
             ...mapping,
-            isSelected: Object.keys(clickEvent.setVariables).includes(
-              mapping.variableId
-            ),
+            isSelected: keys.includes(mapping.variableId),
           }))
         );
       }
@@ -135,7 +132,6 @@ export const EventsConfig: React.FC<EventsConfigProps> = ({ widget }) => {
     });
 
     const clickEvent: WidgetEvent = {
-      id: generateId(),
       trigger: "click",
       setVariables,
     };
@@ -158,18 +154,13 @@ export const EventsConfig: React.FC<EventsConfigProps> = ({ widget }) => {
   const getVariableDisplayName = (variableId: string) => {
     // Mapear IDs técnicos a nombres de negocio
     const businessNames: Record<string, string> = {
-      selected_indicator: "Indicador Seleccionado",
+      indicator: "Indicador Seleccionado",
       sale_type_filter: "Filtro de Tipo de Venta",
       scope_filter: "Filtro de Alcance",
       timeframe_filter: "Filtro de Período",
-      comparison_filter: "Filtro de Comparación",
     };
 
-    return (
-      businessNames[variableId] ||
-      variableDefinitions[variableId]?.name ||
-      variableId
-    );
+    return businessNames[variableId] || variableId;
   };
 
   const getValueLabel = (value: unknown) => {

@@ -1050,3 +1050,69 @@
   background-color: rgba(5, 150, 105, 0.1);
   color: #047857;
 }
+
+/* Estilos para elementos dinámicos en el sidebar */
+.metric-selector__chip-title-dynamic {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: #10b981;
+  font-weight: 500;
+}
+
+.metric-selector__chip-tag--dynamic {
+  background-color: rgba(16, 185, 129, 0.1) !important;
+  color: #10b981 !important;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-weight: 500;
+}
+
+.metric-selector__dynamic-icon {
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+/* Tema oscuro para elementos dinámicos */
+[data-theme="dark"] .metric-selector__chip-title-dynamic {
+  color: #34d399;
+}
+
+[data-theme="dark"] .metric-selector__chip-tag--dynamic {
+  background-color: rgba(52, 211, 153, 0.1) !important;
+  color: #34d399 !important;
+}
+
+[data-theme="dark"] .metric-selector__dynamic-icon {
+  color: #34d399;
+}
+
+/* Estilos para el chip del indicador */
+.metric-selector__chip-tag--indicator {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+  text-transform: capitalize;
+}
+
+/* Estilos para el chip del indicador dinámico */
+.metric-selector__chip-tag--indicator.metric-selector__chip-tag--dynamic {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+/* Tema oscuro para el chip del indicador */
+[data-theme="dark"] .metric-selector__chip-tag--indicator {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary-light);
+}
+
+/* Tema oscuro para el chip del indicador dinámico */
+[data-theme="dark"]
+  .metric-selector__chip-tag--indicator.metric-selector__chip-tag--dynamic {
+  background-color: rgba(52, 211, 153, 0.1);
+  color: #34d399;
+}

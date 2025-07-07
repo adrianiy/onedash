@@ -5,7 +5,11 @@ import type {
   MetricDefinition,
   MetricModifiers,
 } from "../../../../../types/metricConfig";
-import { ModifiersMetadata } from "../../../../../types/metricConfig";
+import {
+  ModifiersMetadata,
+  getDisplayTitle,
+} from "../../../../../types/metricConfig";
+import { useVariableStore } from "../../../../../store/variableStore";
 
 interface ColumnItemProps {
   id: string;
@@ -32,11 +36,19 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
 }) => {
   // Estados
   const [isEditing, setIsEditing] = useState(false);
-  const [titleValue, setTitleValue] = useState(column.title);
+  const [titleValue, setTitleValue] = useState(
+    column.displayName || column.title
+  );
   const [isClosing, setIsClosing] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const isSavingRef = useRef(false);
+
+  // Obtener variables actuales del store
+  const { variables } = useVariableStore();
+
+  // Usar la función getDisplayTitle centralizada que maneja la prioridad correctamente
+  const displayTitle = getDisplayTitle(column, variables);
 
   // Función para obtener la etiqueta de un modificador para mostrar en los chips
   const getModifierLabel = (
@@ -52,19 +64,68 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
 
     if (
       typeof modValue === "object" &&
+      modValue !== null &&
       "type" in modValue &&
       "value" in modValue
     ) {
       // Caso especial para comparison con type a-n
-      if (modValue.type === "a-n") {
-        return `Hace ${modValue.value} años`;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if ((modValue as any).type === "a-n") {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return `Hace ${(modValue as any).value} años`;
       }
-      return String(modValue.value);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return String((modValue as any).value);
     }
 
     // Buscar la opción correspondiente
     const option = metadata.options.find((opt) => opt.value === modValue);
     return option ? option.label : String(modValue);
+  };
+
+  // Función para obtener la etiqueta del indicador para mostrar en los chips
+  const getIndicatorLabel = (): React.ReactNode => {
+    // Si es dinámico, resolver con las variables actuales
+    const isDynamic =
+      typeof column.indicator === "object" &&
+      column.indicator !== null &&
+      "type" in column.indicator &&
+      column.indicator.type === "variable";
+
+    if (isDynamic) {
+      const variableBinding = column.indicator as {
+        type: "variable";
+        key: string;
+      };
+      const resolvedIndicator = variables[variableBinding.key];
+      const text = resolvedIndicator ? String(resolvedIndicator) : "Dinámico";
+
+      return (
+        <>
+          <Icon name="zap" size={12} />
+          {text}
+        </>
+      );
+    }
+
+    // Si es estático, buscar en los metadatos de indicadores
+    // Por ahora usamos el valor directamente, pero se podría mapear a etiquetas amigables
+    const text =
+      typeof column.indicator === "string"
+        ? column.indicator
+        : String(column.indicator);
+
+    return text;
+  };
+
+  // Función para verificar si el indicador es dinámico
+  const isIndicatorDynamic = (): boolean => {
+    return (
+      typeof column.indicator === "object" &&
+      column.indicator !== null &&
+      "type" in column.indicator &&
+      column.indicator.type === "variable"
+    );
   };
 
   // Manejar clic en el botón de expandir/contraer
@@ -102,7 +163,7 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
       if (titleValue.trim() !== "") {
         onRename(id, titleValue.trim());
       } else {
-        setTitleValue(column.title);
+        setTitleValue(column.displayName || column.title);
       }
       setIsEditing(false);
 
@@ -112,7 +173,7 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
       }, 100);
     } else if (e.key === "Escape") {
       // Solo cancelar sin guardar cambios
-      setTitleValue(column.title);
+      setTitleValue(column.displayName || column.title);
       setIsEditing(false);
     }
   };
@@ -134,7 +195,7 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
       ) {
         // Restaurar el valor original y salir del modo edición
         setIsClosing(true);
-        setTitleValue(column.title);
+        setTitleValue(column.displayName || column.title);
         setIsEditing(false);
 
         // Resetear la bandera después de un breve retraso
@@ -237,7 +298,7 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
                         if (titleValue.trim() !== "") {
                           onRename(id, titleValue.trim());
                         } else {
-                          setTitleValue(column.title);
+                          setTitleValue(column.displayName || column.title);
                         }
                         setIsEditing(false);
 
@@ -257,7 +318,7 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
                         // Marcar que estamos cancelando para evitar que otros eventos interfieran
                         isSavingRef.current = true;
 
-                        setTitleValue(column.title);
+                        setTitleValue(column.displayName || column.title);
                         setIsEditing(false);
 
                         // Restaurar la bandera después de un breve retraso
@@ -277,7 +338,7 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
                 className="column-item__name config-item__name column-item__name--editable"
                 onClick={handleTitleClick}
               >
-                {column.title}
+                {displayTitle}
               </div>
             )}
           </div>
@@ -330,6 +391,19 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
         >
           <div className="column-item__chips-content">
             <div className="metric-selector__chip-modifiers">
+              {/* Chip del indicador (siempre visible) */}
+              <span
+                className={`metric-selector__chip-tag metric-selector__chip-tag--indicator ${
+                  isIndicatorDynamic()
+                    ? "metric-selector__chip-tag--dynamic"
+                    : ""
+                }`}
+                key={`${column.id}-indicator`}
+              >
+                {getIndicatorLabel()}
+              </span>
+
+              {/* Chips de modificadores */}
               {Object.entries(column.modifiers).map(([modKey, modValue]) =>
                 modValue ? (
                   <span

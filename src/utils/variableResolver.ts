@@ -1,23 +1,51 @@
 import type { MetricDefinition } from "../types/metricConfig";
-import type { DashboardVariable } from "../types/variables";
+import type { VariableBinding } from "../types/metricConfig";
 
 /**
- * Set a nested property value using dot notation path
+ * A simplified representation of a variable for use in resolver logic.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function setNestedProperty(obj: any, path: string, value: unknown): void {
-  const keys = path.split(".");
-  let current = obj;
+export interface SimpleVariable {
+  id: string;
+  name: string;
+  value: unknown;
+  type: string;
+}
 
-  for (let i = 0; i < keys.length - 1; i++) {
-    const key = keys[i];
-    if (!(key in current) || typeof current[key] !== "object") {
-      current[key] = {};
-    }
-    current = current[key];
+/**
+ * Recursively resolves variables in any part of a metric definition.
+ * @param data The piece of the metric definition to resolve.
+ * @param variables The current state of dashboard variables.
+ * @returns The resolved piece of the metric definition.
+ */
+export function resolveRecursively(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any,
+  variables: Record<string, unknown>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): any {
+  if (typeof data !== "object" || data === null) {
+    return data;
   }
 
-  current[keys[keys.length - 1]] = value;
+  // Check if the object is a variable binding
+  if (data.type === "variable" && data.key) {
+    const variableKey = data.key as string;
+    return variables[variableKey] !== undefined ? variables[variableKey] : null;
+  }
+
+  // If it's an array, resolve each item
+  if (Array.isArray(data)) {
+    return data.map((item) => resolveRecursively(item, variables));
+  }
+
+  // If it's a regular object, resolve each property
+  const resolvedObject: Record<string, unknown> = {};
+  for (const key in data) {
+    if (Object.prototype.hasOwnProperty.call(data, key)) {
+      resolvedObject[key] = resolveRecursively(data[key], variables);
+    }
+  }
+  return resolvedObject;
 }
 
 /**
@@ -27,22 +55,8 @@ export function resolveMetricDefinition(
   definition: MetricDefinition,
   variables: Record<string, unknown>
 ): MetricDefinition {
-  if (!definition.useVariables) {
-    return definition;
-  }
-
-  // Create a deep copy to avoid mutating the original
-  const resolved = JSON.parse(JSON.stringify(definition)) as MetricDefinition;
-
-  // Resolve each variable binding
-  Object.entries(definition.useVariables).forEach(([path, variableId]) => {
-    const value = variables[variableId];
-    if (value !== undefined) {
-      setNestedProperty(resolved, path, value);
-    }
-  });
-
-  return resolved;
+  // The recursive function handles deep cloning implicitly by creating new objects/arrays.
+  return resolveRecursively(definition, variables) as MetricDefinition;
 }
 
 /**
@@ -56,41 +70,56 @@ export function resolveMetricDefinitions(
 }
 
 /**
+ * Recursively checks if any part of a metric definition is dynamic.
+ */
+function isDynamicRecursively(data: unknown): boolean {
+  if (typeof data !== "object" || data === null) {
+    return false;
+  }
+
+  if (
+    "type" in data &&
+    (data as VariableBinding).type === "variable" &&
+    "key" in data
+  ) {
+    return true;
+  }
+
+  if (Array.isArray(data)) {
+    return data.some(isDynamicRecursively);
+  }
+
+  for (const key in data) {
+    if (Object.prototype.hasOwnProperty.call(data, key)) {
+      if (isDynamicRecursively((data as Record<string, unknown>)[key])) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+/**
  * Check if a metric definition has any variable bindings
  */
 export function hasVariableBindings(definition: MetricDefinition): boolean {
-  return Boolean(
-    definition.useVariables && Object.keys(definition.useVariables).length > 0
-  );
+  return isDynamicRecursively(definition);
 }
 
 /**
- * Get all variable IDs used by a metric definition
- */
-export function getUsedVariableIds(definition: MetricDefinition): string[] {
-  if (!definition.useVariables) {
-    return [];
-  }
-  return Object.values(definition.useVariables);
-}
-
-/**
- * Get active variables by type from visible variables
- * Widget scanning will be done in the hook where we have access to stores
+ * Get active variables by type from a list of simple variable objects.
  */
 export function getActiveVariablesByType(
-  visibleVariables: DashboardVariable[]
-): Record<string, DashboardVariable[]> {
-  const activeVariables: Record<string, DashboardVariable[]> = {};
+  variables: SimpleVariable[]
+): Record<string, SimpleVariable[]> {
+  const activeVariables: Record<string, SimpleVariable[]> = {};
 
-  // Add visible variables (from FilterBar)
-  visibleVariables.forEach((variable) => {
+  variables.forEach((variable) => {
     if (!activeVariables[variable.type]) {
       activeVariables[variable.type] = [];
     }
-    if (!activeVariables[variable.type].find((v) => v.id === variable.id)) {
-      activeVariables[variable.type].push(variable);
-    }
+    activeVariables[variable.type].push(variable);
   });
 
   return activeVariables;

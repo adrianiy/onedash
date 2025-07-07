@@ -17,7 +17,7 @@
 .metric-config-tabs__content {
   flex: 1;
   overflow-y: auto;
-  padding: var(--spacing-md) 0;
+  padding: var(--spacing-xl) 0;
 }
 
 /* Estilos específicos para métricas */

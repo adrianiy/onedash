@@ -13,6 +13,8 @@ import {
   calculateTotals,
 } from "../../../utils/generateTableData";
 import { formatValue } from "../../../utils/format";
+import { getDisplayTitle } from "../../../types/metricConfig";
+import { useVariableStore } from "../../../store/variableStore";
 import "../../../styles/table-widget.css";
 
 // Tipo ampliado para incluir "desglose"
@@ -46,6 +48,8 @@ interface TableWidgetProps {
 }
 
 export const TableWidget: React.FC<TableWidgetProps> = ({ widget }) => {
+  // Obtener variables para actualizar títulos dinámicos
+  const { variables } = useVariableStore();
   // Función para obtener el estilo condicional de una celda
   const getConditionalStyle = (
     columnId: string,
@@ -320,10 +324,18 @@ export const TableWidget: React.FC<TableWidgetProps> = ({ widget }) => {
       indicator: "desglose",
     };
 
-    // Las columnas métricas (todas las demás)
-    const metricColumns = columns.filter(
-      (col) => !breakdownLevels.includes(col.id)
-    );
+    // Las columnas métricas con títulos actualizados
+    const metricColumns = columns
+      .filter((col) => !breakdownLevels.includes(col.id))
+      .map((col) => ({
+        ...col,
+        // Usar la nueva función getDisplayTitle que maneja la prioridad correctamente
+        // Solo aplicar a columnas que no sean de desglose
+        title:
+          col.indicator !== "desglose"
+            ? getDisplayTitle(col as MetricDefinition, variables)
+            : col.title,
+      }));
 
     return [breakdownColumn, ...metricColumns];
   }, [
@@ -331,6 +343,7 @@ export const TableWidget: React.FC<TableWidgetProps> = ({ widget }) => {
     widget.config.breakdownLevels,
     hasColumns,
     hasBreakdownLevels,
+    variables, // Añadir variables como dependencia
   ]);
 
   // Función para ordenar datos (independientemente de si hay datos)
@@ -376,20 +389,58 @@ export const TableWidget: React.FC<TableWidgetProps> = ({ widget }) => {
     };
   }, [sortedData, currentPage, rowsPerPage]);
 
-  // Generar datos de tabla cuando cambia la configuración
+  // Generar datos de tabla cuando cambia la configuración o las variables
   useEffect(() => {
     if (hasBreakdownLevels && hasColumns) {
+      // Resolver columnas con variables dinámicas antes de generar datos
+      const resolvedColumns = widget.config.columns.map((col) => {
+        // Si el indicador es dinámico, resolverlo
+        if (
+          typeof col.indicator === "object" &&
+          col.indicator.type === "variable"
+        ) {
+          const resolvedIndicator = variables[col.indicator.key];
+          return {
+            ...col,
+            indicator: resolvedIndicator || col.indicator,
+          };
+        }
+
+        // Si algún modificador es dinámico, resolverlo
+        const resolvedModifiers = { ...col.modifiers };
+        Object.entries(col.modifiers).forEach(([key, value]) => {
+          if (
+            typeof value === "object" &&
+            value !== null &&
+            "type" in value &&
+            value.type === "variable"
+          ) {
+            const resolvedValue = variables[value.key];
+            if (resolvedValue !== undefined && resolvedValue !== null) {
+              // Asignar el valor resuelto con el tipo correcto
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (resolvedModifiers as any)[key] = resolvedValue;
+            }
+          }
+        });
+
+        return {
+          ...col,
+          modifiers: resolvedModifiers,
+        };
+      });
+
       // Generar datos o usar los existentes si están disponibles
       const data =
         widget.config.data && widget.config.data.length > 0
           ? widget.config.data
           : generateTableData(
-              widget.config.columns,
+              resolvedColumns,
               widget.config.breakdownLevels as string[]
             );
 
-      // Calcular totales
-      const calculatedTotals = calculateTotals(data, widget.config.columns);
+      // Calcular totales con las columnas resueltas
+      const calculatedTotals = calculateTotals(data, resolvedColumns);
 
       setTableData(data);
       setTotals(calculatedTotals);
@@ -400,6 +451,7 @@ export const TableWidget: React.FC<TableWidgetProps> = ({ widget }) => {
     widget.config.data,
     hasBreakdownLevels,
     hasColumns,
+    variables, // Añadir variables como dependencia
   ]);
 
   // Establecer ordenación inicial por la primera métrica cuando las columnas estén disponibles
@@ -497,20 +549,14 @@ export const TableWidget: React.FC<TableWidgetProps> = ({ widget }) => {
     if (typeof value === "number") {
       // Para métricas de crecimiento, mostrar clase de color según signo
       if (column.modifiers.calculation === "crecimiento") {
-        return (
-          <span
-            className={
-              value > 0 ? "text-positive" : value < 0 ? "text-negative" : ""
-            }
-          >
-            {value > 0 ? "+" : ""}
-            {formatValue(value, "crecimiento")}
-          </span>
-        );
+        return <span>{formatValue(value, "crecimiento")}</span>;
       }
 
       // Para otros tipos numéricos, usar formatValue según el tipo de cálculo
-      return formatValue(value, column.modifiers.calculation || "default");
+      return formatValue(
+        value,
+        (column.modifiers.calculation || "default") as string
+      );
     }
 
     return String(value);

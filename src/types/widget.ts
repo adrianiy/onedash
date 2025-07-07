@@ -1,8 +1,12 @@
 import type { MetricDefinition } from "./metricConfig";
-import type { WidgetEvent } from "./variables";
 
 export type WidgetType = "chart" | "metric" | "table" | "text";
 export type ChartType = "bar" | "line" | "pie" | "scatter" | "area";
+
+export interface WidgetEvent {
+  trigger: "click";
+  setVariables?: Record<string, unknown>;
+}
 
 export interface ConditionalFormatRule {
   id: string;

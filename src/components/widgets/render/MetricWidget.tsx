@@ -3,6 +3,7 @@ import { Icon } from "../../common/Icon";
 import type { MetricWidget as MetricWidgetType } from "../../../types/widget";
 import { formatValue } from "../../../utils/format";
 import { useVariableStore } from "../../../store/variableStore";
+import { useResolvedMetric } from "../../../hooks/useResolvedMetric";
 
 interface MetricWidgetProps {
   widget: MetricWidgetType;
@@ -23,13 +24,15 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
   }, [widget.events]);
 
   const isClickable = Boolean(
-    clickEvent && Object.keys(clickEvent.setVariables).length > 0
+    clickEvent &&
+      clickEvent.setVariables &&
+      Object.keys(clickEvent.setVariables).length > 0
   );
 
   // Verificar si el KPI está "activo" (sus variables coinciden con el estado actual)
   const variables = useVariableStore((state) => state.variables);
   const isActive = useMemo(() => {
-    if (!isClickable || !clickEvent) return false;
+    if (!isClickable || !clickEvent || !clickEvent.setVariables) return false;
 
     // Verificar si alguna de las variables del evento coincide con el estado actual
     return Object.entries(clickEvent.setVariables).some(
@@ -41,7 +44,7 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
 
   // Función para manejar el click en el widget
   const handleWidgetClick = () => {
-    if (!isClickable || !clickEvent) return;
+    if (!isClickable || !clickEvent || !clickEvent.setVariables) return;
 
     // Activar animación de click
     setIsClicked(true);
@@ -51,40 +54,9 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
     setMultiple(clickEvent.setVariables);
   };
 
-  // Generar datos simulados para las métricas
-  const metricData = useMemo(() => {
-    const generateValue = (calculation: string) => {
-      // Para crecimientos, generar valores entre -50% y +150%
-      if (calculation === "crecimiento" || calculation === "peso") {
-        return Math.floor(Math.random() * 200 - 50); // -50 a +150
-      }
-      // Para otros valores, generar números normales
-      return Math.floor(Math.random() * 1000000) + 10000;
-    };
-
-    return {
-      primary: widget.config.primaryMetric
-        ? {
-            value: generateValue(
-              widget.config.primaryMetric.modifiers.calculation || "valor"
-            ),
-            label: widget.config.primaryMetric.title,
-            calculation:
-              widget.config.primaryMetric.modifiers.calculation || "valor",
-          }
-        : null,
-      secondary: widget.config.secondaryMetric
-        ? {
-            value: generateValue(
-              widget.config.secondaryMetric.modifiers.calculation || "valor"
-            ),
-            label: widget.config.secondaryMetric.title,
-            calculation:
-              widget.config.secondaryMetric.modifiers.calculation || "valor",
-          }
-        : null,
-    };
-  }, [widget.config.primaryMetric, widget.config.secondaryMetric]);
+  // Resolver las métricas usando el hook
+  const primaryMetricData = useResolvedMetric(widget.config.primaryMetric);
+  const secondaryMetricData = useResolvedMetric(widget.config.secondaryMetric);
 
   // Función para obtener el estilo condicional
   const getConditionalStyle = (
@@ -136,7 +108,7 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
   };
 
   // Si no hay métricas configuradas, mostrar placeholder
-  if (!metricData.primary) {
+  if (!primaryMetricData) {
     return (
       <div className="widget-placeholder">
         <Icon name="target" size={48} />
@@ -165,28 +137,25 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
           className={`metric-widget__primary-value ${
             isActive ? "metric-widget__primary-value--active" : ""
           }`}
-          style={getConditionalStyle("primaryMetric", metricData.primary.value)}
+          style={getConditionalStyle("primaryMetric", primaryMetricData.value)}
         >
-          {formatValue(
-            metricData.primary.value,
-            metricData.primary.calculation
-          )}
+          {formatValue(primaryMetricData.value, primaryMetricData.calculation)}
         </div>
 
         {/* Footer con título del widget y métrica secundaria */}
         <div className="metric-widget__footer">
           <div className="metric-widget__title">{widget.title}</div>
-          {metricData.secondary && (
+          {secondaryMetricData && (
             <div
               className="metric-widget__secondary-value"
               style={getConditionalStyle(
                 "secondaryMetric",
-                metricData.secondary.value
+                secondaryMetricData.value
               )}
             >
               {formatValue(
-                metricData.secondary.value,
-                metricData.secondary.calculation
+                secondaryMetricData.value,
+                secondaryMetricData.calculation
               )}
             </div>
           )}

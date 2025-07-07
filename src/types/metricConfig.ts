@@ -1,19 +1,32 @@
-// Tipos de indicadores base
-export type IndicatorType = "importe" | "unidades" | "pedidos";
+// --- Tipos Base y de Vinculación ---
 
-// Tipo que incluye indicadores dinámicos
-export type IndicatorTypeOrDynamic = IndicatorType | "{{dynamic}}";
+export type VariableBinding = {
+  type: "variable";
+  key: string;
+};
 
-// Tipos de modificadores
-export type SaleType = "bruto" | "neto" | "devos";
-export type ScopeType = "mismas_tiendas" | "total_tiendas";
-export type TimeframeType = "hoy" | "ayer" | "semana" | "mes" | "año";
-export type ComparisonType =
+// Tipos de valores estáticos para indicadores y modificadores
+export type IndicatorValue = "importe" | "unidades" | "pedidos";
+export type SaleValue = "bruto" | "neto" | "devos";
+export type ScopeValue = "mismas_tiendas" | "total_tiendas";
+export type TimeframeValue = "hoy" | "ayer" | "semana" | "mes" | "año";
+export type ComparisonValue =
   | "actual"
   | "anterior"
   | "a-2"
   | { type: "a-n"; value: number };
-export type CalculationType = "valor" | "crecimiento" | "peso";
+export type CalculationValue = "valor" | "crecimiento" | "peso";
+
+// --- Tipos Flexibles (Estático o Vinculado a Variable) ---
+
+export type IndicatorType = IndicatorValue | VariableBinding;
+export type SaleType = SaleValue | VariableBinding;
+export type ScopeType = ScopeValue | VariableBinding;
+export type TimeframeType = TimeframeValue | VariableBinding;
+export type ComparisonType = ComparisonValue | VariableBinding;
+export type CalculationType = CalculationValue | VariableBinding;
+
+// --- Interfaces Principales ---
 
 // Interfaz para los modificadores de una métrica
 export interface MetricModifiers {
@@ -30,8 +43,8 @@ export interface MetricDefinition {
   indicator: IndicatorType;
   modifiers: MetricModifiers;
   title: string;
+  displayName?: string; // Nombre personalizado por el usuario (tiene prioridad)
   width?: number; // Para columnas de tabla
-  useVariables?: Record<string, string>; // property path → variable ID
 }
 
 // Interfaz para una opción de modificador en la UI
@@ -153,72 +166,163 @@ export function isModifierCompatible(
  * Genera un título descriptivo para una métrica basado en sus propiedades
  */
 export function generateMetricTitle(
-  indicator: IndicatorType,
-  modifiers: MetricModifiers
+  indicator: IndicatorValue | string | VariableBinding, // Acepta string o VariableBinding
+  modifiers: MetricModifiers,
+  variables?: Record<string, unknown> // Variables opcionales para resolver dinámicos
 ): string {
-  const indicatorName = IndicatorMetadata[indicator]?.name || indicator;
+  const isDynamic = (value: unknown) =>
+    typeof value === "object" && value !== null && "type" in value;
+
+  const getOptionLabel = (
+    modifierKey: string,
+    value: string
+  ): string | undefined => {
+    return ModifiersMetadata[modifierKey]?.options.find(
+      (o) => o.value === value
+    )?.label;
+  };
+
+  let indicatorName: string;
+  let isDynamicIndicator: boolean = false; // Flag para identificar indicadores dinámicos
+
+  if (
+    (typeof indicator === "string" && indicator.startsWith("var:")) ||
+    (typeof indicator === "object" &&
+      indicator !== null &&
+      "type" in indicator &&
+      indicator.type === "variable")
+  ) {
+    const variableKey =
+      typeof indicator === "string" ? indicator.substring(4) : indicator.key;
+
+    // Resolver el valor actual de la variable si se proporcionaron variables
+    const resolvedValue = variables ? variables[variableKey] : undefined;
+    indicatorName =
+      resolvedValue !== undefined && resolvedValue !== null
+        ? String(resolvedValue)
+        : `Dinámico (${variableKey})`;
+
+    isDynamicIndicator = true;
+  } else {
+    indicatorName =
+      IndicatorMetadata[indicator as string]?.name || (indicator as string);
+    isDynamicIndicator = false;
+  }
+
   const parts: string[] = [indicatorName];
 
   // Añadir modificadores en orden lógico
-  if (modifiers.saleType && isModifierCompatible(indicator, "saleType")) {
-    const option = ModifiersMetadata.saleType.options.find(
-      (o) => o.value === modifiers.saleType
-    );
-    if (option) parts.push(option.label);
-  }
+  Object.entries(modifiers).forEach(([key, value]) => {
+    // Para indicadores dinámicos, incluir todos los modificadores
+    // Para indicadores estáticos, verificar compatibilidad
+    const shouldIncludeModifier =
+      isDynamicIndicator || isModifierCompatible(indicator as string, key);
 
-  if (modifiers.scope && isModifierCompatible(indicator, "scope")) {
-    const option = ModifiersMetadata.scope.options.find(
-      (o) => o.value === modifiers.scope
-    );
-    if (option) parts.push(option.label);
-  }
-
-  if (modifiers.timeframe && isModifierCompatible(indicator, "timeframe")) {
-    const option = ModifiersMetadata.timeframe.options.find(
-      (o) => o.value === modifiers.timeframe
-    );
-    if (option) parts.push(option.label);
-  }
-
-  if (modifiers.comparison && isModifierCompatible(indicator, "comparison")) {
-    let comparisonText = "";
-    if (typeof modifiers.comparison === "string") {
-      const option = ModifiersMetadata.comparison.options.find(
-        (o) => o.value === modifiers.comparison
-      );
-      comparisonText = option?.label || modifiers.comparison;
-    } else {
-      comparisonText = `Hace ${modifiers.comparison.value} años`;
+    if (value && shouldIncludeModifier) {
+      if (isDynamic(value)) {
+        const variableKey = (value as VariableBinding).key;
+        parts.push(variableKey);
+      } else if (typeof value === "string") {
+        const label = getOptionLabel(key, value);
+        if (label) {
+          // Para indicadores dinámicos, incluir siempre los modificadores para diferenciar
+          // Para indicadores estáticos, excluir "valor" y "actual" como antes
+          if (isDynamicIndicator || (value !== "valor" && value !== "actual")) {
+            if (key === "comparison") {
+              parts.push(`vs ${label}`);
+            } else {
+              parts.push(label);
+            }
+          }
+        }
+      } else if (typeof value === "object" && "value" in value) {
+        // Caso especial para comparison a-n
+        parts.push(`vs Hace ${value.value} años`);
+      }
     }
-    if (comparisonText !== "Actual") parts.push(`vs ${comparisonText}`);
-  }
-
-  if (modifiers.calculation && isModifierCompatible(indicator, "calculation")) {
-    const option = ModifiersMetadata.calculation.options.find(
-      (o) => o.value === modifiers.calculation
-    );
-    if (option && option.value !== "valor") parts.push(`(${option.label})`);
-  }
+  });
 
   return parts.join(" ");
+}
+
+/**
+ * Obtiene el título para mostrar según la lógica de prioridad:
+ * 1. displayName (nombre personalizado por el usuario)
+ * 2. título generado automáticamente (si hay elementos dinámicos)
+ * 3. title (título por defecto)
+ */
+export function getDisplayTitle(
+  column: MetricDefinition,
+  variables?: Record<string, unknown>
+): string {
+  // 1. Si hay displayName personalizado, usarlo siempre
+  if (column.displayName && column.displayName.trim() !== "") {
+    return column.displayName;
+  }
+
+  // 2. Si hay elementos dinámicos, generar título automáticamente
+  const hasDynamicElements =
+    (typeof column.indicator === "object" &&
+      column.indicator !== null &&
+      "type" in column.indicator &&
+      column.indicator.type === "variable") ||
+    Object.values(column.modifiers).some(
+      (value) =>
+        typeof value === "object" &&
+        value !== null &&
+        "type" in value &&
+        value.type === "variable"
+    );
+
+  if (hasDynamicElements && variables) {
+    try {
+      return generateMetricTitle(column.indicator, column.modifiers, variables);
+    } catch (error) {
+      console.warn("Error generando título dinámico:", error);
+    }
+  }
+
+  // 3. Fallback al título por defecto
+  return column.title;
 }
 
 /**
  * Genera un ID único para una métrica basado en sus propiedades
  */
 export function generateMetricId(
-  indicator: IndicatorType,
+  indicator: IndicatorValue | string | { type: "variable"; key: string }, // Acepta todos los tipos
   modifiers: MetricModifiers
 ): string {
-  let id = indicator;
+  let id: string;
+  let isIndicatorDynamic = false;
 
+  // Determinar el ID base del indicador
+  if (typeof indicator === "object" && indicator.type === "variable") {
+    id = `dynamic_${indicator.key}`;
+    isIndicatorDynamic = true;
+  } else {
+    id = indicator as string;
+  }
+
+  // Añadir modificadores al ID
   Object.entries(modifiers).forEach(([key, value]) => {
-    if (value && isModifierCompatible(indicator, key)) {
-      if (typeof value === "object" && "type" in value && "value" in value) {
-        id += `_${key}_${value.type}_${value.value}`;
-      } else {
-        id += `_${key}_${value}`;
+    if (value) {
+      // Para indicadores dinámicos, siempre añadir modificadores compatibles
+      // Para indicadores estáticos, verificar compatibilidad
+      const shouldAddModifier =
+        isIndicatorDynamic ||
+        (typeof indicator === "string" && isModifierCompatible(indicator, key));
+
+      if (shouldAddModifier) {
+        if (typeof value === "object") {
+          if ("type" in value && value.type === "variable") {
+            id += `_${key}_var:${value.key}`;
+          } else if ("type" in value && "value" in value) {
+            id += `_${key}_${value.type}_${value.value}`;
+          }
+        } else {
+          id += `_${key}_${value}`;
+        }
       }
     }
   });

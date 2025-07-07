@@ -1,9 +1,13 @@
 import { useMemo } from "react";
 import type {
-  IndicatorType,
   MetricDefinition,
   MetricModifiers,
   ComparisonType,
+  SaleType,
+  ScopeType,
+  TimeframeType,
+  CalculationType,
+  IndicatorType,
 } from "../types/metricConfig";
 import {
   generateMetricId,
@@ -12,13 +16,26 @@ import {
   IndicatorMetadata,
   ModifiersMetadata,
 } from "../types/metricConfig";
+import { useVariableStore } from "../store/variableStore";
 
 export interface MetricGenerationOptions {
   mode: "single" | "multiple";
-  selectedIndicators: IndicatorType[];
+  selectedIndicators: (string | { type: "variable"; key: string })[];
   selectedModifiers: Record<string, string[]>;
   customValues?: Record<string, unknown>;
 }
+
+const VARIABLE_PREFIX = "var:";
+
+const isVariable = (value: string | { type: "variable"; key: string }) =>
+  typeof value === "object"
+    ? value.type === "variable"
+    : value.startsWith(VARIABLE_PREFIX);
+
+const getVariableKey = (value: string | { type: "variable"; key: string }) =>
+  typeof value === "object"
+    ? value.key
+    : value.substring(VARIABLE_PREFIX.length);
 
 /**
  * Función de utilidad para asignar un valor a un modificador con seguridad de tipos
@@ -28,25 +45,29 @@ function setModifierValue(
   key: string,
   value: string | { type: string; value: number }
 ): void {
+  if (typeof value === "string" && isVariable(value)) {
+    modifiers[key as keyof MetricModifiers] = {
+      type: "variable",
+      key: getVariableKey(value),
+    };
+    return;
+  }
+
   switch (key) {
     case "saleType":
-      modifiers.saleType = value as any;
+      modifiers.saleType = value as SaleType;
       break;
     case "scope":
-      modifiers.scope = value as any;
+      modifiers.scope = value as ScopeType;
       break;
     case "timeframe":
-      modifiers.timeframe = value as any;
+      modifiers.timeframe = value as TimeframeType;
       break;
     case "comparison":
-      if (typeof value === "object") {
-        modifiers.comparison = value as ComparisonType;
-      } else {
-        modifiers.comparison = value as any;
-      }
+      modifiers.comparison = value as ComparisonType;
       break;
     case "calculation":
-      modifiers.calculation = value as any;
+      modifiers.calculation = value as CalculationType;
       break;
   }
 }
@@ -66,15 +87,49 @@ function getDefaultValue(modifier: string): string | null {
 }
 
 /**
+ * Verifica si un indicador es compatible con un modificador específico
+ */
+function isIndicatorModifierCompatible(
+  indicator: string | { type: "variable"; key: string },
+  modifier: string
+): boolean {
+  if (isVariable(indicator)) {
+    // Los indicadores dinámicos son compatibles con todos los modificadores estándar
+    return [
+      "saleType",
+      "scope",
+      "timeframe",
+      "comparison",
+      "calculation",
+    ].includes(modifier);
+  }
+
+  const indicatorKey =
+    typeof indicator === "object" ? indicator.key : indicator;
+  return isModifierCompatible(indicatorKey, modifier);
+}
+
+/**
  * Verifica si un indicador cumple con todos sus requisitos de modificadores
  */
 function indicatorMeetsRequirements(
-  indicator: IndicatorType,
+  indicator: string | { type: "variable"; key: string },
   selectedModifiers: Record<string, string[]>
 ): boolean {
+  if (isVariable(indicator)) {
+    // Para indicadores dinámicos, verificamos que tengan al menos los modificadores básicos requeridos
+    // Asumimos que requieren al menos saleType y calculation como los indicadores normales
+    const basicRequiredModifiers = ["saleType", "calculation"];
+    return basicRequiredModifiers.every(
+      (modifier) =>
+        selectedModifiers[modifier]?.length > 0 || hasDefaultValue(modifier)
+    );
+  }
   // Obtenemos los modificadores requeridos para este indicador
+  const indicatorKey =
+    typeof indicator === "object" ? indicator.key : indicator;
   const requiredModifiers =
-    IndicatorMetadata[indicator]?.requiredModifiers || [];
+    IndicatorMetadata[indicatorKey]?.requiredModifiers || [];
 
   // Verificamos que todos los modificadores requeridos tengan al menos un valor seleccionado
   // o tengan un valor por defecto
@@ -93,6 +148,8 @@ export function useMetricGeneration({
   selectedModifiers,
   customValues = {},
 }: MetricGenerationOptions) {
+  // Obtener variables del store para pasarlas a las funciones de generación
+  const { variables } = useVariableStore();
   /**
    * Generar métricas basadas en las selecciones
    */
@@ -113,7 +170,10 @@ export function useMetricGeneration({
 
       // Tomamos el primer valor seleccionado de cada modificador (si existe)
       Object.entries(selectedModifiers).forEach(([key, values]) => {
-        if (values.length > 0 && isModifierCompatible(indicator, key)) {
+        if (
+          values.length > 0 &&
+          isIndicatorModifierCompatible(indicator, key)
+        ) {
           if (
             key === "comparison" &&
             values[0] === "a-n" &&
@@ -131,12 +191,22 @@ export function useMetricGeneration({
       });
 
       // Aplicar valores por defecto para modificadores requeridos sin selección
-      const requiredModifiers =
-        IndicatorMetadata[indicator]?.requiredModifiers || [];
+      let requiredModifiers: string[] = [];
+
+      if (isVariable(indicator)) {
+        // Para indicadores dinámicos, usar modificadores básicos
+        requiredModifiers = ["saleType", "calculation"];
+      } else {
+        const indicatorKey =
+          typeof indicator === "object" ? indicator.key : indicator;
+        requiredModifiers =
+          IndicatorMetadata[indicatorKey]?.requiredModifiers || [];
+      }
+
       requiredModifiers.forEach((modifier) => {
         // Si el modificador es requerido, compatible, no tiene selección pero tiene valor por defecto
         if (
-          isModifierCompatible(indicator, modifier) &&
+          isIndicatorModifierCompatible(indicator, modifier) &&
           !modifiers[modifier as keyof MetricModifiers] &&
           (selectedModifiers[modifier]?.length === 0 ||
             !selectedModifiers[modifier]) &&
@@ -149,24 +219,32 @@ export function useMetricGeneration({
         }
       });
 
+      const finalIndicator = isVariable(indicator)
+        ? {
+            type: "variable" as const,
+            key: getVariableKey(indicator),
+          }
+        : indicator;
+
       // Generar una única métrica
       return [
         {
-          id: generateMetricId(indicator, modifiers),
-          indicator,
+          id: generateMetricId(finalIndicator, modifiers),
+          indicator: finalIndicator as IndicatorType,
           modifiers,
-          title: generateMetricTitle(indicator, modifiers),
+          title: generateMetricTitle(finalIndicator, modifiers, variables),
         },
       ];
     } else {
       // En modo multiple, generamos todas las combinaciones posibles
       return generateAllMetricCombinations(
-        validIndicators, // Usamos solo los indicadores válidos
+        validIndicators,
         selectedModifiers,
-        customValues
+        customValues,
+        variables
       );
     }
-  }, [mode, selectedIndicators, selectedModifiers, customValues]);
+  }, [mode, selectedIndicators, selectedModifiers, customValues, variables]);
 
   return {
     generatedMetrics,
@@ -179,25 +257,45 @@ export function useMetricGeneration({
  * basadas en los indicadores y modificadores seleccionados
  */
 function generateAllMetricCombinations(
-  indicators: IndicatorType[],
+  indicators: (string | { type: "variable"; key: string })[],
   modifierSelections: Record<string, string[]>,
-  customValues: Record<string, unknown>
+  customValues: Record<string, unknown>,
+  variables: Record<string, unknown> = {}
 ): MetricDefinition[] {
   const metrics: MetricDefinition[] = [];
 
   // Para cada indicador seleccionado
   for (const indicator of indicators) {
-    // Obtenemos los modificadores compatibles con este indicador
-    const compatibleModifiers = Object.keys(modifierSelections).filter(
-      (modifier) => isModifierCompatible(indicator, modifier)
+    // Obtenemos los modificadores que están seleccionados y son compatibles
+    const selectedCompatibleModifiers = Object.keys(modifierSelections).filter(
+      (modifier) => isIndicatorModifierCompatible(indicator, modifier)
     );
+
+    // Agregamos también los modificadores requeridos que tienen valores por defecto
+    const requiredModifiers = isVariable(indicator)
+      ? ["saleType", "calculation"]
+      : IndicatorMetadata[
+          typeof indicator === "object" ? indicator.key : indicator
+        ]?.requiredModifiers || [];
+
+    const allRelevantModifiers = new Set([
+      ...selectedCompatibleModifiers,
+      ...requiredModifiers.filter(
+        (modifier) =>
+          isIndicatorModifierCompatible(indicator, modifier) &&
+          hasDefaultValue(modifier)
+      ),
+    ]);
 
     // Generamos todas las combinaciones posibles
     const combinations = generateModifierCombinations(
       indicator,
-      compatibleModifiers,
+      Array.from(allRelevantModifiers),
       modifierSelections,
-      customValues
+      customValues,
+      0,
+      {},
+      variables
     );
 
     // Añadimos todas las combinaciones a la lista
@@ -211,21 +309,26 @@ function generateAllMetricCombinations(
  * Genera todas las combinaciones posibles de modificadores para un indicador
  */
 function generateModifierCombinations(
-  indicator: IndicatorType,
+  indicator: string | { type: "variable"; key: string },
   compatibleModifiers: string[],
   modifierSelections: Record<string, string[]>,
   customValues: Record<string, unknown>,
   currentIndex: number = 0,
-  currentModifiers: MetricModifiers = {}
+  currentModifiers: MetricModifiers = {},
+  variables: Record<string, unknown> = {}
 ): MetricDefinition[] {
   // Si hemos procesado todos los modificadores, generamos la métrica
   if (currentIndex >= compatibleModifiers.length) {
+    const finalIndicator = isVariable(indicator)
+      ? { type: "variable" as const, key: getVariableKey(indicator) }
+      : indicator;
+
     return [
       {
-        id: generateMetricId(indicator, currentModifiers),
-        indicator,
+        id: generateMetricId(finalIndicator, currentModifiers),
+        indicator: finalIndicator as IndicatorType,
         modifiers: { ...currentModifiers },
-        title: generateMetricTitle(indicator, currentModifiers),
+        title: generateMetricTitle(finalIndicator, currentModifiers, variables),
       },
     ];
   }
@@ -234,16 +337,49 @@ function generateModifierCombinations(
   const currentModifier = compatibleModifiers[currentIndex];
   const selectedValues = modifierSelections[currentModifier];
 
-  // Si no hay valores seleccionados para este modificador, avanzamos al siguiente
+  // Si no hay valores seleccionados para este modificador, verificar si tiene valor por defecto
   if (!selectedValues || selectedValues.length === 0) {
-    return generateModifierCombinations(
-      indicator,
-      compatibleModifiers,
-      modifierSelections,
-      customValues,
-      currentIndex + 1,
-      currentModifiers
-    );
+    // Verificar si es un modificador requerido y tiene valor por defecto
+    let isRequired = false;
+    if (isVariable(indicator)) {
+      // Para indicadores dinámicos, saleType y calculation son requeridos
+      isRequired = ["saleType", "calculation"].includes(currentModifier);
+    } else {
+      const indicatorKey =
+        typeof indicator === "object" ? indicator.key : indicator;
+      const requiredModifiers =
+        IndicatorMetadata[indicatorKey]?.requiredModifiers || [];
+      isRequired = requiredModifiers.includes(currentModifier);
+    }
+
+    if (isRequired && hasDefaultValue(currentModifier)) {
+      // Aplicar valor por defecto y continuar
+      const newModifiers = { ...currentModifiers };
+      const defaultValue = getDefaultValue(currentModifier);
+      if (defaultValue) {
+        setModifierValue(newModifiers, currentModifier, defaultValue);
+      }
+      return generateModifierCombinations(
+        indicator,
+        compatibleModifiers,
+        modifierSelections,
+        customValues,
+        currentIndex + 1,
+        newModifiers,
+        variables
+      );
+    } else {
+      // No es requerido o no tiene valor por defecto, avanzar al siguiente
+      return generateModifierCombinations(
+        indicator,
+        compatibleModifiers,
+        modifierSelections,
+        customValues,
+        currentIndex + 1,
+        currentModifiers,
+        variables
+      );
+    }
   }
 
   // Para cada valor seleccionado para este modificador
@@ -273,7 +409,8 @@ function generateModifierCombinations(
       modifierSelections,
       customValues,
       currentIndex + 1,
-      newModifiers
+      newModifiers,
+      variables
     );
 
     // Añadimos las nuevas combinaciones a la lista

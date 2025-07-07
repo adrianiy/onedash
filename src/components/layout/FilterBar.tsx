@@ -2,10 +2,24 @@ import React from "react";
 import { Icon } from "../common/Icon";
 import { CustomSelect } from "../common/CustomSelect";
 import { useVariableStore } from "../../store/variableStore";
-import type { DashboardVariable, VariableType } from "../../types/variables";
 
 interface FilterBarProps {
   className?: string;
+}
+
+type VariableType =
+  | "indicator"
+  | "sale_type"
+  | "scope"
+  | "timeframe"
+  | "date_range";
+
+interface DashboardVariable {
+  id: string;
+  name: string;
+  type: VariableType;
+  value: unknown;
+  isVisible: boolean;
 }
 
 const getVariableOptions = (type: VariableType) => {
@@ -81,10 +95,18 @@ const renderVariableInput = (
 };
 
 export const FilterBar: React.FC<FilterBarProps> = ({ className = "" }) => {
-  const visibleVariables = useVariableStore((state) =>
-    state.getVisibleVariables()
-  );
-  const setVariable = useVariableStore((state) => state.setVariable);
+  const { variables, setVariable } = useVariableStore();
+
+  // Convertir variables del store a formato DashboardVariable
+  const visibleVariables: DashboardVariable[] = Object.entries(variables)
+    .filter(([, value]) => value !== null && value !== undefined)
+    .map(([key, value]) => ({
+      id: key,
+      name: key.charAt(0).toUpperCase() + key.slice(1),
+      type: key as VariableType,
+      value: value,
+      isVisible: true,
+    }));
 
   if (visibleVariables.length === 0) {
     return null;

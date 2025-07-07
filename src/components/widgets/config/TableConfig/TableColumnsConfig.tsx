@@ -234,16 +234,16 @@ export const TableColumnsConfig: React.FC<TableColumnsConfigProps> = ({
     }
   };
 
-  // Renombrar una columna
+  // Renombrar una columna (actualiza displayName para títulos personalizados)
   const handleRenameColumn = (columnId: string, newTitle: string) => {
     if (widget.type === "table") {
       // Obtener el store para actualizar el widget
       const { updateWidget } = useWidgetStore.getState();
 
-      // Crear una copia de las columnas y actualizar el título de la columna específica
+      // Crear una copia de las columnas y actualizar el displayName de la columna específica
       const updatedColumns = columnsFromConfig.map((column) => {
         if (column.id === columnId) {
-          return { ...column, title: newTitle };
+          return { ...column, displayName: newTitle };
         }
         return column;
       });
