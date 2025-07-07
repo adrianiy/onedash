@@ -10,11 +10,60 @@ import {
   ErrorWidget,
 } from "../widgets/render";
 import type { Widget } from "../../types/widget";
+import type { DashboardLayout } from "../../types/dashboard";
 
 interface WidgetContainerProps {
   widget: Widget;
   isSelected?: boolean;
 }
+
+// Function to find the first available position in the grid
+const findFirstFreePosition = (
+  layout: DashboardLayout[],
+  width: number,
+  height: number,
+  gridCols: number = 12
+): { x: number; y: number } => {
+  // Create a grid to track occupied positions
+  const maxRows = Math.max(...layout.map((item) => item.y + item.h), 0);
+  const grid: boolean[][] = Array(maxRows + height)
+    .fill(false)
+    .map(() => Array(gridCols).fill(false));
+
+  // Mark occupied positions
+  layout.forEach((item) => {
+    for (let y = item.y; y < item.y + item.h; y++) {
+      for (let x = item.x; x < item.x + item.w; x++) {
+        if (grid[y] && grid[y][x] !== undefined) {
+          grid[y][x] = true;
+        }
+      }
+    }
+  });
+
+  // Find the first free position
+  for (let y = 0; y < grid.length - height + 1; y++) {
+    for (let x = 0; x <= gridCols - width; x++) {
+      let canPlace = true;
+
+      // Check if the widget can be placed at this position
+      for (let dy = 0; dy < height && canPlace; dy++) {
+        for (let dx = 0; dx < width && canPlace; dx++) {
+          if (grid[y + dy] && grid[y + dy][x + dx]) {
+            canPlace = false;
+          }
+        }
+      }
+
+      if (canPlace) {
+        return { x, y };
+      }
+    }
+  }
+
+  // If no position is found, place at the bottom
+  return { x: 0, y: maxRows };
+};
 
 export const WidgetContainer: React.FC<WidgetContainerProps> = ({
   widget,
@@ -41,17 +90,35 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
       isEditing,
       updateDashboard,
       updateTempDashboard,
+      settings,
     } = useDashboardStore.getState();
 
     const targetDashboard = isEditing ? tempDashboard : currentDashboard;
 
     if (targetDashboard) {
+      // Find the original widget in the layout to get its size
+      const originalLayout = targetDashboard.layout.find(
+        (item) => item.i === widget.id
+      );
+
+      // Use original widget size or default values
+      const widgetWidth = originalLayout?.w || 4;
+      const widgetHeight = originalLayout?.h || 3;
+
+      // Find the first free position for the copied widget
+      const freePosition = findFirstFreePosition(
+        targetDashboard.layout,
+        widgetWidth,
+        widgetHeight,
+        settings.gridCols
+      );
+
       const newLayout = {
         i: newWidget.id,
-        x: 0,
-        y: 0,
-        w: 4,
-        h: 3,
+        x: freePosition.x,
+        y: freePosition.y,
+        w: widgetWidth,
+        h: widgetHeight,
       };
 
       if (isEditing) {

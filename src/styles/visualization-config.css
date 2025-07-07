@@ -20,7 +20,6 @@
 .viz-table-preview {
   width: calc(100% - 48px);
   overflow: hidden;
-  border-radius: var(--radius-md);
   margin: var(--spacing-md) 0;
 }
 
@@ -92,7 +91,6 @@
 /* Estilos para placeholders visuales */
 .viz-table-placeholder {
   height: 10px;
-  border-radius: var(--radius-sm);
   background-color: rgba(var(--color-secondary-rgb), 0.15);
   width: 100%;
   margin: 2px 0;
