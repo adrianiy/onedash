@@ -193,6 +193,42 @@ export const EditToolbar: React.FC = () => {
     addWidgetToBoard(newMetricWidget, { w: 4, h: 4 });
   };
 
+  // Drag handler para métricas
+  const handleMetricDragStart = (e: React.DragEvent) => {
+    const { setDroppingItemSize } = useDashboardStore.getState();
+
+    // Establecer el tamaño del droppingItem para métricas
+    setDroppingItemSize({ w: 4, h: 4 });
+
+    const div = document.createElement("div");
+    div.style.width = "1px";
+    div.style.height = "1px";
+    div.style.backgroundColor = "transparent";
+    div.style.position = "absolute";
+    div.style.top = "-1000px";
+    div.style.left = "-1000px";
+    div.style.opacity = "0";
+    document.body.appendChild(div);
+    e.dataTransfer.setDragImage(div, 0, 0);
+    setTimeout(() => {
+      if (document.body.contains(div)) {
+        document.body.removeChild(div);
+      }
+    }, 100);
+
+    const dragData = {
+      type: "metric",
+      title: "Nueva métrica",
+      w: 4,
+      h: 4,
+      config: {},
+      isConfigured: false,
+    };
+
+    e.dataTransfer.setData("application/json", JSON.stringify(dragData));
+    e.dataTransfer.effectAllowed = "copy";
+  };
+
   const handleAddChart = () => {
     const { addWidget } = useWidgetStore.getState();
 
@@ -249,6 +285,11 @@ export const EditToolbar: React.FC = () => {
   };
 
   const handleDragStart = (e: React.DragEvent) => {
+    const { setDroppingItemSize } = useDashboardStore.getState();
+
+    // Establecer el tamaño del droppingItem para tablas
+    setDroppingItemSize({ w: 6, h: 6 });
+
     // Crear elemento DIV invisible para eliminar el ghost
     const div = document.createElement("div");
     div.style.width = "1px";
@@ -353,7 +394,9 @@ export const EditToolbar: React.FC = () => {
               <button
                 className="edit-toolbar__button"
                 onClick={handleAddMetric}
-                title="Añadir widget de métrica"
+                onDragStart={handleMetricDragStart}
+                draggable="true"
+                title="Haz clic para añadir o arrastra al grid"
               >
                 <Icon name="target" size={20} />
                 <span>Métrica</span>

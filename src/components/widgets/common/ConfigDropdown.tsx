@@ -9,8 +9,9 @@ import {
   useClick,
   useRole,
   useDismiss,
-  FloatingPortal,
   autoUpdate,
+  hide,
+  FloatingPortal,
 } from "@floating-ui/react";
 
 interface ConfigDropdownProps {
@@ -28,6 +29,8 @@ interface ConfigDropdownProps {
   // Acceso al setter del estado para controlar externamente
   setIsOpenRef?: React.MutableRefObject<((isOpen: boolean) => void) | null>;
   onOpenChange?: (isOpen: boolean) => void;
+  // Usar portal para dropdowns anidados que necesiten escapar del stacking context padre
+  usePortal?: boolean;
 }
 
 export const ConfigDropdown: React.FC<ConfigDropdownProps> = ({
@@ -38,6 +41,7 @@ export const ConfigDropdown: React.FC<ConfigDropdownProps> = ({
   className = "",
   setIsOpenRef,
   onOpenChange,
+  usePortal = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -52,16 +56,9 @@ export const ConfigDropdown: React.FC<ConfigDropdownProps> = ({
     placement,
     open: isOpen,
     onOpenChange: handleOpenChange,
-    middleware: [
-      offset(offsetDistance),
-      flip({
-        fallbackPlacements: ["right", "left", "bottom", "top"],
-        crossAxis: false,
-      }),
-      shift({ padding: 8 }),
-    ],
+    middleware: [offset(offsetDistance), flip(), shift({ padding: 8 }), hide()],
     whileElementsMounted: autoUpdate,
-    strategy: "absolute",
+    strategy: "fixed",
   });
 
   const click = useClick(context);
@@ -96,19 +93,35 @@ export const ConfigDropdown: React.FC<ConfigDropdownProps> = ({
       })}
 
       {isOpen && (
-        <FloatingPortal>
-          <div
-            ref={refs.setFloating}
-            style={{
-              ...floatingStyles,
-              zIndex: 1000,
-            }}
-            className={`config-dropdown ${className}`}
-            {...getFloatingProps()}
-          >
-            {children}
-          </div>
-        </FloatingPortal>
+        <>
+          {usePortal ? (
+            <FloatingPortal>
+              <div
+                ref={refs.setFloating}
+                style={{
+                  ...floatingStyles,
+                  zIndex: 1000,
+                }}
+                className={`config-dropdown ${className}`}
+                {...getFloatingProps()}
+              >
+                {children}
+              </div>
+            </FloatingPortal>
+          ) : (
+            <div
+              ref={refs.setFloating}
+              style={{
+                ...floatingStyles,
+                zIndex: 1000,
+              }}
+              className={`config-dropdown ${className}`}
+              {...getFloatingProps()}
+            >
+              {children}
+            </div>
+          )}
+        </>
       )}
     </>
   );

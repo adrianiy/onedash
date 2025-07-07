@@ -79,6 +79,9 @@ export const MetricSelectorSingle: React.FC<MetricSelectorSingleProps> = ({
         mode="single"
         selectedMetric={value}
         onSelectMetric={handleMetricSelect}
+        onClose={() =>
+          setDropdownOpenRef.current && setDropdownOpenRef.current(false)
+        }
       />
     </ConfigDropdown>
   );

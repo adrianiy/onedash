@@ -7,6 +7,7 @@ import type {
 } from "../types/dashboard";
 import { generateId } from "../utils/helpers";
 import { useWidgetStore } from "./widgetStore";
+import { useVariableStore } from "./variableStore";
 
 interface DashboardState {
   dashboards: Dashboard[];
@@ -18,6 +19,7 @@ interface DashboardState {
   hasUnsavedChanges: boolean;
   selectedWidgetId: string | null;
   isConfigSidebarOpen: boolean;
+  droppingItemSize: { w: number; h: number };
 
   // Actions
   createDashboard: (
@@ -40,6 +42,8 @@ interface DashboardState {
   clearSelection: () => void;
   openConfigSidebar: () => void;
   closeConfigSidebar: () => void;
+  setDroppingItemSize: (size: { w: number; h: number }) => void;
+  resetDroppingItemSize: () => void;
   initializeIfNeeded: () => void;
 }
 
@@ -64,6 +68,7 @@ export const useDashboardStore = create<DashboardState>()(
         hasUnsavedChanges: false,
         selectedWidgetId: null,
         isConfigSidebarOpen: false,
+        droppingItemSize: { w: 6, h: 6 },
 
         createDashboard: (dashboardData) => {
           const newDashboard: Dashboard = {
@@ -82,6 +87,12 @@ export const useDashboardStore = create<DashboardState>()(
             isEditing: false,
             hasUnsavedChanges: false,
           }));
+
+          // Inicializar variables para el nuevo dashboard
+          const { initializeDashboardVariables, setCurrentDashboard } =
+            useVariableStore.getState();
+          initializeDashboardVariables(newDashboard.id);
+          setCurrentDashboard(newDashboard.id);
 
           return newDashboard;
         },
@@ -105,6 +116,10 @@ export const useDashboardStore = create<DashboardState>()(
         },
 
         deleteDashboard: (id) => {
+          // Limpiar variables del dashboard eliminado
+          const { clearDashboardVariables } = useVariableStore.getState();
+          clearDashboardVariables(id);
+
           set((state) => ({
             dashboards: state.dashboards.filter(
               (dashboard) => dashboard.id !== id
@@ -118,6 +133,12 @@ export const useDashboardStore = create<DashboardState>()(
 
         setCurrentDashboard: (dashboard) => {
           set({ currentDashboard: dashboard });
+
+          // Sincronizar variables del dashboard actual
+          const { setCurrentDashboard: setVariableDashboard } =
+            useVariableStore.getState();
+
+          setVariableDashboard(dashboard?.id || null);
         },
 
         updateLayout: (layout) => {
@@ -263,6 +284,14 @@ export const useDashboardStore = create<DashboardState>()(
           set({ isConfigSidebarOpen: false });
         },
 
+        setDroppingItemSize: (size) => {
+          set({ droppingItemSize: size });
+        },
+
+        resetDroppingItemSize: () => {
+          set({ droppingItemSize: { w: 6, h: 6 } });
+        },
+
         initializeIfNeeded: () => {
           const state = get();
 
@@ -343,7 +372,13 @@ export const useDashboardStore = create<DashboardState>()(
             currentState.dashboards.length > 0 &&
             !currentState.currentDashboard
           ) {
-            set({ currentDashboard: currentState.dashboards[0] });
+            const firstDashboard = currentState.dashboards[0];
+            set({ currentDashboard: firstDashboard });
+
+            // Sincronizar variables para el dashboard inicial
+            const { setCurrentDashboard: setVariableDashboard } =
+              useVariableStore.getState();
+            setVariableDashboard(firstDashboard.id);
           }
         },
       }),

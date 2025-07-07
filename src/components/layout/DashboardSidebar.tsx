@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useDashboardStore } from "../../store/dashboardStore";
+import { useNavigate } from "react-router-dom";
 import { Icon } from "../common/Icon";
 import type { Dashboard } from "../../types/dashboard";
 
@@ -36,8 +37,10 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     setCurrentDashboard(newDashboard);
   };
 
+  const navigate = useNavigate();
+
   const handleSelectDashboard = (dashboard: Dashboard) => {
-    setCurrentDashboard(dashboard);
+    navigate(`/dashboard/${dashboard.id}`);
     onClose();
   };
 
