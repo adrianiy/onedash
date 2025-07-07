@@ -1,14 +1,16 @@
-import React from "react";
+import React, { useRef } from "react";
 import type { MetricDefinition } from "../../../../../types/metricConfig";
 import { Icon } from "../../../../common/Icon";
 import { useSortable } from "@dnd-kit/sortable";
+import { ConfigDropdown } from "../../../common/ConfigDropdown";
+import MetricSelector from "../../../common/MetricSelector/MetricSelector";
 
 interface MetricItemProps {
   id: string;
   metric: MetricDefinition;
   type: "primary" | "secondary";
   onRemove: (type: "primary" | "secondary") => void;
-  onEdit: (type: "primary" | "secondary") => void;
+  onChange: (type: "primary" | "secondary", metric: MetricDefinition) => void;
 }
 
 export const MetricItem: React.FC<MetricItemProps> = ({
@@ -16,7 +18,7 @@ export const MetricItem: React.FC<MetricItemProps> = ({
   metric,
   type,
   onRemove,
-  onEdit,
+  onChange,
 }) => {
   const {
     attributes,
@@ -42,9 +44,12 @@ export const MetricItem: React.FC<MetricItemProps> = ({
     onRemove(type);
   };
 
-  const handleEdit = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onEdit(type);
+  // Dropdown reference for external control
+  const dropdownRef = useRef<((isOpen: boolean) => void) | null>(null);
+
+  // Function to close dropdown
+  const handleCloseDropdown = () => {
+    dropdownRef.current?.(false);
   };
 
   return (
@@ -87,13 +92,32 @@ export const MetricItem: React.FC<MetricItemProps> = ({
         </div>
 
         {/* Acciones reutilizando clases existentes */}
-        <button
-          onClick={handleEdit}
-          className="column-item__visibility"
-          title="Editar métrica"
+        <ConfigDropdown
+          className="metrics-dropdown"
+          setIsOpenRef={dropdownRef}
+          offsetDistance={8}
+          triggerElement={({ ref, onClick, referenceProps }) => (
+            <button
+              ref={ref}
+              onClick={onClick}
+              className="column-item__visibility"
+              title="Editar métrica"
+              {...referenceProps}
+            >
+              <Icon name="edit" size={14} />
+            </button>
+          )}
         >
-          <Icon name="edit" size={14} />
-        </button>
+          <MetricSelector
+            mode="single"
+            selectedMetric={metric}
+            onSelectMetric={(selectedMetric) => {
+              onChange(type, selectedMetric);
+              handleCloseDropdown();
+            }}
+            onClose={handleCloseDropdown}
+          />
+        </ConfigDropdown>
 
         <button
           onClick={handleRemove}

@@ -1,4 +1,4 @@
-import type { MetricDefinition } from "../types/metricConfig";
+import type { MetricDefinition, IndicatorType } from "../types/metricConfig";
 import { breakdownCategories } from "../types/breakdownLevels";
 
 // Constantes para las dimensiones conocidas
@@ -168,7 +168,7 @@ function getWeightFactor(dimensionId: string, value: string): number {
  * Genera un valor para una métrica basada en las dimensiones y otros factores
  */
 function generateMetricValue(
-  indicator: string,
+  indicator: IndicatorType,
   dimensions: { id: string; value: string }[],
   baseValue: number | null = null,
   calculation: string = "valor"
@@ -179,12 +179,28 @@ function generateMetricValue(
   if (baseValue !== null) {
     value = baseValue; // Usar valor base si se proporciona (para cálculos relacionados)
   } else {
+    // Determinar el nombre del indicador para buscar en METRIC_RANGES
+    let indicatorName: string;
+    if (typeof indicator === "string") {
+      indicatorName = indicator;
+    } else {
+      // Para VariableBinding, usar un nombre genérico
+      indicatorName = "dynamic";
+    }
+
     // Generar valor base según el indicador
-    const range = METRIC_RANGES[indicator as keyof typeof METRIC_RANGES];
-    value = randomNormal(
-      (range.min + range.max) / 2,
-      (range.max - range.min) / 4
-    );
+    const range = METRIC_RANGES[indicatorName as keyof typeof METRIC_RANGES];
+
+    // Si no se encuentra el rango (por ejemplo, para indicadores dinámicos), usar valores por defecto
+    if (!range) {
+      // Para indicadores dinámicos o desconocidos, usar un rango general
+      value = randomNormal(5000, 2000); // Valor medio con variación
+    } else {
+      value = randomNormal(
+        (range.min + range.max) / 2,
+        (range.max - range.min) / 4
+      );
+    }
 
     // Ajustar según las dimensiones
     for (const dim of dimensions) {
@@ -313,11 +329,15 @@ export function generateTableData(
         )?.id;
 
         const baseValue = baseId ? baseMetrics[baseId] : null;
+        const calculationType =
+          typeof modifiers.calculation === "string"
+            ? modifiers.calculation
+            : "valor"; // Fallback para VariableBinding
         row[id] = generateMetricValue(
           indicator,
           dimensionCombo,
           baseValue,
-          modifiers.calculation
+          calculationType
         );
       }
     }

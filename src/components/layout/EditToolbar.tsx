@@ -127,7 +127,7 @@ export const EditToolbar: React.FC = () => {
   // Función auxiliar para añadir cualquier tipo de widget
   const addWidgetToBoard = (
     widget: Widget,
-    layout: { w: number; h: number; minW: number; minH: number }
+    layout: { w: number; h: number }
   ) => {
     const {
       currentDashboard,
@@ -147,8 +147,6 @@ export const EditToolbar: React.FC = () => {
         y: 0,
         w: layout.w,
         h: layout.h,
-        minW: layout.minW,
-        minH: layout.minH,
       };
 
       const updatedWidgets = [...targetDashboard.widgets, widget.id];
@@ -192,7 +190,43 @@ export const EditToolbar: React.FC = () => {
       isConfigured: false,
     });
 
-    addWidgetToBoard(newMetricWidget, { w: 4, h: 4, minW: 3, minH: 3 });
+    addWidgetToBoard(newMetricWidget, { w: 4, h: 4 });
+  };
+
+  // Drag handler para métricas
+  const handleMetricDragStart = (e: React.DragEvent) => {
+    const { setDroppingItemSize } = useDashboardStore.getState();
+
+    // Establecer el tamaño del droppingItem para métricas
+    setDroppingItemSize({ w: 4, h: 4 });
+
+    const div = document.createElement("div");
+    div.style.width = "1px";
+    div.style.height = "1px";
+    div.style.backgroundColor = "transparent";
+    div.style.position = "absolute";
+    div.style.top = "-1000px";
+    div.style.left = "-1000px";
+    div.style.opacity = "0";
+    document.body.appendChild(div);
+    e.dataTransfer.setDragImage(div, 0, 0);
+    setTimeout(() => {
+      if (document.body.contains(div)) {
+        document.body.removeChild(div);
+      }
+    }, 100);
+
+    const dragData = {
+      type: "metric",
+      title: "Nueva métrica",
+      w: 4,
+      h: 4,
+      config: {},
+      isConfigured: false,
+    };
+
+    e.dataTransfer.setData("application/json", JSON.stringify(dragData));
+    e.dataTransfer.effectAllowed = "copy";
   };
 
   const handleAddChart = () => {
@@ -210,7 +244,7 @@ export const EditToolbar: React.FC = () => {
       isConfigured: false,
     });
 
-    addWidgetToBoard(newChartWidget, { w: 6, h: 4, minW: 4, minH: 3 });
+    addWidgetToBoard(newChartWidget, { w: 6, h: 4 });
   };
 
   const handleAddText = () => {
@@ -228,7 +262,7 @@ export const EditToolbar: React.FC = () => {
       isConfigured: true,
     });
 
-    addWidgetToBoard(newTextWidget, { w: 4, h: 3, minW: 2, minH: 2 });
+    addWidgetToBoard(newTextWidget, { w: 4, h: 3 });
   };
 
   const handleAddTable = () => {
@@ -247,10 +281,15 @@ export const EditToolbar: React.FC = () => {
       isConfigured: false,
     });
 
-    addWidgetToBoard(newTableWidget, { w: 6, h: 6, minW: 4, minH: 5 });
+    addWidgetToBoard(newTableWidget, { w: 6, h: 6 });
   };
 
   const handleDragStart = (e: React.DragEvent) => {
+    const { setDroppingItemSize } = useDashboardStore.getState();
+
+    // Establecer el tamaño del droppingItem para tablas
+    setDroppingItemSize({ w: 6, h: 6 });
+
     // Crear elemento DIV invisible para eliminar el ghost
     const div = document.createElement("div");
     div.style.width = "1px";
@@ -280,8 +319,6 @@ export const EditToolbar: React.FC = () => {
       title: "",
       w: 6,
       h: 6,
-      minW: 4,
-      minH: 5,
       config: {
         columns: [],
         data: [],
@@ -357,7 +394,9 @@ export const EditToolbar: React.FC = () => {
               <button
                 className="edit-toolbar__button"
                 onClick={handleAddMetric}
-                title="Añadir widget de métrica"
+                onDragStart={handleMetricDragStart}
+                draggable="true"
+                title="Haz clic para añadir o arrastra al grid"
               >
                 <Icon name="target" size={20} />
                 <span>Métrica</span>

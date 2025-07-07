@@ -21,8 +21,11 @@ export const CalculationsTab: React.FC<MetricTabProps> = ({
   }, [searchQuery]);
 
   // Handler para el CheckboxItem
-  const handleChange = (value: string, isChecked: boolean) => {
-    if (handleModifierSelect) {
+  const handleChange = (
+    value: string | { type: "variable"; key: string },
+    isChecked: boolean
+  ) => {
+    if (handleModifierSelect && typeof value === "string") {
       handleModifierSelect("calculation", value, isChecked);
     }
   };
@@ -35,7 +38,9 @@ export const CalculationsTab: React.FC<MetricTabProps> = ({
             key={option.value}
             label={option.label}
             value={option.value}
-            checked={selectedModifiers.calculation.includes(option.value)}
+            checked={
+              selectedModifiers.calculation?.includes(option.value) || false
+            }
             onChange={handleChange}
             mode={mode}
             radioGroupName="metric-selector-calculation"
@@ -45,6 +50,7 @@ export const CalculationsTab: React.FC<MetricTabProps> = ({
               getDefaultValue &&
               option.value === getDefaultValue("calculation")
             }
+            defaultTipText="Valor por defecto"
           />
         ))}
       </div>

@@ -98,7 +98,7 @@
 
 /* Widget Selection Styles */
 .editing .react-grid-item .widget-selected {
-  border: 2px solid var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary);
 }
 
 .editing .react-grid-item .widget-selected:hover {

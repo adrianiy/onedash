@@ -107,12 +107,17 @@ export const DataConfig: React.FC<DataConfigProps> = ({ widget }) => {
     }
   };
 
-  // Manejar edición de métrica
-  const handleEditMetric = (type: "primary" | "secondary") => {
-    setEditingType(type);
-    if (setDropdownOpenRef.current) {
-      setDropdownOpenRef.current(true);
-    }
+  // Manejar cambio de métrica desde MetricItem
+  const handleMetricChange = (
+    type: "primary" | "secondary",
+    metric: MetricDefinition
+  ) => {
+    updateWidget(widget.id, {
+      config: {
+        ...widget.config,
+        [`${type}Metric`]: metric,
+      },
+    });
   };
 
   // Manejar apertura del selector para añadir
@@ -154,7 +159,7 @@ export const DataConfig: React.FC<DataConfigProps> = ({ widget }) => {
           metric={primaryMetric}
           type="primary"
           onRemove={handleRemoveMetric}
-          onEdit={handleEditMetric}
+          onChange={handleMetricChange}
         />
       );
       itemIds.push("primary");
@@ -168,7 +173,7 @@ export const DataConfig: React.FC<DataConfigProps> = ({ widget }) => {
           metric={secondaryMetric}
           type="secondary"
           onRemove={handleRemoveMetric}
-          onEdit={handleEditMetric}
+          onChange={handleMetricChange}
         />
       );
       itemIds.push("secondary");

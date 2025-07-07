@@ -3,6 +3,11 @@ import type { MetricDefinition } from "./metricConfig";
 export type WidgetType = "chart" | "metric" | "table" | "text";
 export type ChartType = "bar" | "line" | "pie" | "scatter" | "area";
 
+export interface WidgetEvent {
+  trigger: "click";
+  setVariables?: Record<string, unknown>;
+}
+
 export interface ConditionalFormatRule {
   id: string;
   columnId: string;
@@ -38,6 +43,7 @@ export interface MetricWidgetConfig {
 
   // Configuración visual
   visualization?: {
+    showTitle?: boolean;
     conditionalFormats?: ConditionalFormatRule[];
   };
 
@@ -91,6 +97,7 @@ export interface BaseWidget {
   createdAt: Date;
   updatedAt: Date;
   isConfigured?: boolean;
+  events?: WidgetEvent[];
 }
 
 export interface ChartWidget extends BaseWidget {

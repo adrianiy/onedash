@@ -26,6 +26,14 @@ export const VisualizationConfig: React.FC<VisualizationConfigProps> = ({
   const conditionalFormats =
     widget.config.visualization?.conditionalFormats || [];
 
+  // Configuración de visualización
+  const visualization = widget.config.visualization || {};
+  const showTitle =
+    visualization.showTitle !== undefined ? visualization.showTitle : false; // Por defecto false
+
+  // Verificar si hay título para habilitar/deshabilitar la opción
+  const hasTitleDisabled = !widget.title || widget.title.trim() === "";
+
   // Manejar cambio de tamaño
   const handleSizeChange = (size: "small" | "medium" | "large") => {
     updateWidget(widget.id, {
@@ -42,6 +50,19 @@ export const VisualizationConfig: React.FC<VisualizationConfigProps> = ({
       config: {
         ...widget.config,
         alignment,
+      },
+    });
+  };
+
+  // Manejar toggle del título
+  const handleToggleTitle = (show: boolean) => {
+    updateWidget(widget.id, {
+      config: {
+        ...widget.config,
+        visualization: {
+          ...visualization,
+          showTitle: show,
+        },
       },
     });
   };
@@ -164,6 +185,23 @@ export const VisualizationConfig: React.FC<VisualizationConfigProps> = ({
     <div className="viz-config">
       {/* Configurador de métrica con placeholder visual */}
       <div className="viz-metric-configurator">
+        {/* Controles superiores: título */}
+        <div className="viz-metric-controls viz-metric-controls--top">
+          <div className="viz-control-with-label">
+            <button
+              className={`viz-control-btn ${
+                showTitle ? "viz-control-btn--active" : ""
+              } ${hasTitleDisabled ? "viz-control-btn--disabled" : ""}`}
+              onClick={() => !hasTitleDisabled && handleToggleTitle(!showTitle)}
+              data-tooltip-id="metric-title-tooltip"
+              disabled={hasTitleDisabled}
+            >
+              <Icon name="type" size={16} />
+            </button>
+            <span className="viz-control-label">Título</span>
+          </div>
+        </div>
+
         {/* Preview de la métrica */}
         <div className="viz-metric-preview">
           <div
@@ -344,6 +382,7 @@ export const VisualizationConfig: React.FC<VisualizationConfigProps> = ({
       )}
 
       {/* Tooltips */}
+      <Tooltip id="metric-title-tooltip" content="Mostrar título del widget" />
       <Tooltip id="metric-size-small-tooltip" content="Tamaño pequeño" />
       <Tooltip id="metric-size-medium-tooltip" content="Tamaño mediano" />
       <Tooltip id="metric-size-large-tooltip" content="Tamaño grande" />

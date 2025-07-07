@@ -8,6 +8,8 @@ export const TimerangeTab: React.FC<MetricTabProps> = ({
   selectedModifiers,
   mode,
   handleModifierSelect,
+  willApplyDefaultValue,
+  getDefaultValue,
 }) => {
   // Filtrar las opciones de modificadores basadas en la búsqueda
   const getFilteredModifierOptions = React.useCallback(() => {
@@ -19,8 +21,11 @@ export const TimerangeTab: React.FC<MetricTabProps> = ({
   }, [searchQuery]);
 
   // Handler para el CheckboxItem
-  const handleChange = (value: string, isChecked: boolean) => {
-    if (handleModifierSelect) {
+  const handleChange = (
+    value: string | { type: "variable"; key: string },
+    isChecked: boolean
+  ) => {
+    if (handleModifierSelect && typeof value === "string") {
       handleModifierSelect("timeframe", value, isChecked);
     }
   };
@@ -33,10 +38,18 @@ export const TimerangeTab: React.FC<MetricTabProps> = ({
             key={option.value}
             label={option.label}
             value={option.value}
-            checked={selectedModifiers.timeframe.includes(option.value)}
+            checked={
+              selectedModifiers.timeframe?.includes(option.value) || false
+            }
             onChange={handleChange}
             mode={mode}
             radioGroupName="metric-selector-timeframe"
+            hasDefaultTip={
+              willApplyDefaultValue &&
+              willApplyDefaultValue("timeframe") &&
+              getDefaultValue &&
+              option.value === getDefaultValue("timeframe")
+            }
           />
         ))}
       </div>

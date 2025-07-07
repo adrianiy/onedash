@@ -1,8 +1,9 @@
 /* Floating Action Bar */
 .floating-action-bar {
   position: fixed;
-  bottom: var(--spacing-xl);
-  left: var(--spacing-xl);
+  top: 50%;
+  left: var(--spacing-lg);
+  transform: translateY(-50%);
   display: flex;
   flex-direction: column;
   z-index: 100;

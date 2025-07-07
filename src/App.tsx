@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Dashboard } from "./pages/Dashboard";
 import { Header } from "./components/layout/Header";
 import { FloatingActionBar } from "./components/layout/FloatingActionBar";
@@ -30,15 +31,21 @@ function App() {
   };
 
   return (
-    <>
+    <BrowserRouter>
       <Header />
-      <Dashboard />
+      <Routes>
+        <Route path="/dashboard/:dashboardId" element={<Dashboard />} />
+        <Route
+          path="*"
+          element={<Navigate to="/dashboard/default" replace />}
+        />
+      </Routes>
       <FloatingActionBar
         onToggleSidebar={toggleSidebar}
         isSidebarOpen={isSidebarOpen}
       />
       <DashboardSidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
-    </>
+    </BrowserRouter>
   );
 }
 

@@ -88,6 +88,11 @@
   color: var(--color-text-muted);
 }
 
+/* Capitalizar el texto del nombre de la columna */
+.column-item__name {
+  text-transform: capitalize;
+}
+
 /* Estilos para la edición de nombre de columna */
 .column-item__name--editable {
   cursor: text;

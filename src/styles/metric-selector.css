@@ -341,7 +341,6 @@
   cursor: pointer;
   position: relative;
   transition: all 0.2s ease;
-  margin-top: var(--spacing-xs);
   margin-right: var(--spacing-md);
   flex-shrink: 0;
 }
@@ -782,7 +781,7 @@
 .metric-selector__metric-tag,
 .metric-selector__chip-tag {
   font-size: 0.75rem;
-  padding: 2px var(--spacing-xs);
+  padding: var(--spacing-sm);
   border-radius: var(--radius-sm);
   white-space: nowrap;
 }
@@ -938,7 +937,7 @@
   cursor: pointer;
   position: relative;
   transition: all 0.2s ease;
-  margin-top: var(--spacing-xs);
+  margin-top: 0; /* Eliminar margin-top para alineación correcta */
   margin-right: var(--spacing-md);
   flex-shrink: 0;
 }
@@ -997,4 +996,123 @@
   ~ * {
   color: var(--color-primary);
   font-weight: 500;
+}
+
+/* Estilos para opciones dinámicas */
+.metric-selector__dynamic-option .metric-selector__option-content label {
+  color: #10b981;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.metric-selector__dynamic-icon {
+  margin-right: var(--spacing-xs);
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Nota informativa sobre campos dinámicos */
+.metric-selector__dynamic-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md) var(--spacing-xl);
+  background-color: #f0fdf4;
+  border-top: 1px solid #56d7ac57;
+  color: #059669;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  position: relative;
+  z-index: 101; /* Sobre el panel de modificadores (z-index: 100) */
+}
+
+.metric-selector__dynamic-info svg {
+  flex-shrink: 0;
+  color: #059669;
+}
+
+.metric-selector__dynamic-info-close {
+  background: none;
+  border: none;
+  color: #059669;
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  transition: all var(--transition-fast);
+}
+
+.metric-selector__dynamic-info-close:hover {
+  background-color: rgba(5, 150, 105, 0.1);
+  color: #047857;
+}
+
+/* Estilos para elementos dinámicos en el sidebar */
+.metric-selector__chip-title-dynamic {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: #10b981;
+  font-weight: 500;
+}
+
+.metric-selector__chip-tag--dynamic {
+  background-color: rgba(16, 185, 129, 0.1) !important;
+  color: #10b981 !important;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-weight: 500;
+}
+
+.metric-selector__dynamic-icon {
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+/* Tema oscuro para elementos dinámicos */
+[data-theme="dark"] .metric-selector__chip-title-dynamic {
+  color: #34d399;
+}
+
+[data-theme="dark"] .metric-selector__chip-tag--dynamic {
+  background-color: rgba(52, 211, 153, 0.1) !important;
+  color: #34d399 !important;
+}
+
+[data-theme="dark"] .metric-selector__dynamic-icon {
+  color: #34d399;
+}
+
+/* Estilos para el chip del indicador */
+.metric-selector__chip-tag--indicator {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+  text-transform: capitalize;
+}
+
+/* Estilos para el chip del indicador dinámico */
+.metric-selector__chip-tag--indicator.metric-selector__chip-tag--dynamic {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+/* Tema oscuro para el chip del indicador */
+[data-theme="dark"] .metric-selector__chip-tag--indicator {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary-light);
+}
+
+/* Tema oscuro para el chip del indicador dinámico */
+[data-theme="dark"]
+  .metric-selector__chip-tag--indicator.metric-selector__chip-tag--dynamic {
+  background-color: rgba(52, 211, 153, 0.1);
+  color: #34d399;
 }

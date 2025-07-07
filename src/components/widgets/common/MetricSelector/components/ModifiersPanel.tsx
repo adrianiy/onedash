@@ -1,7 +1,10 @@
 import React from "react";
 import type { MetricModifiersPanelProps } from "../types";
 import { CheckboxItem } from "./CheckboxItem";
-import { ModifiersMetadata } from "../../../../../types/metricConfig";
+import {
+  ModifiersMetadata,
+  type VariableBinding,
+} from "../../../../../types/metricConfig";
 
 /**
  * Panel lateral para la selección de modificadores en indicadores y temporalidad
@@ -19,7 +22,11 @@ export const ModifiersPanel: React.FC<MetricModifiersPanelProps> = ({
   getDefaultValue,
 }) => {
   // Handler para el CheckboxItem
-  const handleChange = (type: string, value: string, isChecked: boolean) => {
+  const handleChange = (
+    type: string,
+    value: string | VariableBinding,
+    isChecked: boolean
+  ) => {
     handleModifierSelect(type, value, isChecked);
   };
 
@@ -34,7 +41,7 @@ export const ModifiersPanel: React.FC<MetricModifiersPanelProps> = ({
               <h4>
                 {ModifiersMetadata.saleType.name}
                 {isStrictlyRequired("saleType") &&
-                  selectedModifiers.saleType.length === 0 && (
+                  (selectedModifiers.saleType?.length || 0) === 0 && (
                     <span className="metric-selector__required-indicator">
                       *
                     </span>
@@ -46,7 +53,10 @@ export const ModifiersPanel: React.FC<MetricModifiersPanelProps> = ({
                     key={option.value}
                     label={option.label}
                     value={option.value}
-                    checked={selectedModifiers.saleType.includes(option.value)}
+                    checked={
+                      selectedModifiers.saleType?.includes(option.value) ||
+                      false
+                    }
                     onChange={(value, isChecked) =>
                       handleChange("saleType", value, isChecked)
                     }
@@ -68,7 +78,7 @@ export const ModifiersPanel: React.FC<MetricModifiersPanelProps> = ({
               <h4>
                 {ModifiersMetadata.scope.name}
                 {isStrictlyRequired("scope") &&
-                  selectedModifiers.scope.length === 0 && (
+                  (selectedModifiers.scope?.length || 0) === 0 && (
                     <span className="metric-selector__required-indicator">
                       *
                     </span>
@@ -80,7 +90,9 @@ export const ModifiersPanel: React.FC<MetricModifiersPanelProps> = ({
                     key={option.value}
                     label={option.label}
                     value={option.value}
-                    checked={selectedModifiers.scope.includes(option.value)}
+                    checked={
+                      selectedModifiers.scope?.includes(option.value) || false
+                    }
                     onChange={(value, isChecked) =>
                       handleChange("scope", value, isChecked)
                     }
@@ -108,7 +120,10 @@ export const ModifiersPanel: React.FC<MetricModifiersPanelProps> = ({
                 <CheckboxItem
                   label={option.label}
                   value={option.value}
-                  checked={selectedModifiers.comparison.includes(option.value)}
+                  checked={
+                    selectedModifiers.comparison?.includes(option.value) ||
+                    false
+                  }
                   onChange={(value, isChecked) =>
                     handleChange("comparison", value, isChecked)
                   }
@@ -123,7 +138,7 @@ export const ModifiersPanel: React.FC<MetricModifiersPanelProps> = ({
                 {/* Campo de entrada para A-N cuando está seleccionado */}
                 {option.requiresInput &&
                   option.value === "a-n" &&
-                  selectedModifiers.comparison.includes("a-n") && (
+                  selectedModifiers.comparison?.includes("a-n") && (
                     <input
                       type="number"
                       value={customValues["comparison_a_n_value"] as number}

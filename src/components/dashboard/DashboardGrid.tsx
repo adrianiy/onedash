@@ -49,6 +49,8 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
     clearSelection,
     updateTempDashboard,
     updateDashboard,
+    droppingItemSize,
+    resetDroppingItemSize,
   } = useDashboardStore();
   const { getWidgetsByIds } = useWidgetStore();
   const { getGridProps } = useGridLayout();
@@ -107,8 +109,6 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
           y: item.y,
           w: dragData.w,
           h: dragData.h,
-          minW: dragData.minW || 3,
-          minH: dragData.minH || 3,
         };
 
         const updatedWidgets = [...targetDashboard.widgets, newWidget.id];
@@ -132,13 +132,25 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
         const { selectWidget } = useDashboardStore.getState();
         selectWidget(newWidget.id);
       }
+
+      // Resetear el tamaño del droppingItem al finalizar el drop
+      resetDroppingItemSize();
     } catch (error) {
       console.error("Error al procesar el drop:", error);
     }
   };
 
+  // Handler para resetear el tamaño al finalizar el drag
+  const handleDragEnd = () => {
+    resetDroppingItemSize();
+  };
+
   return (
-    <div className={`dashboard-grid ${className}`} onClick={handleGridClick}>
+    <div
+      className={`dashboard-grid ${className}`}
+      onClick={handleGridClick}
+      onDragLeave={handleDragEnd}
+    >
       <ResponsiveGridLayout
         {...gridProps}
         layouts={{ lg: activeDashboard.layout }}
@@ -152,7 +164,11 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
             e as unknown as React.DragEvent<HTMLElement>
           )
         }
-        droppingItem={{ i: "__dropping-elem__", w: 6, h: 6 }}
+        droppingItem={{
+          i: "__dropping-elem__",
+          w: droppingItemSize.w,
+          h: droppingItemSize.h,
+        }}
       >
         {widgets.map((widget) => (
           <div key={widget.id} className="react-grid-item">

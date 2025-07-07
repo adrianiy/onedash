@@ -198,6 +198,7 @@ export const ConditionalFormatForm: React.FC<ConditionalFormatFormProps> = ({
             <ConfigDropdown
               className="color-picker-dropdown"
               placement="top"
+              usePortal={true}
               triggerElement={({ ref, onClick, referenceProps }) => (
                 <button
                   ref={ref}
@@ -224,6 +225,7 @@ export const ConditionalFormatForm: React.FC<ConditionalFormatFormProps> = ({
             <ConfigDropdown
               className="color-picker-dropdown"
               placement="top"
+              usePortal={true}
               triggerElement={({ ref, onClick, referenceProps }) => (
                 <button
                   ref={ref}

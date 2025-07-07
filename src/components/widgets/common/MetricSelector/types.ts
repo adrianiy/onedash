@@ -1,7 +1,5 @@
-import type {
-  MetricDefinition,
-  IndicatorType,
-} from "../../../../types/metricConfig";
+import type { MetricDefinition } from "../../../../types/metricConfig";
+import type { IconName } from "../../../common/Icon";
 
 export interface MetricSelectorProps {
   // Modo de selección
@@ -23,38 +21,38 @@ export interface MetricSelectorProps {
   onClose?: () => void;
 }
 
-export interface SelectedModifiers extends Record<string, string[]> {
-  saleType: string[];
-  scope: string[];
-  timeframe: string[];
-  comparison: string[];
-  calculation: string[];
-}
+export type SelectedModifiers = Record<string, (string | VariableBinding)[]>;
+
+import type { VariableBinding } from "../../../../types/metricConfig";
 
 export interface CheckboxItemProps {
   label: string;
-  value: string;
+  value: string | VariableBinding;
   checked: boolean;
-  onChange: (value: string, isChecked: boolean) => void;
+  onChange: (value: string | VariableBinding, isChecked: boolean) => void;
   disabled?: boolean;
   hasDefaultTip?: boolean;
   defaultTipText?: string;
   mode?: "single" | "multiple";
   radioGroupName?: string;
+  // New props for dynamic options
+  icon?: IconName;
+  iconColor?: string;
+  isDynamic?: boolean;
 }
 
 export interface MetricTabProps {
   searchQuery: string;
-  selectedIndicators: IndicatorType[];
+  selectedIndicators: (string | VariableBinding)[];
   selectedModifiers: SelectedModifiers;
   mode: "single" | "multiple";
   handleIndicatorSelect?: (
-    indicator: IndicatorType,
+    indicator: string | VariableBinding,
     isChecked: boolean
   ) => void;
   handleModifierSelect?: (
     type: string,
-    value: string,
+    value: string | VariableBinding,
     isChecked: boolean
   ) => void;
   customValues?: Record<string, unknown>;
@@ -90,21 +88,23 @@ export interface MetricSidebarProps {
   showSidebar: boolean;
   toggleSidebar: () => void;
   generatedMetrics: MetricDefinition[];
-  selectedIndicators: IndicatorType[];
-  getMissingRequiredModifiers: (indicator: IndicatorType) => string[];
+  selectedIndicators: (string | VariableBinding)[];
+  getMissingRequiredModifiers: (
+    indicator: string | VariableBinding
+  ) => string[];
   getModifierLabel: (modKey: string, modValue: unknown) => string;
 }
 
 export interface MetricModifiersPanelProps {
   isPanelVisible: boolean;
   activeTab: string;
-  selectedIndicators: IndicatorType[];
+  selectedIndicators: (string | VariableBinding)[];
   selectedModifiers: SelectedModifiers;
   isCompatibleModifier: (modifier: string) => boolean;
   isStrictlyRequired: (modifier: string) => boolean;
   handleModifierSelect: (
     type: string,
-    value: string,
+    value: string | VariableBinding,
     isChecked: boolean
   ) => void;
   mode: "single" | "multiple";
