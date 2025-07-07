@@ -24,22 +24,14 @@ export interface MetricModifiers {
   calculation?: CalculationType;
 }
 
-// Interfaz para resolución dinámica
-export interface DynamicResolver {
-  type: "indicator" | "saleType" | "scope" | "timeframe" | "comparison";
-  variableId: string; // ID de la variable que contiene el valor real
-  fallback?: string; // Valor fallback si la variable no existe
-}
-
 // Interfaz para la definición completa de una métrica
 export interface MetricDefinition {
   id: string;
-  indicator: IndicatorTypeOrDynamic;
+  indicator: IndicatorType;
   modifiers: MetricModifiers;
   title: string;
   width?: number; // Para columnas de tabla
   useVariables?: Record<string, string>; // property path → variable ID
-  dynamicResolver?: DynamicResolver; // Para resolver valores dinámicos
 }
 
 // Interfaz para una opción de modificador en la UI

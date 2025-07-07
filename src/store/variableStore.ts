@@ -11,9 +11,7 @@ interface VariableState {
   setVariable: (id: string, value: unknown) => void;
   setMultiple: (updates: Record<string, unknown>) => void;
   createVariable: (
-    variable: Omit<DashboardVariable, "createdAt" | "updatedAt"> & {
-      id?: string;
-    }
+    variable: Omit<DashboardVariable, "id" | "createdAt" | "updatedAt">
   ) => DashboardVariable;
   updateVariable: (id: string, updates: Partial<DashboardVariable>) => void;
   deleteVariable: (id: string) => void;
@@ -60,7 +58,7 @@ export const useVariableStore = create<VariableState>()(
         createVariable: (variableData) => {
           const newVariable: DashboardVariable = {
             ...variableData,
-            id: variableData.id || generateId(),
+            id: generateId(),
             createdAt: new Date(),
             updatedAt: new Date(),
           };
@@ -129,7 +127,6 @@ export const useVariableStore = create<VariableState>()(
           if (Object.keys(definitions).length === 0) {
             // Create some default variables
             get().createVariable({
-              id: "currentIndicator", // ID fijo para referencia en métricas dinámicas
               name: "Indicador Seleccionado",
               value: "importe",
               type: "indicator",

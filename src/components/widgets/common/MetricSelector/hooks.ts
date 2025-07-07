@@ -1,7 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import type {
   IndicatorType,
-  IndicatorTypeOrDynamic,
   MetricDefinition,
 } from "../../../../types/metricConfig";
 import {
@@ -45,9 +44,9 @@ export const useMetricSelector = (
   });
 
   // Estado para las selecciones
-  const [selectedIndicators, setSelectedIndicators] = useState<
-    IndicatorTypeOrDynamic[]
-  >([]);
+  const [selectedIndicators, setSelectedIndicators] = useState<IndicatorType[]>(
+    []
+  );
   const [selectedModifiers, setSelectedModifiers] = useState<SelectedModifiers>(
     {
       saleType: [],
@@ -158,12 +157,9 @@ export const useMetricSelector = (
     if (selectedIndicators.length === 0) return false;
 
     // Comprobar que todos los indicadores seleccionados cumplen sus requisitos
-    return selectedIndicators.every((indicator) => {
-      // Los indicadores dinámicos siempre son válidos
-      if (indicator === "{{dynamic}}") return true;
-      // Para indicadores estáticos, verificar requisitos
-      return indicatorMeetsRequirements(indicator as IndicatorType);
-    });
+    return selectedIndicators.every((indicator) =>
+      indicatorMeetsRequirements(indicator)
+    );
   }, [selectedIndicators, indicatorMeetsRequirements]);
 
   // Comprobar si una pestaña tiene elementos requeridos
@@ -271,7 +267,7 @@ export const useMetricSelector = (
 
   // Función para manejar la selección de indicadores
   const handleIndicatorSelect = useCallback(
-    (indicator: IndicatorTypeOrDynamic, isChecked: boolean) => {
+    (indicator: IndicatorType, isChecked: boolean) => {
       if (isChecked) {
         if (mode === "single") {
           setSelectedIndicators([indicator]);
