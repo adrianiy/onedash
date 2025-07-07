@@ -296,7 +296,11 @@ export const useMetricSelector = (
 
   // Función para manejar la selección de modificadores
   const handleModifierSelect = useCallback(
-    (type: string, value: string, isChecked: boolean) => {
+    (
+      type: string,
+      value: string | { type: "variable"; key: string },
+      isChecked: boolean
+    ) => {
       if (isChecked) {
         if (mode === "single") {
           setSelectedModifiers({

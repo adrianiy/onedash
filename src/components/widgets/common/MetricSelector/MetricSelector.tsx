@@ -61,8 +61,6 @@ const MetricSelector: React.FC<MetricSelectorProps> = ({
     isCompatibleModifier,
     getModifierLabel,
     // Variables dinámicas
-    activeVariablesByType,
-    hasActiveVariableOfType,
     getDynamicLabel,
     shouldShowDynamicOption,
     shouldShowDynamicOptionForSelector,

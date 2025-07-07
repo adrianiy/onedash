@@ -21,7 +21,10 @@ import { useVariableStore } from "../store/variableStore";
 export interface MetricGenerationOptions {
   mode: "single" | "multiple";
   selectedIndicators: (string | { type: "variable"; key: string })[];
-  selectedModifiers: Record<string, string[]>;
+  selectedModifiers: Record<
+    string,
+    (string | { type: "variable"; key: string })[]
+  >;
   customValues?: Record<string, unknown>;
 }
 
@@ -43,8 +46,23 @@ const getVariableKey = (value: string | { type: "variable"; key: string }) =>
 function setModifierValue(
   modifiers: MetricModifiers,
   key: string,
-  value: string | { type: string; value: number }
+  value:
+    | string
+    | { type: "variable"; key: string }
+    | { type: string; value: number }
 ): void {
+  if (
+    typeof value === "object" &&
+    "key" in value &&
+    value.type === "variable"
+  ) {
+    modifiers[key as keyof MetricModifiers] = {
+      type: "variable",
+      key: value.key,
+    };
+    return;
+  }
+
   if (typeof value === "string" && isVariable(value)) {
     modifiers[key as keyof MetricModifiers] = {
       type: "variable",
@@ -114,7 +132,10 @@ function isIndicatorModifierCompatible(
  */
 function indicatorMeetsRequirements(
   indicator: string | { type: "variable"; key: string },
-  selectedModifiers: Record<string, string[]>
+  selectedModifiers: Record<
+    string,
+    (string | { type: "variable"; key: string })[]
+  >
 ): boolean {
   if (isVariable(indicator)) {
     // Para indicadores dinámicos, verificamos que tengan al menos los modificadores básicos requeridos
@@ -258,7 +279,10 @@ export function useMetricGeneration({
  */
 function generateAllMetricCombinations(
   indicators: (string | { type: "variable"; key: string })[],
-  modifierSelections: Record<string, string[]>,
+  modifierSelections: Record<
+    string,
+    (string | { type: "variable"; key: string })[]
+  >,
   customValues: Record<string, unknown>,
   variables: Record<string, unknown> = {}
 ): MetricDefinition[] {
@@ -311,7 +335,10 @@ function generateAllMetricCombinations(
 function generateModifierCombinations(
   indicator: string | { type: "variable"; key: string },
   compatibleModifiers: string[],
-  modifierSelections: Record<string, string[]>,
+  modifierSelections: Record<
+    string,
+    (string | { type: "variable"; key: string })[]
+  >,
   customValues: Record<string, unknown>,
   currentIndex: number = 0,
   currentModifiers: MetricModifiers = {},

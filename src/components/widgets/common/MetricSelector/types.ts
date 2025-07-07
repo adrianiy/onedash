@@ -21,7 +21,7 @@ export interface MetricSelectorProps {
   onClose?: () => void;
 }
 
-export type SelectedModifiers = Record<string, string[]>;
+export type SelectedModifiers = Record<string, (string | VariableBinding)[]>;
 
 import type { VariableBinding } from "../../../../types/metricConfig";
 
@@ -88,21 +88,23 @@ export interface MetricSidebarProps {
   showSidebar: boolean;
   toggleSidebar: () => void;
   generatedMetrics: MetricDefinition[];
-  selectedIndicators: string[];
-  getMissingRequiredModifiers: (indicator: string) => string[];
+  selectedIndicators: (string | VariableBinding)[];
+  getMissingRequiredModifiers: (
+    indicator: string | VariableBinding
+  ) => string[];
   getModifierLabel: (modKey: string, modValue: unknown) => string;
 }
 
 export interface MetricModifiersPanelProps {
   isPanelVisible: boolean;
   activeTab: string;
-  selectedIndicators: string[];
+  selectedIndicators: (string | VariableBinding)[];
   selectedModifiers: SelectedModifiers;
   isCompatibleModifier: (modifier: string) => boolean;
   isStrictlyRequired: (modifier: string) => boolean;
   handleModifierSelect: (
     type: string,
-    value: string,
+    value: string | VariableBinding,
     isChecked: boolean
   ) => void;
   mode: "single" | "multiple";

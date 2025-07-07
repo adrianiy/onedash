@@ -121,13 +121,19 @@ export const MetricSidebar: React.FC<MetricSidebarProps> = ({
               <ul className="metric-selector__requirements-list">
                 {selectedIndicators.map((indicator) => {
                   const missingMods = getMissingRequiredModifiers(indicator);
+                  const indicatorKey =
+                    typeof indicator === "string" ? indicator : indicator.key;
+                  const indicatorName =
+                    typeof indicator === "string"
+                      ? IndicatorMetadata[indicator]?.name || indicator
+                      : `Variable (${indicator.key})`;
+
                   return missingMods.length > 0 ? (
                     <li
-                      key={indicator}
+                      key={indicatorKey}
                       className="metric-selector__requirement-item"
                     >
-                      {IndicatorMetadata[indicator].name} requiere:{" "}
-                      {missingMods.join(", ")}
+                      {indicatorName} requiere: {missingMods.join(", ")}
                     </li>
                   ) : null;
                 })}

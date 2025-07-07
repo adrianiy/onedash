@@ -1,7 +1,10 @@
 import React from "react";
 import type { MetricModifiersPanelProps } from "../types";
 import { CheckboxItem } from "./CheckboxItem";
-import { ModifiersMetadata } from "../../../../../types/metricConfig";
+import {
+  ModifiersMetadata,
+  type VariableBinding,
+} from "../../../../../types/metricConfig";
 
 /**
  * Panel lateral para la selección de modificadores en indicadores y temporalidad
@@ -19,7 +22,11 @@ export const ModifiersPanel: React.FC<MetricModifiersPanelProps> = ({
   getDefaultValue,
 }) => {
   // Handler para el CheckboxItem
-  const handleChange = (type: string, value: string, isChecked: boolean) => {
+  const handleChange = (
+    type: string,
+    value: string | VariableBinding,
+    isChecked: boolean
+  ) => {
     handleModifierSelect(type, value, isChecked);
   };
 
