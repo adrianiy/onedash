@@ -22,6 +22,7 @@ export const VisualizationConfig: React.FC<VisualizationConfigProps> = ({
   const setDropdownOpenRef = useRef<((isOpen: boolean) => void) | null>(null);
 
   const currentSize = widget.config.size || "medium";
+  const currentAlignment = widget.config.alignment || "center";
   const conditionalFormats =
     widget.config.visualization?.conditionalFormats || [];
 
@@ -31,6 +32,16 @@ export const VisualizationConfig: React.FC<VisualizationConfigProps> = ({
       config: {
         ...widget.config,
         size,
+      },
+    });
+  };
+
+  // Manejar cambio de alineación
+  const handleAlignmentChange = (alignment: "left" | "center" | "right") => {
+    updateWidget(widget.id, {
+      config: {
+        ...widget.config,
+        alignment,
       },
     });
   };
@@ -165,37 +176,73 @@ export const VisualizationConfig: React.FC<VisualizationConfigProps> = ({
           </div>
         </div>
 
-        {/* Controles de tamaño */}
+        {/* Controles de tamaño y alineación */}
         <div className="viz-metric-controls viz-metric-controls--bottom">
-          <button
-            className={`viz-control-btn ${
-              currentSize === "small" ? "viz-control-btn--active" : ""
-            }`}
-            onClick={() => handleSizeChange("small")}
-            data-tooltip-id="metric-size-small-tooltip"
-          >
-            <Icon name="type" size={12} />
-          </button>
+          {/* Controles de tamaño */}
+          <div className="viz-control-group">
+            <button
+              className={`viz-control-btn ${
+                currentSize === "small" ? "viz-control-btn--active" : ""
+              }`}
+              onClick={() => handleSizeChange("small")}
+              data-tooltip-id="metric-size-small-tooltip"
+            >
+              <Icon name="type" size={12} />
+            </button>
 
-          <button
-            className={`viz-control-btn ${
-              currentSize === "medium" ? "viz-control-btn--active" : ""
-            }`}
-            onClick={() => handleSizeChange("medium")}
-            data-tooltip-id="metric-size-medium-tooltip"
-          >
-            <Icon name="type" size={16} />
-          </button>
+            <button
+              className={`viz-control-btn ${
+                currentSize === "medium" ? "viz-control-btn--active" : ""
+              }`}
+              onClick={() => handleSizeChange("medium")}
+              data-tooltip-id="metric-size-medium-tooltip"
+            >
+              <Icon name="type" size={16} />
+            </button>
 
-          <button
-            className={`viz-control-btn ${
-              currentSize === "large" ? "viz-control-btn--active" : ""
-            }`}
-            onClick={() => handleSizeChange("large")}
-            data-tooltip-id="metric-size-large-tooltip"
-          >
-            <Icon name="type" size={20} />
-          </button>
+            <button
+              className={`viz-control-btn ${
+                currentSize === "large" ? "viz-control-btn--active" : ""
+              }`}
+              onClick={() => handleSizeChange("large")}
+              data-tooltip-id="metric-size-large-tooltip"
+            >
+              <Icon name="type" size={20} />
+            </button>
+          </div>
+
+          {/* Controles de alineación */}
+          <div className="viz-control-group">
+            <button
+              className={`viz-control-btn ${
+                currentAlignment === "left" ? "viz-control-btn--active" : ""
+              }`}
+              onClick={() => handleAlignmentChange("left")}
+              data-tooltip-id="metric-align-left-tooltip"
+            >
+              <Icon name="align-left" size={14} />
+            </button>
+
+            <button
+              className={`viz-control-btn ${
+                currentAlignment === "center" ? "viz-control-btn--active" : ""
+              }`}
+              onClick={() => handleAlignmentChange("center")}
+              data-tooltip-id="metric-align-center-tooltip"
+            >
+              <Icon name="align-center" size={14} />
+            </button>
+
+            <button
+              className={`viz-control-btn ${
+                currentAlignment === "right" ? "viz-control-btn--active" : ""
+              }`}
+              onClick={() => handleAlignmentChange("right")}
+              data-tooltip-id="metric-align-right-tooltip"
+            >
+              <Icon name="align-right" size={14} />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -300,6 +347,12 @@ export const VisualizationConfig: React.FC<VisualizationConfigProps> = ({
       <Tooltip id="metric-size-small-tooltip" content="Tamaño pequeño" />
       <Tooltip id="metric-size-medium-tooltip" content="Tamaño mediano" />
       <Tooltip id="metric-size-large-tooltip" content="Tamaño grande" />
+      <Tooltip
+        id="metric-align-left-tooltip"
+        content="Alinear a la izquierda"
+      />
+      <Tooltip id="metric-align-center-tooltip" content="Alinear al centro" />
+      <Tooltip id="metric-align-right-tooltip" content="Alinear a la derecha" />
     </div>
   );
 };

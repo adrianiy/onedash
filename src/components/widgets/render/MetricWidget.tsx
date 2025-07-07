@@ -9,6 +9,7 @@ interface MetricWidgetProps {
 
 export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
   const size = widget.config.size || "medium";
+  const alignment = widget.config.alignment || "center";
   const conditionalFormats =
     widget.config.visualization?.conditionalFormats || [];
 
@@ -111,8 +112,10 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
   }
 
   return (
-    <div className="metric-widget-wrapper">
-      <div className={`metric-widget metric-widget--${size}`}>
+    <div
+      className={`metric-widget-wrapper metric-widget-wrapper--${alignment}`}
+    >
+      <div className={`metric-widget metric-widget--${size} `}>
         {/* Valor principal arriba en grande */}
         <div
           className="metric-widget__primary-value"
@@ -124,10 +127,9 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
           )}
         </div>
 
-        {/* Footer con título del widget y métrica secundaria en horizontal */}
-        <div className="metric-widget__footer">
-          <div className="metric-widget__title">{widget.title}</div>
-          {metricData.secondary && (
+        {/* Footer con métrica secundaria */}
+        {metricData.secondary && (
+          <div className="metric-widget__footer">
             <div
               className="metric-widget__secondary-value"
               style={getConditionalStyle(
@@ -140,8 +142,8 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
                 metricData.secondary.calculation
               )}
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Compatibilidad con mock actual (deprecado) */}
         {!widget.config.primaryMetric && widget.config.value && (

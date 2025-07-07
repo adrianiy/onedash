@@ -426,8 +426,15 @@
 /* Controles de métricas */
 .viz-metric-controls {
   display: flex;
-  gap: var(--spacing-md);
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* Grupos de controles */
+.viz-control-group {
+  display: flex;
+  gap: var(--spacing-xs);
   align-items: center;
 }
 

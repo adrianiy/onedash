@@ -33,6 +33,9 @@ export interface MetricWidgetConfig {
   // Tamaño visual (por defecto medium)
   size?: "small" | "medium" | "large";
 
+  // Alineación del contenido (por defecto center)
+  alignment?: "left" | "center" | "right";
+
   // Configuración visual
   visualization?: {
     conditionalFormats?: ConditionalFormatRule[];
