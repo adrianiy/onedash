@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { MetricWidget } from "../../../../types/widget";
+import type { MetricWidget, Widget } from "../../../../types/widget";
 import type { ConfigTab } from "../../common/ConfigTabs";
 import { ConfigTabs } from "../../common/ConfigTabs";
 import { DataConfig } from "./DataConfig";
@@ -18,12 +18,12 @@ export const MetricConfigTabs: React.FC<MetricConfigTabsProps> = ({
     {
       id: "data",
       label: "Datos",
-      component: DataConfig,
+      component: DataConfig as React.ComponentType<{ widget: Widget }>,
     },
     {
       id: "visualization",
       label: "Visualización",
-      component: VisualizationConfig,
+      component: VisualizationConfig as React.ComponentType<{ widget: Widget }>,
     },
   ];
 

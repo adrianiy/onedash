@@ -1,11 +1,18 @@
-/* Estilos para el widget de métrica */
-
-.metric-widget {
+/* Wrapper para alineamiento vertical */
+.metric-widget-wrapper {
   width: 100%;
   height: 100%;
   display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Estilos para el widget de métrica */
+.metric-widget {
+  width: 100%;
+  display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  gap: var(--spacing-md);
   padding: var(--spacing-lg);
   text-align: center;
 }
@@ -40,7 +47,7 @@
 
 .metric-widget__value {
   font-size: 2.5em;
-  font-weight: 700;
+  font-weight: normal;
   color: var(--color-text-primary);
   line-height: 1;
   letter-spacing: -0.02em;
@@ -216,16 +223,14 @@
 
 /* Nuevo layout con valor principal arriba y footer abajo */
 .metric-widget__primary-value {
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 3em;
-  font-weight: 700;
+  font-weight: normal;
   color: var(--color-text-primary);
   line-height: 1;
   letter-spacing: -0.02em;
-  padding: var(--spacing-md);
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
 }
@@ -234,7 +239,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--spacing-md);
 }
 
 .metric-widget__title {
@@ -261,11 +265,11 @@
 }
 
 .metric-widget--small .metric-widget__title {
-  font-size: 0.8em;
+  font-size: 0.7em;
 }
 
 .metric-widget--small .metric-widget__secondary-value {
-  font-size: 1em;
+  font-size: 0.7em;
 }
 
 .metric-widget--medium .metric-widget__primary-value {
@@ -273,11 +277,11 @@
 }
 
 .metric-widget--medium .metric-widget__title {
-  font-size: 0.9em;
+  font-size: 0.75em;
 }
 
 .metric-widget--medium .metric-widget__secondary-value {
-  font-size: 1.2em;
+  font-size: 0.75em;
 }
 
 .metric-widget--large .metric-widget__primary-value {
@@ -285,11 +289,11 @@
 }
 
 .metric-widget--large .metric-widget__title {
-  font-size: 1.1em;
+  font-size: 0.8em;
 }
 
 .metric-widget--large .metric-widget__secondary-value {
-  font-size: 1.5em;
+  font-size: 0.8em;
 }
 
 /* Responsive para el nuevo layout */
@@ -318,7 +322,7 @@
 }
 
 /* Estilos para formatos condicionales en el nuevo layout */
-44 [data-theme="dark"] .metric-widget__primary-value[style*="background"],
+[data-theme="dark"] .metric-widget__primary-value[style*="background"],
 [data-theme="dark"] .metric-widget__secondary-value[style*="background"] {
   border-color: rgba(var(--color-border-rgb), 0.5);
 }

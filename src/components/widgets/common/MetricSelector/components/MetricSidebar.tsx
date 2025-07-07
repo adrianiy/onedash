@@ -7,7 +7,6 @@ import { IndicatorMetadata } from "../../../../../types/metricConfig";
  * Sidebar lateral que muestra el resumen de métricas seleccionadas
  */
 export const MetricSidebar: React.FC<MetricSidebarProps> = ({
-  showSidebar,
   toggleSidebar,
   generatedMetrics,
   selectedIndicators,

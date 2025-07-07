@@ -79,7 +79,7 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
   };
 
   const handleWidgetDrop = (
-    layout: Layout[],
+    _layout: Layout[],
     item: DroppedItem,
     event: React.DragEvent<HTMLElement>
   ) => {

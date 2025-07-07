@@ -2,7 +2,6 @@ import React, { useMemo } from "react";
 import { Icon } from "../../common/Icon";
 import type { MetricWidget as MetricWidgetType } from "../../../types/widget";
 import { formatValue } from "../../../utils/format";
-import "../../../styles/metric-widget.css";
 
 interface MetricWidgetProps {
   widget: MetricWidgetType;
@@ -112,55 +111,62 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
   }
 
   return (
-    <div className={`metric-widget metric-widget--${size}`}>
-      {/* Valor principal arriba en grande */}
-      <div
-        className="metric-widget__primary-value"
-        style={getConditionalStyle("primaryMetric", metricData.primary.value)}
-      >
-        {formatValue(metricData.primary.value, metricData.primary.calculation)}
-      </div>
+    <div className="metric-widget-wrapper">
+      <div className={`metric-widget metric-widget--${size}`}>
+        {/* Valor principal arriba en grande */}
+        <div
+          className="metric-widget__primary-value"
+          style={getConditionalStyle("primaryMetric", metricData.primary.value)}
+        >
+          {formatValue(
+            metricData.primary.value,
+            metricData.primary.calculation
+          )}
+        </div>
 
-      {/* Footer con título del widget y métrica secundaria en horizontal */}
-      <div className="metric-widget__footer">
-        <div className="metric-widget__title">{widget.title}</div>
-        {metricData.secondary && (
-          <div
-            className="metric-widget__secondary-value"
-            style={getConditionalStyle(
-              "secondaryMetric",
-              metricData.secondary.value
-            )}
-          >
-            {formatValue(
-              metricData.secondary.value,
-              metricData.secondary.calculation
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Compatibilidad con mock actual (deprecado) */}
-      {!widget.config.primaryMetric && widget.config.value && (
-        <div className="metric-widget__legacy">
-          <div className="metric-widget__value">
-            {widget.config.value}
-            {widget.config.unit && (
-              <span className="metric-widget__unit">{widget.config.unit}</span>
-            )}
-          </div>
-          {widget.config.trend && (
+        {/* Footer con título del widget y métrica secundaria en horizontal */}
+        <div className="metric-widget__footer">
+          <div className="metric-widget__title">{widget.title}</div>
+          {metricData.secondary && (
             <div
-              className={`metric-widget__trend metric-widget__trend--${widget.config.trend}`}
+              className="metric-widget__secondary-value"
+              style={getConditionalStyle(
+                "secondaryMetric",
+                metricData.secondary.value
+              )}
             >
-              <Icon name={`trending-${widget.config.trend}`} size={16} />
-              {widget.config.trendValue && (
-                <span>{widget.config.trendValue}%</span>
+              {formatValue(
+                metricData.secondary.value,
+                metricData.secondary.calculation
               )}
             </div>
           )}
         </div>
-      )}
+
+        {/* Compatibilidad con mock actual (deprecado) */}
+        {!widget.config.primaryMetric && widget.config.value && (
+          <div className="metric-widget__legacy">
+            <div className="metric-widget__value">
+              {widget.config.value}
+              {widget.config.unit && (
+                <span className="metric-widget__unit">
+                  {widget.config.unit}
+                </span>
+              )}
+            </div>
+            {widget.config.trend && (
+              <div
+                className={`metric-widget__trend metric-widget__trend--${widget.config.trend}`}
+              >
+                <Icon name={`trending-${widget.config.trend}`} size={16} />
+                {widget.config.trendValue && (
+                  <span>{widget.config.trendValue}%</span>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

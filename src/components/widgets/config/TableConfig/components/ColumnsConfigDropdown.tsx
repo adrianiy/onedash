@@ -16,8 +16,6 @@ interface ColumnsConfigDropdownProps {
 }
 
 export const ColumnsConfigDropdown: React.FC<ColumnsConfigDropdownProps> = ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  config,
   onAddColumns,
   onClose,
 }) => {
@@ -28,16 +26,9 @@ export const ColumnsConfigDropdown: React.FC<ColumnsConfigDropdownProps> = ({
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   // Estado para las selecciones en cada pestaña
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [selectedIndicators, setSelectedIndicators] = useState<TableColumn[]>(
-    []
-  );
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [selectedTimerange, setSelectedTimerange] = useState<TableColumn[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [selectedCalculations, setSelectedCalculations] = useState<
-    TableColumn[]
-  >([]);
+  const [selectedIndicators] = useState<TableColumn[]>([]);
+  const [selectedTimerange] = useState<TableColumn[]>([]);
+  const [selectedCalculations] = useState<TableColumn[]>([]);
 
   // Total de selecciones
   const totalSelections =

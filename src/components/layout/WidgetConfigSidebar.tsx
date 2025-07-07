@@ -106,13 +106,21 @@ export const WidgetConfigSidebar: React.FC = () => {
     }
   };
 
-  // Comprobar si hay TANTO columnas COMO niveles de desglose configurados
-  const hasColumnsAndBreakdowns = () => {
+  // Comprobar si la configuración del widget es válida para guardar
+  const isWidgetConfigValid = () => {
+    if (widget.type === "metric") {
+      // Para widgets de métrica: debe tener al menos la métrica principal
+      return Boolean(widget.config.primaryMetric);
+    }
+
     if (widget.type === "table") {
+      // Para widgets de tabla: debe tener columnas Y niveles de desglose
       const columns = widget.config.columns || [];
       const breakdownLevels = widget.config.breakdownLevels || [];
       return columns.length > 0 && breakdownLevels.length > 0;
     }
+
+    // Para otros tipos de widgets no implementados
     return false;
   };
 
@@ -231,7 +239,7 @@ export const WidgetConfigSidebar: React.FC = () => {
                 <button
                   className="widget-config-sidebar__config-action"
                   onClick={handleSaveConfig}
-                  disabled={!hasColumnsAndBreakdowns()}
+                  disabled={!isWidgetConfigValid()}
                 >
                   Guardar
                 </button>

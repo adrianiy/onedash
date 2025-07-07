@@ -8,7 +8,6 @@ import { ModifiersMetadata } from "../../../../../types/metricConfig";
  */
 export const ModifiersPanel: React.FC<MetricModifiersPanelProps> = ({
   activeTab,
-  selectedIndicators,
   selectedModifiers,
   isCompatibleModifier,
   isStrictlyRequired,

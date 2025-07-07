@@ -1,5 +1,4 @@
 import type { MetricDefinition } from "../types/metricConfig";
-import { IndicatorMetadata } from "../types/metricConfig";
 import { breakdownCategories } from "../types/breakdownLevels";
 
 // Constantes para las dimensiones conocidas
@@ -68,21 +67,6 @@ const METRIC_RANGES = {
   pedidos: { min: 1, max: 500 },
 };
 
-// Factores para calcular crecimiento
-const GROWTH_RANGE = { min: -30, max: 50 }; // Porcentaje de crecimiento entre -30% y +50%
-
-// Relación entre métricas (para generar datos coherentes)
-const METRIC_RELATIONS = {
-  // Precio medio aproximado por unidad según producto
-  avgPricePerUnit: {
-    Ropa: { min: 20, max: 60 },
-    Calzado: { min: 40, max: 120 },
-    Perfumería: { min: 30, max: 80 },
-  },
-  // Unidades promedio por pedido
-  avgUnitsPerOrder: { min: 2, max: 8 },
-};
-
 // Pesos de venta por sección (para distribución realista)
 const SECTION_WEIGHTS = {
   Señora: 0.5, // 50% de las ventas
@@ -116,13 +100,6 @@ const SEASONALITY = {
     Domingo: 1.1,
   },
 };
-
-/**
- * Genera un número aleatorio entre min y max (inclusive)
- */
-function randomNumber(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
 
 /**
  * Genera un valor aleatorio con distribución normal (para datos más realistas)

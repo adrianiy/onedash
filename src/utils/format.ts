@@ -15,7 +15,7 @@ numeral.register("locale", "es", {
   currency: {
     symbol: "€",
   },
-  ordinal: (number) => {
+  ordinal: () => {
     return "º";
   },
 });

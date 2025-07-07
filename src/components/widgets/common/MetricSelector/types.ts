@@ -1,7 +1,6 @@
 import type {
   MetricDefinition,
   IndicatorType,
-  ModifierOption,
 } from "../../../../types/metricConfig";
 
 export interface MetricSelectorProps {
@@ -24,7 +23,7 @@ export interface MetricSelectorProps {
   onClose?: () => void;
 }
 
-export interface SelectedModifiers {
+export interface SelectedModifiers extends Record<string, string[]> {
   saleType: string[];
   scope: string[];
   timeframe: string[];
@@ -93,7 +92,7 @@ export interface MetricSidebarProps {
   generatedMetrics: MetricDefinition[];
   selectedIndicators: IndicatorType[];
   getMissingRequiredModifiers: (indicator: IndicatorType) => string[];
-  getModifierLabel: (modKey: string, modValue: any) => string;
+  getModifierLabel: (modKey: string, modValue: unknown) => string;
 }
 
 export interface MetricModifiersPanelProps {

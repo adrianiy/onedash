@@ -162,12 +162,6 @@ export const VisualizationConfig: React.FC<VisualizationConfigProps> = ({
               <div className="viz-metric-placeholder__value"></div>
               <div className="viz-metric-placeholder__label"></div>
             </div>
-            {widget.config.secondaryMetric && (
-              <div className="viz-metric-placeholder viz-metric-placeholder--secondary">
-                <div className="viz-metric-placeholder__value"></div>
-                <div className="viz-metric-placeholder__label"></div>
-              </div>
-            )}
           </div>
         </div>
 

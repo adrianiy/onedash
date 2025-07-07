@@ -20,7 +20,6 @@ const MetricSelector: React.FC<MetricSelectorProps> = ({
   mode = "multiple",
   selectedMetric,
   onSelectMetric,
-  selectedMetrics = [],
   onSelectMetrics,
   initialTab = "indicators",
   onClose,
@@ -46,12 +45,9 @@ const MetricSelector: React.FC<MetricSelectorProps> = ({
     // Funciones de utilidad
     isTabRequired,
     isTabComplete,
-    isModifierRequired,
-    hasDefaultValue,
     getDefaultValue,
     isStrictlyRequired,
     willApplyDefaultValue,
-    getDefaultValueLabel,
     getMissingRequiredModifiers,
     isButtonEnabled,
     generateButtonHelpMessage,
@@ -77,10 +73,7 @@ const MetricSelector: React.FC<MetricSelectorProps> = ({
   };
 
   // Función para manejar los resultados de búsqueda
-  const handleSearchResultSelect = (
-    resultType: string,
-    options?: Record<string, unknown>
-  ) => {
+  const handleSearchResultSelect = (resultType: string) => {
     // Lógica para manejar cada tipo de resultado
     switch (resultType) {
       case "importeNeto":

@@ -9,7 +9,6 @@ import {
 export const IndicatorsTab: React.FC<MetricTabProps> = ({
   searchQuery,
   selectedIndicators,
-  selectedModifiers,
   mode,
   handleIndicatorSelect,
 }) => {
