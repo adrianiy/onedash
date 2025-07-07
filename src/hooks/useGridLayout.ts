@@ -24,8 +24,6 @@ export const useGridLayout = () => {
           defaultHeight,
         w: defaultWidth,
         h: defaultHeight,
-        minW: 2,
-        minH: 2,
       }));
     },
     [settings.gridCols]

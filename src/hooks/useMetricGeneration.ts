@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import type {
   IndicatorType,
+  IndicatorTypeOrDynamic,
   MetricDefinition,
   MetricModifiers,
   ComparisonType,
@@ -12,10 +13,15 @@ import {
   IndicatorMetadata,
   ModifiersMetadata,
 } from "../types/metricConfig";
+import {
+  createIndicatorDynamicResolver,
+  resolveDynamicMetrics,
+} from "../utils/variableResolver";
+import { useVariableStore } from "../store/variableStore";
 
 export interface MetricGenerationOptions {
   mode: "single" | "multiple";
-  selectedIndicators: IndicatorType[];
+  selectedIndicators: IndicatorTypeOrDynamic[];
   selectedModifiers: Record<string, string[]>;
   customValues?: Record<string, unknown>;
 }
@@ -69,19 +75,38 @@ function getDefaultValue(modifier: string): string | null {
  * Verifica si un indicador cumple con todos sus requisitos de modificadores
  */
 function indicatorMeetsRequirements(
-  indicator: IndicatorType,
+  indicator: IndicatorTypeOrDynamic,
   selectedModifiers: Record<string, string[]>
 ): boolean {
-  // Obtenemos los modificadores requeridos para este indicador
+  // Para indicadores dinámicos, siempre son válidos (se resolverán después)
+  if (indicator === "{{dynamic}}") {
+    return true;
+  }
+
+  // Para indicadores estáticos, verificar requisitos
   const requiredModifiers =
     IndicatorMetadata[indicator]?.requiredModifiers || [];
 
-  // Verificamos que todos los modificadores requeridos tengan al menos un valor seleccionado
-  // o tengan un valor por defecto
   return requiredModifiers.every(
     (modifier) =>
       selectedModifiers[modifier]?.length > 0 || hasDefaultValue(modifier)
   );
+}
+
+/**
+ * Crea una métrica dinámica
+ */
+function createDynamicMetric(
+  modifiers: MetricModifiers,
+  variableId: string = "currentIndicator"
+): MetricDefinition {
+  return {
+    id: `dynamic_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    indicator: "{{dynamic}}",
+    modifiers,
+    title: "Indicador Dinámico", // Se actualizará cuando se resuelva
+    dynamicResolver: createIndicatorDynamicResolver(variableId, "importe"),
+  };
 }
 
 /**
@@ -93,10 +118,23 @@ export function useMetricGeneration({
   selectedModifiers,
   customValues = {},
 }: MetricGenerationOptions) {
+  // Obtener variables del store para resolución dinámica
+  const { getVisibleVariables } = useVariableStore();
+  const visibleVariables = getVisibleVariables();
+
+  // Convertir variables a formato para resolución
+  const variablesForResolution = useMemo(() => {
+    const vars: Record<string, unknown> = {};
+    visibleVariables.forEach((variable) => {
+      vars[variable.id] = variable.value;
+    });
+    return vars;
+  }, [visibleVariables]);
+
   /**
    * Generar métricas basadas en las selecciones
    */
-  const generatedMetrics = useMemo(() => {
+  const rawGeneratedMetrics = useMemo(() => {
     if (selectedIndicators.length === 0) return [];
 
     // Filtramos primero los indicadores que cumplen los requisitos
@@ -107,66 +145,133 @@ export function useMetricGeneration({
     if (validIndicators.length === 0) return [];
 
     if (mode === "single" && validIndicators.length > 0) {
-      // En modo single, solo generamos una métrica con la primera selección de cada tipo
+      // En modo single, solo generamos una métrica con la primera selección
       const indicator = validIndicators[0];
-      const modifiers: MetricModifiers = {};
 
-      // Tomamos el primer valor seleccionado de cada modificador (si existe)
-      Object.entries(selectedModifiers).forEach(([key, values]) => {
-        if (values.length > 0 && isModifierCompatible(indicator, key)) {
+      if (indicator === "{{dynamic}}") {
+        // Crear métrica dinámica
+        const modifiers: MetricModifiers = {};
+
+        // Aplicar modificadores universales (que aplican a todos los indicadores)
+        Object.entries(selectedModifiers).forEach(([key, values]) => {
+          if (values.length > 0) {
+            if (
+              key === "comparison" &&
+              values[0] === "a-n" &&
+              customValues["comparison_a_n_value"]
+            ) {
+              setModifierValue(modifiers, key, {
+                type: "a-n",
+                value: customValues["comparison_a_n_value"] as number,
+              });
+            } else {
+              setModifierValue(modifiers, key, values[0]);
+            }
+          }
+        });
+
+        return [createDynamicMetric(modifiers)];
+      } else {
+        // Crear métrica estática
+        const modifiers: MetricModifiers = {};
+
+        Object.entries(selectedModifiers).forEach(([key, values]) => {
+          if (values.length > 0 && isModifierCompatible(indicator, key)) {
+            if (
+              key === "comparison" &&
+              values[0] === "a-n" &&
+              customValues["comparison_a_n_value"]
+            ) {
+              setModifierValue(modifiers, key, {
+                type: "a-n",
+                value: customValues["comparison_a_n_value"] as number,
+              });
+            } else {
+              setModifierValue(modifiers, key, values[0]);
+            }
+          }
+        });
+
+        // Aplicar valores por defecto
+        const requiredModifiers =
+          IndicatorMetadata[indicator]?.requiredModifiers || [];
+        requiredModifiers.forEach((modifier) => {
           if (
-            key === "comparison" &&
-            values[0] === "a-n" &&
-            customValues["comparison_a_n_value"]
+            isModifierCompatible(indicator, modifier) &&
+            !modifiers[modifier as keyof MetricModifiers] &&
+            (selectedModifiers[modifier]?.length === 0 ||
+              !selectedModifiers[modifier]) &&
+            hasDefaultValue(modifier)
           ) {
-            // Caso especial para a-n que requiere un valor
-            setModifierValue(modifiers, key, {
-              type: "a-n",
-              value: customValues["comparison_a_n_value"] as number,
-            });
-          } else {
-            setModifierValue(modifiers, key, values[0]);
+            const defaultValue = getDefaultValue(modifier);
+            if (defaultValue) {
+              setModifierValue(modifiers, modifier, defaultValue);
+            }
           }
-        }
-      });
+        });
 
-      // Aplicar valores por defecto para modificadores requeridos sin selección
-      const requiredModifiers =
-        IndicatorMetadata[indicator]?.requiredModifiers || [];
-      requiredModifiers.forEach((modifier) => {
-        // Si el modificador es requerido, compatible, no tiene selección pero tiene valor por defecto
-        if (
-          isModifierCompatible(indicator, modifier) &&
-          !modifiers[modifier as keyof MetricModifiers] &&
-          (selectedModifiers[modifier]?.length === 0 ||
-            !selectedModifiers[modifier]) &&
-          hasDefaultValue(modifier)
-        ) {
-          const defaultValue = getDefaultValue(modifier);
-          if (defaultValue) {
-            setModifierValue(modifiers, modifier, defaultValue);
-          }
-        }
-      });
-
-      // Generar una única métrica
-      return [
-        {
-          id: generateMetricId(indicator, modifiers),
-          indicator,
-          modifiers,
-          title: generateMetricTitle(indicator, modifiers),
-        },
-      ];
+        return [
+          {
+            id: generateMetricId(indicator, modifiers),
+            indicator,
+            modifiers,
+            title: generateMetricTitle(indicator, modifiers),
+          },
+        ];
+      }
     } else {
-      // En modo multiple, generamos todas las combinaciones posibles
-      return generateAllMetricCombinations(
-        validIndicators, // Usamos solo los indicadores válidos
-        selectedModifiers,
-        customValues
-      );
+      // En modo multiple, separar dinámicos de estáticos
+      const staticIndicators = validIndicators.filter(
+        (ind) => ind !== "{{dynamic}}"
+      ) as IndicatorType[];
+      const hasDynamic = validIndicators.includes("{{dynamic}}");
+
+      const metrics: MetricDefinition[] = [];
+
+      // Generar métricas estáticas
+      if (staticIndicators.length > 0) {
+        metrics.push(
+          ...generateAllMetricCombinations(
+            staticIndicators,
+            selectedModifiers,
+            customValues
+          )
+        );
+      }
+
+      // Generar métrica dinámica si está seleccionada
+      if (hasDynamic) {
+        const modifiers: MetricModifiers = {};
+
+        // Para dinámicos, usar todos los modificadores seleccionados
+        Object.entries(selectedModifiers).forEach(([key, values]) => {
+          if (values.length > 0) {
+            if (
+              key === "comparison" &&
+              values[0] === "a-n" &&
+              customValues["comparison_a_n_value"]
+            ) {
+              setModifierValue(modifiers, key, {
+                type: "a-n",
+                value: customValues["comparison_a_n_value"] as number,
+              });
+            } else {
+              setModifierValue(modifiers, key, values[0]);
+            }
+          }
+        });
+
+        metrics.push(createDynamicMetric(modifiers));
+      }
+
+      return metrics;
     }
   }, [mode, selectedIndicators, selectedModifiers, customValues]);
+
+  // Resolver métricas dinámicas usando las variables actuales
+  const generatedMetrics = useMemo(() => {
+    return resolveDynamicMetrics(rawGeneratedMetrics, variablesForResolution);
+  }, [rawGeneratedMetrics, variablesForResolution]);
 
   return {
     generatedMetrics,

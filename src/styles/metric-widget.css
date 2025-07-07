@@ -252,6 +252,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
 }
 
 .metric-widget__title {
@@ -342,4 +343,61 @@
 
 [data-theme="dark"] .metric-widget__footer {
   border-color: var(--color-border);
+}
+
+/* Estilos para widgets clicables */
+.metric-widget--clickable {
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+/* Asegurar que el widget tenga position relative para el indicador */
+.metric-widget {
+  position: relative;
+}
+
+/* Zoom en la métrica principal cuando está activa */
+.metric-widget__primary-value--active {
+  transform: scale(1.3);
+  transition: transform var(--transition-fast);
+}
+
+/* Animación de click */
+.metric-widget--clicked {
+  transform: scale(0.98);
+}
+
+.metric-widget--clicked .metric-widget__primary-value--active {
+  transform: scale(1.02);
+}
+
+/* Barra indicadora flotante - solo visible cuando está activo */
+.metric-widget__active-indicator {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40%;
+  height: 3px;
+  background-color: var(--color-secondary);
+  border-radius: var(--radius-full);
+  opacity: 0;
+  animation: slideInUp 0.3s ease-out 0.1s forwards;
+}
+
+/* Animación slideInUp */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Tema oscuro para elementos interactivos */
+[data-theme="dark"] .metric-widget__active-indicator {
+  background-color: var(--color-secondary);
 }

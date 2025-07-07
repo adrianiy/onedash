@@ -34,23 +34,39 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
       config: { ...widget.config },
     });
 
-    // Add to current dashboard
-    const { currentDashboard, updateDashboard } = useDashboardStore.getState();
-    if (currentDashboard) {
+    // Add to current dashboard or temp dashboard if in editing mode
+    const {
+      currentDashboard,
+      tempDashboard,
+      isEditing,
+      updateDashboard,
+      updateTempDashboard,
+    } = useDashboardStore.getState();
+
+    const targetDashboard = isEditing ? tempDashboard : currentDashboard;
+
+    if (targetDashboard) {
       const newLayout = {
         i: newWidget.id,
         x: 0,
         y: 0,
         w: 4,
         h: 3,
-        minW: 3,
-        minH: 3,
       };
 
-      updateDashboard(currentDashboard.id, {
-        widgets: [...currentDashboard.widgets, newWidget.id],
-        layout: [...currentDashboard.layout, newLayout],
-      });
+      if (isEditing) {
+        // En modo edición, actualizar el dashboard temporal
+        updateTempDashboard({
+          widgets: [...targetDashboard.widgets, newWidget.id],
+          layout: [...targetDashboard.layout, newLayout],
+        });
+      } else {
+        // Fuera del modo edición, actualizar directamente
+        updateDashboard(targetDashboard.id, {
+          widgets: [...targetDashboard.widgets, newWidget.id],
+          layout: [...targetDashboard.layout, newLayout],
+        });
+      }
     }
   };
 
@@ -146,6 +162,21 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
           ) : null;
         }
 
+        // Para widgets de métrica, verificar la configuración de visualización
+        if (widget.type === "metric") {
+          const visualization = widget.config.visualization || {};
+          const showTitle =
+            visualization.showTitle !== undefined
+              ? visualization.showTitle
+              : false; // Por defecto false
+
+          return widget.title && showTitle ? (
+            <div className="widget-header">
+              <h4 className="widget-title">{widget.title}</h4>
+            </div>
+          ) : null;
+        }
+
         // Para otros tipos de widgets, mostrar el título si existe
         return widget.title ? (
           <div className="widget-header">
@@ -161,6 +192,13 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
         if (widget.type === "table") {
           const visualization = widget.config.visualization || {};
           const showTitle = visualization.showTitle !== false;
+          shouldShowTitle = !!(widget.title && showTitle);
+        } else if (widget.type === "metric") {
+          const visualization = widget.config.visualization || {};
+          const showTitle =
+            visualization.showTitle !== undefined
+              ? visualization.showTitle
+              : false; // Por defecto false
           shouldShowTitle = !!(widget.title && showTitle);
         } else {
           shouldShowTitle = !!widget.title;

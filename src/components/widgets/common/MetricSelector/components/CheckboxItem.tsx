@@ -1,5 +1,6 @@
 import React from "react";
 import { type CheckboxItemProps } from "../types";
+import { Icon } from "../../../../common/Icon";
 
 /**
  * Componente reutilizable para los elementos checkbox/radio del selector de métricas.
@@ -17,12 +18,15 @@ export const CheckboxItem: React.FC<CheckboxItemProps> = ({
   defaultTipText = "Valor por defecto",
   mode = "multiple",
   radioGroupName,
+  icon,
+  iconColor,
+  isDynamic = false,
 }) => {
   const handleClick = () => {
     if (!disabled) {
       if (mode === "single") {
-        // En modo single, siempre seleccionar (como radio button)
-        onChange(value, true);
+        // En modo single, permitir deseleccionar si ya está seleccionado
+        onChange(value, !checked);
       } else {
         // En modo multiple, toggle (como checkbox)
         onChange(value, !checked);
@@ -31,24 +35,29 @@ export const CheckboxItem: React.FC<CheckboxItemProps> = ({
   };
 
   const handleInputClick = (e: React.MouseEvent<HTMLInputElement>) => {
-    e.stopPropagation();
+    // En modo single, permitir que el input maneje su propio evento
+    if (mode === "single") {
+      e.stopPropagation();
+      // Aplicar la misma lógica que en handleClick
+      onChange(value, !checked);
+    } else {
+      e.stopPropagation();
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (mode === "single") {
-      // En modo single, siempre seleccionar
-      onChange(value, true);
-    } else {
-      // En modo multiple, usar el valor del checkbox
+    // Para mode múltiple, usar el valor del checkbox
+    if (mode === "multiple") {
       onChange(value, e.target.checked);
     }
+    // Para mode single, el comportamiento se maneja en handleInputClick
   };
 
   return (
     <div
       className={`metric-selector__checkbox-item ${
         mode === "single" ? "metric-selector__radio-item" : ""
-      }`}
+      } ${isDynamic ? "metric-selector__dynamic-option" : ""}`}
       onClick={handleClick}
     >
       <input
@@ -64,7 +73,17 @@ export const CheckboxItem: React.FC<CheckboxItemProps> = ({
         disabled={disabled}
       />
       <div className="metric-selector__option-content">
-        <label>{label}</label>
+        <label>
+          {icon && (
+            <Icon
+              name={icon}
+              size={14}
+              color={iconColor}
+              className="metric-selector__dynamic-icon"
+            />
+          )}
+          {label}
+        </label>
         {hasDefaultTip && (
           <div className="metric-selector__default-tip">
             <span>{defaultTipText}</span>

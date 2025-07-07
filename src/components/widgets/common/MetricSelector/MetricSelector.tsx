@@ -1,4 +1,5 @@
 import React from "react";
+import { Tooltip } from "react-tooltip";
 import type { MetricSelectorProps } from "./types";
 import { useMetricSelector } from "./hooks";
 
@@ -59,6 +60,15 @@ const MetricSelector: React.FC<MetricSelectorProps> = ({
     isPanelVisible,
     isCompatibleModifier,
     getModifierLabel,
+    // Variables dinámicas
+    activeVariablesByType,
+    hasActiveVariableOfType,
+    getDynamicLabel,
+    shouldShowDynamicOption,
+    shouldShowDynamicOptionForSelector,
+    // Tip dinámico
+    showDynamicTip,
+    hideDynamicTip,
   } = useMetricSelector(mode, initialTab, selectedMetric);
 
   // Función para manejar la selección según el modo
@@ -107,6 +117,10 @@ const MetricSelector: React.FC<MetricSelectorProps> = ({
             selectedModifiers={selectedModifiers}
             mode={mode}
             handleIndicatorSelect={handleIndicatorSelect}
+            shouldShowDynamicOptionForSelector={
+              shouldShowDynamicOptionForSelector
+            }
+            getDynamicLabel={getDynamicLabel}
           />
         );
       case "timerange":
@@ -200,6 +214,28 @@ const MetricSelector: React.FC<MetricSelectorProps> = ({
         )}
       </div>
 
+      {/* Nota informativa sobre campos dinámicos */}
+      {showDynamicTip &&
+        (shouldShowDynamicOptionForSelector("indicators") ||
+          shouldShowDynamicOptionForSelector("timerange") ||
+          shouldShowDynamicOption("saleType") ||
+          shouldShowDynamicOption("scope") ||
+          shouldShowDynamicOption("comparison")) && (
+          <div className="metric-selector__dynamic-info">
+            <Icon name="zap" size={14} />
+            <span>
+              Los campos dinámicos reaccionan a los filtros del dashboard
+            </span>
+            <button
+              className="metric-selector__dynamic-info-close"
+              onClick={hideDynamicTip}
+              data-tooltip-id="dynamic-tip-close-tooltip"
+            >
+              <Icon name="close" size={12} />
+            </button>
+          </div>
+        )}
+
       {/* Footer con botones */}
       <MetricFooter
         showSidebar={showSidebar}
@@ -222,6 +258,13 @@ const MetricSelector: React.FC<MetricSelectorProps> = ({
           getModifierLabel={getModifierLabel}
         />
       )}
+
+      {/* Tooltips */}
+      <Tooltip
+        id="dynamic-tip-close-tooltip"
+        content="Ocultar este mensaje permanentemente"
+        place="top"
+      />
     </div>
   );
 };

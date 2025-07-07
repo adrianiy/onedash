@@ -107,8 +107,6 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
           y: item.y,
           w: dragData.w,
           h: dragData.h,
-          minW: dragData.minW || 3,
-          minH: dragData.minH || 3,
         };
 
         const updatedWidgets = [...targetDashboard.widgets, newWidget.id];

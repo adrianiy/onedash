@@ -17,6 +17,8 @@
 @import "./styles/custom-color-picker.css";
 @import "./styles/metric-config.css";
 @import "./styles/metric-widget.css";
+@import "./styles/events-config.css";
+@import "./styles/filter-bar.css";
 
 /* Global Styles */
 *,

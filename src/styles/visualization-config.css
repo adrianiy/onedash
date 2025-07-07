@@ -368,7 +368,7 @@
   width: 100%;
   display: flex;
   justify-content: center;
-  padding: var(--spacing-xl);
+  padding: var(--spacing-3xl);
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
 }
@@ -438,6 +438,12 @@
   align-items: center;
 }
 
+.viz-metric-controls--top {
+  width: 100%;
+  justify-content: flex-start;
+  margin-bottom: var(--spacing-md);
+}
+
 .viz-metric-controls--bottom {
   margin-top: var(--spacing-md);
 }
@@ -469,4 +475,188 @@
 
 [data-theme="dark"] .viz-metric-placeholder__label {
   background-color: rgba(var(--color-secondary-rgb), 0.25);
+}
+
+/* Estilos específicos para eventos */
+.viz-events-variables {
+}
+
+.viz-events-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: 0.85rem;
+  color: var(--color-info);
+  margin-bottom: var(--spacing-xl);
+  line-height: 1.4;
+}
+
+.viz-events-info svg {
+  color: var(--color-info);
+  flex-shrink: 0;
+}
+
+.viz-events-preview {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background-color: var(--color-surface-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.viz-events-preview-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+}
+
+.viz-events-preview-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: 0.8rem;
+  padding: var(--spacing-xs) 0;
+}
+
+.viz-events-preview-variable {
+  font-family: monospace;
+  background: rgba(var(--color-primary-rgb), 0.1);
+  padding: 2px var(--spacing-xs);
+  border-radius: var(--radius-xs);
+  font-size: 0.75rem;
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.viz-events-preview-arrow {
+  color: var(--color-text-muted);
+}
+
+.viz-events-preview-value {
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.viz-control-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--color-border-secondary);
+  border-radius: 4px;
+  background-color: transparent;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+  margin-right: var(--spacing-xs);
+  flex-shrink: 0;
+}
+
+.viz-control-checkbox:checked {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.viz-control-checkbox:checked::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 6px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.viz-control-checkbox:hover:not(:disabled) {
+  border-color: var(--color-primary);
+}
+
+.viz-control-checkbox:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--color-surface-secondary);
+}
+
+/* Tema oscuro para eventos */
+[data-theme="dark"] .viz-events-preview {
+  background-color: var(--color-surface-tertiary);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .viz-events-preview-variable {
+  background: rgba(var(--color-primary-rgb), 0.2);
+}
+
+/* Estilos para badges de eventos minimalistas */
+.viz-events-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.viz-events-badge {
+  cursor: pointer;
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: all var(--transition-fast);
+  font-size: 0.75rem;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  border: 1px solid transparent;
+  gap: var(--spacing-xs);
+}
+
+.viz-events-badge:hover {
+  opacity: 0.8;
+}
+
+/* Estados normales - colores neutros para todos */
+.viz-events-badge.metric-selector__chip-tag--indicator,
+.viz-events-badge.metric-selector__chip-tag--sale,
+.viz-events-badge.metric-selector__chip-tag--scope,
+.viz-events-badge.metric-selector__chip-tag--timeframe {
+  background-color: transparent;
+  border-color: var(--color-border-secondary);
+  color: var(--color-text-secondary);
+}
+
+/* Estados seleccionados - color primario para todos */
+.viz-events-badge--selected.metric-selector__chip-tag--indicator,
+.viz-events-badge--selected.metric-selector__chip-tag--sale,
+.viz-events-badge--selected.metric-selector__chip-tag--scope,
+.viz-events-badge--selected.metric-selector__chip-tag--timeframe {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+/* Estilos para las cabeceras y valores de los badges */
+.viz-events-badge-header {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+  line-height: 1;
+}
+
+.viz-events-badge-value {
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+/* Cuando está seleccionado, la cabecera se mantiene igual pero el valor se ve más prominente */
+.viz-events-badge--selected .viz-events-badge-value {
+  font-weight: 600;
 }

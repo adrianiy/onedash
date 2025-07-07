@@ -127,7 +127,7 @@ export const EditToolbar: React.FC = () => {
   // Función auxiliar para añadir cualquier tipo de widget
   const addWidgetToBoard = (
     widget: Widget,
-    layout: { w: number; h: number; minW: number; minH: number }
+    layout: { w: number; h: number }
   ) => {
     const {
       currentDashboard,
@@ -147,8 +147,6 @@ export const EditToolbar: React.FC = () => {
         y: 0,
         w: layout.w,
         h: layout.h,
-        minW: layout.minW,
-        minH: layout.minH,
       };
 
       const updatedWidgets = [...targetDashboard.widgets, widget.id];
@@ -192,7 +190,7 @@ export const EditToolbar: React.FC = () => {
       isConfigured: false,
     });
 
-    addWidgetToBoard(newMetricWidget, { w: 4, h: 4, minW: 3, minH: 3 });
+    addWidgetToBoard(newMetricWidget, { w: 4, h: 4 });
   };
 
   const handleAddChart = () => {
@@ -210,7 +208,7 @@ export const EditToolbar: React.FC = () => {
       isConfigured: false,
     });
 
-    addWidgetToBoard(newChartWidget, { w: 6, h: 4, minW: 4, minH: 3 });
+    addWidgetToBoard(newChartWidget, { w: 6, h: 4 });
   };
 
   const handleAddText = () => {
@@ -228,7 +226,7 @@ export const EditToolbar: React.FC = () => {
       isConfigured: true,
     });
 
-    addWidgetToBoard(newTextWidget, { w: 4, h: 3, minW: 2, minH: 2 });
+    addWidgetToBoard(newTextWidget, { w: 4, h: 3 });
   };
 
   const handleAddTable = () => {
@@ -247,7 +245,7 @@ export const EditToolbar: React.FC = () => {
       isConfigured: false,
     });
 
-    addWidgetToBoard(newTableWidget, { w: 6, h: 6, minW: 4, minH: 5 });
+    addWidgetToBoard(newTableWidget, { w: 6, h: 6 });
   };
 
   const handleDragStart = (e: React.DragEvent) => {
@@ -280,8 +278,6 @@ export const EditToolbar: React.FC = () => {
       title: "",
       w: 6,
       h: 6,
-      minW: 4,
-      minH: 5,
       config: {
         columns: [],
         data: [],

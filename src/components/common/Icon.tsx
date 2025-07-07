@@ -56,6 +56,7 @@ import {
   ListOrdered,
   PanelTop,
   PanelBottom,
+  Filter,
   type LucideIcon,
 } from "lucide-react";
 
@@ -78,6 +79,7 @@ const lucideIconMap = {
   moon: Moon,
   save: Save,
   close: X,
+  x: X,
   menu: Menu,
   grid: Grid3X3,
   "trending-up": TrendingUp,
@@ -123,6 +125,7 @@ const lucideIconMap = {
   "list-ordered": ListOrdered,
   "panel-top": PanelTop,
   "panel-bottom": PanelBottom,
+  filter: Filter,
 } as const;
 
 const tablerIconMap = {

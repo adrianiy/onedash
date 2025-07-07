@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import type {
   IndicatorType,
+  IndicatorTypeOrDynamic,
   MetricDefinition,
 } from "../../../../types/metricConfig";
 import {
@@ -8,6 +9,13 @@ import {
   ModifiersMetadata,
 } from "../../../../types/metricConfig";
 import { useMetricGeneration } from "../../../../hooks/useMetricGeneration";
+import { useVariableStore } from "../../../../store/variableStore";
+import {
+  getActiveVariablesByType,
+  MODIFIER_TO_VARIABLE_TYPE_MAP,
+  SELECTOR_TO_VARIABLE_TYPE_MAP,
+  DYNAMIC_LABELS,
+} from "../../../../utils/variableResolver";
 import type { SelectedModifiers } from "./types";
 
 /**
@@ -27,10 +35,19 @@ export const useMetricSelector = (
   // Estado para mostrar/ocultar el sidebar con el resumen
   const [showSidebar, setShowSidebar] = useState<boolean>(false);
 
+  // Estado para controlar si se muestra la nota informativa de campos dinámicos
+  const [showDynamicTip, setShowDynamicTip] = useState<boolean>(() => {
+    // Verificar si el usuario ya ocultó el tip anteriormente
+    const hiddenTip = localStorage.getItem(
+      "metric-selector-dynamic-tip-hidden"
+    );
+    return hiddenTip !== "true";
+  });
+
   // Estado para las selecciones
-  const [selectedIndicators, setSelectedIndicators] = useState<IndicatorType[]>(
-    []
-  );
+  const [selectedIndicators, setSelectedIndicators] = useState<
+    IndicatorTypeOrDynamic[]
+  >([]);
   const [selectedModifiers, setSelectedModifiers] = useState<SelectedModifiers>(
     {
       saleType: [],
@@ -141,9 +158,12 @@ export const useMetricSelector = (
     if (selectedIndicators.length === 0) return false;
 
     // Comprobar que todos los indicadores seleccionados cumplen sus requisitos
-    return selectedIndicators.every((indicator) =>
-      indicatorMeetsRequirements(indicator)
-    );
+    return selectedIndicators.every((indicator) => {
+      // Los indicadores dinámicos siempre son válidos
+      if (indicator === "{{dynamic}}") return true;
+      // Para indicadores estáticos, verificar requisitos
+      return indicatorMeetsRequirements(indicator as IndicatorType);
+    });
   }, [selectedIndicators, indicatorMeetsRequirements]);
 
   // Comprobar si una pestaña tiene elementos requeridos
@@ -251,7 +271,7 @@ export const useMetricSelector = (
 
   // Función para manejar la selección de indicadores
   const handleIndicatorSelect = useCallback(
-    (indicator: IndicatorType, isChecked: boolean) => {
+    (indicator: IndicatorTypeOrDynamic, isChecked: boolean) => {
       if (isChecked) {
         if (mode === "single") {
           setSelectedIndicators([indicator]);
@@ -312,16 +332,11 @@ export const useMetricSelector = (
     setShowSidebar(!showSidebar);
   }, [showSidebar]);
 
-  // Verificar si un modificador es compatible con alguno de los indicadores seleccionados
-  const isCompatibleModifier = useCallback(
-    (modifier: string): boolean => {
-      // El modificador es compatible si al menos uno de los indicadores seleccionados lo soporta
-      return selectedIndicators.some((indicator) =>
-        IndicatorMetadata[indicator]?.compatibleModifiers.includes(modifier)
-      );
-    },
-    [selectedIndicators]
-  );
+  // Función para ocultar el tip de campos dinámicos permanentemente
+  const hideDynamicTip = useCallback(() => {
+    setShowDynamicTip(false);
+    localStorage.setItem("metric-selector-dynamic-tip-hidden", "true");
+  }, []);
 
   // Función para obtener la etiqueta de un modificador
   const getModifierLabel = useCallback(
@@ -394,13 +409,147 @@ export const useMetricSelector = (
   // Variable para controlar la habilitación del botón
   const isButtonEnabled = allIndicatorsMeetRequirements();
 
-  // Determinar si el panel debe ser visible (para indicadores o temporalidades)
-  const isPanelVisible = useMemo(
-    () =>
-      (activeTab === "indicators" && selectedIndicators.length > 0) ||
-      (activeTab === "timerange" && selectedModifiers.timeframe.length > 0),
-    [activeTab, selectedIndicators.length, selectedModifiers.timeframe.length]
+  // Obtener variables activas del store
+  const { getVisibleVariables, initializeIfNeeded } = useVariableStore();
+
+  // Asegurar que el store está inicializado
+  useEffect(() => {
+    initializeIfNeeded();
+  }, [initializeIfNeeded]);
+
+  const visibleVariables = getVisibleVariables();
+
+  // Detectar variables activas por tipo
+  const activeVariablesByType = useMemo(() => {
+    return getActiveVariablesByType(visibleVariables);
+  }, [visibleVariables]);
+
+  // Verificar si hay variable activa de un tipo específico
+  const hasActiveVariableOfType = useCallback(
+    (variableType: string): boolean => {
+      return activeVariablesByType[variableType]?.length > 0;
+    },
+    [activeVariablesByType]
   );
+
+  // Obtener la etiqueta dinámica para un contexto
+  const getDynamicLabel = useCallback((context: string): string => {
+    return DYNAMIC_LABELS[context as keyof typeof DYNAMIC_LABELS] || "Dinámico";
+  }, []);
+
+  // Verificar si debe mostrar opción dinámica para un modificador
+  const shouldShowDynamicOption = useCallback(
+    (modifierType: string): boolean => {
+      const variableType =
+        MODIFIER_TO_VARIABLE_TYPE_MAP[
+          modifierType as keyof typeof MODIFIER_TO_VARIABLE_TYPE_MAP
+        ];
+      return variableType ? hasActiveVariableOfType(variableType) : false;
+    },
+    [hasActiveVariableOfType]
+  );
+
+  // Verificar si debe mostrar opción dinámica para un selector (indicators, timerange)
+  const shouldShowDynamicOptionForSelector = useCallback(
+    (selectorType: string): boolean => {
+      const variableType =
+        SELECTOR_TO_VARIABLE_TYPE_MAP[
+          selectorType as keyof typeof SELECTOR_TO_VARIABLE_TYPE_MAP
+        ];
+      return variableType ? hasActiveVariableOfType(variableType) : false;
+    },
+    [hasActiveVariableOfType]
+  );
+
+  // Verificar si un modificador es compatible con alguno de los indicadores seleccionados
+  const isCompatibleModifier = useCallback(
+    (modifier: string): boolean => {
+      // Si no hay indicadores seleccionados, no hay compatibilidad
+      if (selectedIndicators.length === 0) return false;
+
+      // Verificar si hay algún indicador dinámico seleccionado
+      const hasDynamicIndicator = selectedIndicators.some(
+        (indicator) => String(indicator) === "{{dynamic}}"
+      );
+
+      if (hasDynamicIndicator) {
+        // Para indicadores dinámicos, obtener la combinatoria de todos los modificadores
+        // de todos los posibles valores que podría tener la variable
+        const indicatorVariables = activeVariablesByType["indicator"] || [];
+
+        if (indicatorVariables.length > 0) {
+          // Para cada variable de tipo indicator, obtener todos los posibles valores
+          // y sus modificadores compatibles
+          const allPossibleModifiers = new Set<string>();
+
+          // Obtener todos los indicadores disponibles como posibles valores
+          Object.keys(IndicatorMetadata).forEach((indicatorKey) => {
+            const compatibleModifiers =
+              IndicatorMetadata[indicatorKey]?.compatibleModifiers || [];
+            compatibleModifiers.forEach((mod) => allPossibleModifiers.add(mod));
+          });
+
+          return allPossibleModifiers.has(modifier);
+        }
+      }
+
+      // Para indicadores estáticos, usar la lógica original
+      return selectedIndicators
+        .filter((indicator) => String(indicator) !== "{{dynamic}}")
+        .some((indicator) =>
+          IndicatorMetadata[indicator]?.compatibleModifiers.includes(modifier)
+        );
+    },
+    [selectedIndicators, activeVariablesByType]
+  );
+
+  // Determinar si el panel debe ser visible (para indicadores o temporalidades)
+  const isPanelVisible = useMemo(() => {
+    if (activeTab === "indicators" && selectedIndicators.length > 0) {
+      // Verificar si hay algún indicador dinámico seleccionado
+      const hasDynamicIndicator = selectedIndicators.some(
+        (indicator) => String(indicator) === "{{dynamic}}"
+      );
+
+      if (hasDynamicIndicator) {
+        // Para indicadores dinámicos, siempre mostrar el panel si hay variables activas
+        const indicatorVariables = activeVariablesByType["indicator"] || [];
+        if (indicatorVariables.length > 0) {
+          // Verificar si hay al menos algún modificador compatible en la combinatoria
+          const compatibleModifierTypes = ["saleType", "scope"];
+          return compatibleModifierTypes.some((modifierType) =>
+            isCompatibleModifier(modifierType)
+          );
+        }
+      }
+
+      // Para indicadores estáticos, usar la lógica original
+      const compatibleModifierTypes = ["saleType", "scope"];
+      return compatibleModifierTypes.some((modifierType) => {
+        return selectedIndicators
+          .filter((indicator) => String(indicator) !== "{{dynamic}}")
+          .some((indicator) => {
+            const compatibleModifiers =
+              IndicatorMetadata[indicator]?.compatibleModifiers || [];
+            return compatibleModifiers.includes(modifierType);
+          });
+      });
+    }
+
+    if (activeTab === "timeframe" && selectedModifiers.timeframe.length > 0) {
+      // Para timeframe, solo mostrar si hay modificadores de comparación disponibles
+      const comparisonModifiers = ModifiersMetadata.comparison?.options || [];
+      return comparisonModifiers.length > 0;
+    }
+
+    return false;
+  }, [
+    activeTab,
+    selectedIndicators,
+    selectedModifiers.timeframe.length,
+    activeVariablesByType,
+    isCompatibleModifier,
+  ]);
 
   return {
     // Estados
@@ -439,5 +588,14 @@ export const useMetricSelector = (
     isPanelVisible,
     isCompatibleModifier,
     getModifierLabel,
+    // Variables dinámicas
+    activeVariablesByType,
+    hasActiveVariableOfType,
+    getDynamicLabel,
+    shouldShowDynamicOption,
+    shouldShowDynamicOptionForSelector,
+    // Tip dinámico
+    showDynamicTip,
+    hideDynamicTip,
   };
 };

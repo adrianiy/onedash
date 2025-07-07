@@ -2,6 +2,7 @@ import type {
   MetricDefinition,
   IndicatorType,
 } from "../../../../types/metricConfig";
+import type { IconName } from "../../../common/Icon";
 
 export interface MetricSelectorProps {
   // Modo de selección
@@ -41,6 +42,10 @@ export interface CheckboxItemProps {
   defaultTipText?: string;
   mode?: "single" | "multiple";
   radioGroupName?: string;
+  // New props for dynamic options
+  icon?: IconName;
+  iconColor?: string;
+  isDynamic?: boolean;
 }
 
 export interface MetricTabProps {

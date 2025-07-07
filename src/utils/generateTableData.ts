@@ -181,10 +181,17 @@ function generateMetricValue(
   } else {
     // Generar valor base según el indicador
     const range = METRIC_RANGES[indicator as keyof typeof METRIC_RANGES];
-    value = randomNormal(
-      (range.min + range.max) / 2,
-      (range.max - range.min) / 4
-    );
+
+    // Si no se encuentra el rango (por ejemplo, para indicadores dinámicos), usar valores por defecto
+    if (!range) {
+      // Para indicadores dinámicos o desconocidos, usar un rango general
+      value = randomNormal(5000, 2000); // Valor medio con variación
+    } else {
+      value = randomNormal(
+        (range.min + range.max) / 2,
+        (range.max - range.min) / 4
+      );
+    }
 
     // Ajustar según las dimensiones
     for (const dim of dimensions) {

@@ -38,7 +38,7 @@ export const formatNumber = (value: number, format: string = "0,0"): string => {
  */
 export const formatPercent = (value: number): string => {
   return numeral(value / 100)
-    .format("0,0%")
+    .format("+0,0%")
     .replace("%", " %");
 };
 

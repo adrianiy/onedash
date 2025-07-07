@@ -323,17 +323,15 @@ export const useDashboardStore = create<DashboardState>()(
             get().updateDashboard(newDashboard.id, {
               widgets: [chartWidget.id, metricWidget.id, textWidget.id],
               layout: [
-                { i: chartWidget.id, x: 0, y: 0, w: 8, h: 5, minW: 6, minH: 4 },
+                { i: chartWidget.id, x: 0, y: 0, w: 8, h: 5 },
                 {
                   i: metricWidget.id,
                   x: 8,
                   y: 0,
                   w: 4,
                   h: 3,
-                  minW: 3,
-                  minH: 3,
                 },
-                { i: textWidget.id, x: 8, y: 3, w: 4, h: 3, minW: 3, minH: 2 },
+                { i: textWidget.id, x: 8, y: 3, w: 4, h: 3 },
               ],
               isReadonly: true, // Marcar dashboard demo como solo lectura
             });

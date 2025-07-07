@@ -1,17 +1,55 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Icon } from "../../common/Icon";
 import type { MetricWidget as MetricWidgetType } from "../../../types/widget";
 import { formatValue } from "../../../utils/format";
+import { useVariableStore } from "../../../store/variableStore";
 
 interface MetricWidgetProps {
   widget: MetricWidgetType;
 }
 
 export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
+  const setMultiple = useVariableStore((state) => state.setMultiple);
+  const [isClicked, setIsClicked] = useState(false);
+
   const size = widget.config.size || "medium";
   const alignment = widget.config.alignment || "center";
   const conditionalFormats =
     widget.config.visualization?.conditionalFormats || [];
+
+  // Detectar si el widget tiene eventos de click configurados
+  const clickEvent = useMemo(() => {
+    return widget.events?.find((event) => event.trigger === "click");
+  }, [widget.events]);
+
+  const isClickable = Boolean(
+    clickEvent && Object.keys(clickEvent.setVariables).length > 0
+  );
+
+  // Verificar si el KPI está "activo" (sus variables coinciden con el estado actual)
+  const variables = useVariableStore((state) => state.variables);
+  const isActive = useMemo(() => {
+    if (!isClickable || !clickEvent) return false;
+
+    // Verificar si alguna de las variables del evento coincide con el estado actual
+    return Object.entries(clickEvent.setVariables).some(
+      ([variableId, value]) => {
+        return variables[variableId] === value;
+      }
+    );
+  }, [isClickable, clickEvent, variables]);
+
+  // Función para manejar el click en el widget
+  const handleWidgetClick = () => {
+    if (!isClickable || !clickEvent) return;
+
+    // Activar animación de click
+    setIsClicked(true);
+    setTimeout(() => setIsClicked(false), 200);
+
+    // Actualizar variables
+    setMultiple(clickEvent.setVariables);
+  };
 
   // Generar datos simulados para las métricas
   const metricData = useMemo(() => {
@@ -115,10 +153,18 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
     <div
       className={`metric-widget-wrapper metric-widget-wrapper--${alignment}`}
     >
-      <div className={`metric-widget metric-widget--${size} `}>
+      <div
+        className={`metric-widget metric-widget--${size} ${
+          isClickable ? "metric-widget--clickable" : ""
+        } ${isClicked ? "metric-widget--clicked" : ""}`}
+        onClick={handleWidgetClick}
+        style={{ cursor: isClickable ? "pointer" : "default" }}
+      >
         {/* Valor principal arriba en grande */}
         <div
-          className="metric-widget__primary-value"
+          className={`metric-widget__primary-value ${
+            isActive ? "metric-widget__primary-value--active" : ""
+          }`}
           style={getConditionalStyle("primaryMetric", metricData.primary.value)}
         >
           {formatValue(
@@ -144,31 +190,10 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
               )}
             </div>
           )}
-        </div>
 
-        {/* Compatibilidad con mock actual (deprecado) */}
-        {!widget.config.primaryMetric && widget.config.value && (
-          <div className="metric-widget__legacy">
-            <div className="metric-widget__value">
-              {widget.config.value}
-              {widget.config.unit && (
-                <span className="metric-widget__unit">
-                  {widget.config.unit}
-                </span>
-              )}
-            </div>
-            {widget.config.trend && (
-              <div
-                className={`metric-widget__trend metric-widget__trend--${widget.config.trend}`}
-              >
-                <Icon name={`trending-${widget.config.trend}`} size={16} />
-                {widget.config.trendValue && (
-                  <span>{widget.config.trendValue}%</span>
-                )}
-              </div>
-            )}
-          </div>
-        )}
+          {/* Barra indicadora solo cuando está activo */}
+          {isActive && <div className="metric-widget__active-indicator" />}
+        </div>
       </div>
     </div>
   );

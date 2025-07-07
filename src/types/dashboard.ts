@@ -16,6 +16,7 @@ export interface Dashboard {
   description?: string;
   layout: DashboardLayout[];
   widgets: string[];
+  variables?: string[]; // IDs de variables del dashboard
   createdAt: Date;
   updatedAt: Date;
   isReadonly?: boolean;

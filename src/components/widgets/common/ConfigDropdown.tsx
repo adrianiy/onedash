@@ -52,8 +52,16 @@ export const ConfigDropdown: React.FC<ConfigDropdownProps> = ({
     placement,
     open: isOpen,
     onOpenChange: handleOpenChange,
-    middleware: [offset(offsetDistance), flip(), shift()],
+    middleware: [
+      offset(offsetDistance),
+      flip({
+        fallbackPlacements: ["right", "left", "bottom", "top"],
+        crossAxis: false,
+      }),
+      shift({ padding: 8 }),
+    ],
     whileElementsMounted: autoUpdate,
+    strategy: "absolute",
   });
 
   const click = useClick(context);
