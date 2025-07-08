@@ -15,11 +15,13 @@
 @import "./styles/visualization-config.css";
 @import "./styles/conditional-formatting.css";
 @import "./styles/custom-color-picker.css";
-@import "./styles/metric-config.css";
+@import "./styles/table-widget.css";
 @import "./styles/metric-widget.css";
+@import "./styles/metric-config.css";
 @import "./styles/events-config.css";
 @import "./styles/filter-bar.css";
 @import "./styles/text-interpolation-input.css";
+@import "./styles/widget-filters.css";
 
 /* Global Styles */
 *,

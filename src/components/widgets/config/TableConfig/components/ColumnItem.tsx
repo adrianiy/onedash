@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { Tooltip } from "react-tooltip";
 import { Icon } from "../../../../common/Icon";
 import { useSortable } from "@dnd-kit/sortable";
 import type {
@@ -22,6 +23,8 @@ interface ColumnItemProps {
   onToggleVisibility: (id: string) => void;
   onToggleSelect: (id: string) => void;
   onRename: (id: string, newTitle: string) => void;
+  onCopy: (id: string) => void;
+  onEdit: (id: string) => void;
 }
 
 export const ColumnItem: React.FC<ColumnItemProps> = ({
@@ -34,6 +37,8 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
   onToggleVisibility,
   onToggleSelect,
   onRename,
+  onCopy,
+  onEdit,
 }) => {
   // Obtener variables actuales del store
   const { variables } = useVariableStore();
@@ -344,7 +349,8 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
                           isSavingRef.current = false;
                         }, 100);
                       }}
-                      title="Aceptar"
+                      data-tooltip-id={`column-action-tooltip-${id}`}
+                      data-tooltip-content="Aceptar"
                     >
                       <Icon name="check" size={12} />
                     </button>
@@ -366,7 +372,8 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
                           isSavingRef.current = false;
                         }, 100);
                       }}
-                      title="Cancelar"
+                      data-tooltip-id={`column-action-tooltip-${id}`}
+                      data-tooltip-content="Cancelar"
                     >
                       <Icon name="close" size={12} />
                     </button>
@@ -389,7 +396,10 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
             <button
               onClick={handleToggleExpand}
               className="column-item__expand"
-              title={isExpanded ? "Contraer detalles" : "Expandir detalles"}
+              data-tooltip-id={`column-action-tooltip-${id}`}
+              data-tooltip-content={
+                isExpanded ? "Contraer detalles" : "Expandir detalles"
+              }
             >
               <Icon
                 name={isExpanded ? "chevrons-down-up" : "chevrons-up-down"}
@@ -403,9 +413,36 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
                 onToggleVisibility(id);
               }}
               className="column-item__visibility"
-              title={isVisible ? "Ocultar columna" : "Mostrar columna"}
+              data-tooltip-id={`column-action-tooltip-${id}`}
+              data-tooltip-content={
+                isVisible ? "Ocultar columna" : "Mostrar columna"
+              }
             >
               <Icon name={isVisible ? "eye" : "eye-off"} size={14} />
+            </button>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onCopy(id);
+              }}
+              className="column-item__action"
+              data-tooltip-id={`column-action-tooltip-${id}`}
+              data-tooltip-content="Copiar columna"
+            >
+              <Icon name="copy" size={14} />
+            </button>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(id);
+              }}
+              className="column-item__action"
+              data-tooltip-id={`column-action-tooltip-${id}`}
+              data-tooltip-content="Editar columna"
+            >
+              <Icon name="edit" size={14} />
             </button>
 
             <button
@@ -414,7 +451,8 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
                 onRemove(id);
               }}
               className="column-item__remove config-item__remove"
-              title="Eliminar columna"
+              data-tooltip-id={`column-action-tooltip-${id}`}
+              data-tooltip-content="Eliminar columna"
             >
               <Icon name="trash" size={14} />
             </button>
@@ -465,6 +503,9 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
           </div>
         </div>
       )}
+
+      {/* Tooltip único para esta columna */}
+      <Tooltip id={`column-action-tooltip-${id}`} place="top" />
     </div>
   );
 };

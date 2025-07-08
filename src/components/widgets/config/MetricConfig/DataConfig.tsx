@@ -7,6 +7,7 @@ import { EmptyPlaceholder } from "../../common/EmptyPlaceholder";
 import { Icon } from "../../../common/Icon";
 import MetricSelector from "../../common/MetricSelector/MetricSelector";
 import { MetricItem } from "./components/MetricItem";
+import { WidgetFiltersConfig } from "./components/WidgetFiltersConfig";
 import {
   DndContext,
   closestCenter,
@@ -193,64 +194,67 @@ export const DataConfig: React.FC<DataConfigProps> = ({ widget }) => {
   };
 
   return (
-    <div className="metrics-config config-panel">
-      <ConfigDropdown
-        className="metrics-dropdown"
-        setIsOpenRef={setDropdownOpenRef}
-        offsetDistance={20}
-        triggerElement={({ ref, onClick, referenceProps }) =>
-          metricsCount > 0 ? (
-            <>
-              <div className="metrics-config__header config-panel__header">
-                <span className="metrics-config__title config-panel__title">
-                  MÉTRICAS ({metricsCount}/2)
-                </span>
-                {!hasMaxMetrics && (
-                  <button
-                    ref={ref}
-                    className="metrics-config__add-button config-panel__add-button"
-                    onClick={() => {
-                      handleOpenSelector();
-                      onClick();
-                    }}
-                    {...referenceProps}
-                  >
-                    <Icon name="plus" size={12} /> Añadir
-                  </button>
-                )}
-              </div>
-              {renderMetricItems()}
-            </>
-          ) : (
-            <EmptyPlaceholder
-              iconName="plus"
-              text="Añadir métricas"
-              onClick={() => {
-                handleOpenSelector();
-                onClick();
-              }}
-              referenceProps={referenceProps}
-              forwardedRef={ref}
-              className="metrics-config__placeholder config-panel__placeholder"
-            />
-          )
-        }
-      >
-        <MetricSelector
-          mode="single"
-          selectedMetric={
-            editingType === "primary"
-              ? primaryMetric
-              : editingType === "secondary"
-              ? secondaryMetric
-              : undefined
+    <div className="data-config">
+      <div className="metrics-config config-panel">
+        <ConfigDropdown
+          className="metrics-dropdown"
+          setIsOpenRef={setDropdownOpenRef}
+          offsetDistance={20}
+          triggerElement={({ ref, onClick, referenceProps }) =>
+            metricsCount > 0 ? (
+              <>
+                <div className="metrics-config__header config-panel__header">
+                  <span className="metrics-config__title config-panel__title">
+                    MÉTRICAS ({metricsCount}/2)
+                  </span>
+                  {!hasMaxMetrics && (
+                    <button
+                      ref={ref}
+                      className="metrics-config__add-button config-panel__add-button"
+                      onClick={() => {
+                        handleOpenSelector();
+                        onClick();
+                      }}
+                      {...referenceProps}
+                    >
+                      <Icon name="plus" size={12} /> Añadir
+                    </button>
+                  )}
+                </div>
+                {renderMetricItems()}
+              </>
+            ) : (
+              <EmptyPlaceholder
+                iconName="plus"
+                text="Añadir métricas"
+                onClick={() => {
+                  handleOpenSelector();
+                  onClick();
+                }}
+                referenceProps={referenceProps}
+                forwardedRef={ref}
+                className="metrics-config__placeholder config-panel__placeholder"
+              />
+            )
           }
-          onSelectMetric={handleMetricSelect}
-          onClose={() =>
-            setDropdownOpenRef.current && setDropdownOpenRef.current(false)
-          }
-        />
-      </ConfigDropdown>
+        >
+          <MetricSelector
+            mode="single"
+            selectedMetric={
+              editingType === "primary"
+                ? primaryMetric
+                : editingType === "secondary"
+                ? secondaryMetric
+                : undefined
+            }
+            onSelectMetric={handleMetricSelect}
+            onClose={() =>
+              setDropdownOpenRef.current && setDropdownOpenRef.current(false)
+            }
+          />
+        </ConfigDropdown>
+      </div>
+      <WidgetFiltersConfig widget={widget} />
     </div>
   );
 };

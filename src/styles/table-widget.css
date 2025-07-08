@@ -6,12 +6,149 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  position: relative;
+}
+
+/* Cabecera del widget con título y filtros */
+.table-widget__header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm) 0;
+  margin-bottom: var(--spacing-sm);
+  min-height: 28px; /* Altura mínima para mantener el espacio cuando no hay título */
+}
+
+.table-widget__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  flex: 1;
+}
+
+/* Contenedor específico para filtros (siempre a la derecha) */
+.table-widget__filters-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-left: auto; /* Asegurar que siempre esté a la derecha */
+  gap: var(--spacing-sm); /* Espacio entre los elementos de filtro */
+  padding-left: var(--spacing-md); /* Separación con respecto al título */
+}
+
+/* Indicador de filtro simple (icono) */
+.table-widget__filter-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-sm);
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+.table-widget__filter-indicator svg {
+  margin-right: 2px;
+}
+
+/* Contenedor para badges de filtros */
+.table-widget__filter-badges {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  padding: 2px;
+  justify-content: flex-end;
+}
+
+/* Estilo para cada badge de filtro individual */
+.table-widget__filter-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
+
+/* Estilo para badges específicos */
+.table-widget__filter-badge--date {
+  background-color: rgba(var(--color-info-rgb), 0.1);
+  color: var(--color-info);
+}
+
+.table-widget__filter-badge--product {
+  background-color: rgba(var(--color-success-rgb), 0.1);
+  color: var(--color-success);
+}
+
+.table-widget__filter-badge--section {
+  background-color: rgba(var(--color-warning-rgb), 0.1);
+  color: var(--color-warning);
+}
+
+/* Tema oscuro para badges */
+[data-theme="dark"] .table-widget__filter-badge {
+  background-color: rgba(var(--color-primary-rgb), 0.2);
+}
+
+[data-theme="dark"] .table-widget__filter-badge--date {
+  background-color: rgba(var(--color-info-rgb), 0.2);
+}
+
+[data-theme="dark"] .table-widget__filter-badge--product {
+  background-color: rgba(var(--color-success-rgb), 0.2);
+}
+
+[data-theme="dark"] .table-widget__filter-badge--section {
+  background-color: rgba(var(--color-warning-rgb), 0.2);
 }
 
 .table-container {
   flex: 1;
   overflow: auto;
-  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.table-widget th {
+  background-color: var(--color-surface-secondary);
+  color: var(--color-text-secondary);
+  font-weight: 400;
+  text-align: left;
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.75rem;
+}
+
+.table-widget td {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.table-widget tr:hover {
+  background-color: var(--color-surface-hover);
+}
+
+.table-widget tr:last-child td {
+  border-bottom: none;
+}
+
+/* Quitar bordes del contenedor cuando se activa la opción sin bordes */
+.table-widget:has(.table-widget__table--borderless) .table-container {
+  border: none;
 }
 
 /* Estilos para la tabla */
@@ -29,6 +166,16 @@
   top: 0;
   background-color: var(--color-surface);
   z-index: 1;
+}
+
+/* Tabla sin fondo en la cabecera */
+.table-widget__table--no-header-bg .table-widget__th {
+  background-color: transparent;
+}
+
+/* Asegurar que en tema oscuro también se respete */
+[data-theme="dark"] .table-widget__table--no-header-bg .table-widget__th {
+  background-color: transparent;
 }
 
 .table-widget__th {
@@ -139,6 +286,11 @@
 
 .table-widget__tr:hover .table-widget__td {
   background-color: rgba(var(--color-primary-rgb), 0.03) !important;
+}
+
+/* Quitar borde inferior en la última fila (migrado desde widgets.css) */
+.table-widget__tr:last-child .table-widget__td {
+  border-bottom: none;
 }
 
 .table-widget__tr--selected .table-widget__td {
@@ -311,12 +463,13 @@
   border-color: var(--color-border);
 }
 
-.table-widget__table--borderless .table-widget__td,
-.table-widget__table--borderless .table-widget__th {
+.table-widget__table--borderless .table-widget__td {
   border: none;
 }
 
+/* Mantener solo el borde inferior de la cabecera */
 .table-widget__table--borderless .table-widget__th {
+  border: none;
   border-bottom: 1px solid var(--color-border);
 }
 

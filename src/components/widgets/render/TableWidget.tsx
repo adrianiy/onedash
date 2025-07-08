@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Icon } from "../../common/Icon";
+import { Tooltip } from "react-tooltip";
 import type {
   TableWidget as TableWidgetType,
   ConditionalFormatRule,
@@ -11,11 +12,11 @@ import type {
 import {
   generateTableData,
   calculateTotals,
+  type TableDataFilters,
 } from "../../../utils/generateTableData";
 import { formatValue } from "../../../utils/format";
 import { getDisplayTitle } from "../../../types/metricConfig";
 import { useVariableStore } from "../../../store/variableStore";
-import "../../../styles/table-widget.css";
 
 // Tipo ampliado para incluir "desglose"
 type ExtendedIndicatorType = IndicatorType | "desglose";
@@ -50,6 +51,8 @@ interface TableWidgetProps {
 export const TableWidget: React.FC<TableWidgetProps> = ({ widget }) => {
   // Obtener variables para actualizar títulos dinámicos
   const { variables } = useVariableStore();
+  // Verificar si hay filtros específicos del widget configurados
+  const widgetFilters = widget.config.widgetFilters;
   // Función para obtener el estilo condicional de una celda
   const getConditionalStyle = (
     columnId: string,
@@ -430,13 +433,27 @@ export const TableWidget: React.FC<TableWidgetProps> = ({ widget }) => {
         };
       });
 
+      // Usar filtros del widget si existen, o caer a variables globales
+      const effectiveFilters: TableDataFilters = {
+        // Fechas
+        dateStart: widgetFilters?.dateRange?.start || variables.dateStart,
+        dateEnd: widgetFilters?.dateRange?.end || variables.dateEnd,
+        // Productos
+        selectedProducts:
+          widgetFilters?.products || variables.selectedProducts || [],
+        // Secciones
+        selectedSections:
+          widgetFilters?.sections || variables.selectedSections || [],
+      };
+
       // Generar datos o usar los existentes si están disponibles
       const data =
         widget.config.data && widget.config.data.length > 0
           ? widget.config.data
           : generateTableData(
               resolvedColumns,
-              widget.config.breakdownLevels as string[]
+              widget.config.breakdownLevels as string[],
+              effectiveFilters // Pasar los filtros efectivos a generateTableData
             );
 
       // Calcular totales con las columnas resueltas
@@ -567,6 +584,7 @@ export const TableWidget: React.FC<TableWidgetProps> = ({ widget }) => {
   const isCompact = visualization.compact === true;
   const showBorders = visualization.showBorders !== false;
   const alternateRowColors = visualization.alternateRowColors === true;
+  const showHeaderBackground = visualization.showHeaderBackground !== false;
   const textAlign = visualization.textAlign || "left";
   const showPagination = visualization.showPagination !== false;
   const totalRow = visualization.totalRow || "top";
@@ -718,7 +736,8 @@ export const TableWidget: React.FC<TableWidgetProps> = ({ widget }) => {
             showBorders
               ? "table-widget__table--bordered"
               : "table-widget__table--borderless"
-          } ${textAlign !== "left" ? `table-widget__table--${textAlign}` : ""}`}
+          } ${!showHeaderBackground ? "table-widget__table--no-header-bg" : ""}
+          ${textAlign !== "left" ? `table-widget__table--${textAlign}` : ""}`}
         >
           <thead className="table-widget__header">
             <tr>
@@ -808,6 +827,16 @@ export const TableWidget: React.FC<TableWidgetProps> = ({ widget }) => {
           </div>
         </div>
       )}
+
+      {/* Tooltips para filtros */}
+      <Tooltip
+        id="table-filters-tooltip"
+        place="top"
+        style={{ whiteSpace: "pre-line" }}
+      />
+      <Tooltip id="filter-date-tooltip" place="top" />
+      <Tooltip id="filter-products-tooltip" place="top" />
+      <Tooltip id="filter-sections-tooltip" place="top" />
     </div>
   );
 };

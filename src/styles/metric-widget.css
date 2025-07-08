@@ -5,6 +5,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+}
+
+/* Wrapper con filtros */
+.metric-widget-wrapper--with-filters {
+  /* Ya no necesitamos padding adicional pues los filtros estarán posicionados relativamente al valor principal */
 }
 
 /* Alineaciones del widget */
@@ -255,6 +261,15 @@
   position: relative;
 }
 
+/* Footer con título centrado cuando no hay métrica secundaria */
+.metric-widget__footer--centered {
+  justify-content: center;
+}
+
+.metric-widget__footer--centered .metric-widget__title {
+  text-align: center;
+}
+
 .metric-widget__title {
   font-size: 0.9em;
   font-weight: 600;
@@ -400,4 +415,93 @@
 /* Tema oscuro para elementos interactivos */
 [data-theme="dark"] .metric-widget__active-indicator {
   background-color: var(--color-secondary);
+}
+
+/* Estilos para los filtros de widget */
+.metric-widget__filters {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  padding: 4px 8px;
+  top: -24px; /* Posicionar por encima del valor principal */
+}
+
+/* Modo badges */
+.metric-widget__filters--badges {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  padding: 2px;
+  justify-content: center;
+}
+
+.metric-widget__filter-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
+
+/* Estilos para badges específicos */
+.metric-widget__filter-badge--date {
+  background-color: rgba(var(--color-info-rgb), 0.1);
+  color: var(--color-info);
+}
+
+.metric-widget__filter-badge--product {
+  background-color: rgba(var(--color-success-rgb), 0.1);
+  color: var(--color-success);
+}
+
+.metric-widget__filter-badge--section {
+  background-color: rgba(var(--color-warning-rgb), 0.1);
+  color: var(--color-warning);
+}
+
+/* Modo info (ícono con contador) */
+.metric-widget__filters--info {
+  padding: 0;
+  left: 50%;
+  top: -20px;
+}
+
+.metric-widget__filter-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-sm);
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+/* Tema oscuro para filtros */
+[data-theme="dark"] .metric-widget__filter-badge {
+  background-color: rgba(var(--color-primary-rgb), 0.2);
+}
+
+[data-theme="dark"] .metric-widget__filter-badge--date {
+  background-color: rgba(var(--color-info-rgb), 0.2);
+}
+
+[data-theme="dark"] .metric-widget__filter-badge--product {
+  background-color: rgba(var(--color-success-rgb), 0.2);
+}
+
+[data-theme="dark"] .metric-widget__filter-badge--section {
+  background-color: rgba(var(--color-warning-rgb), 0.2);
 }

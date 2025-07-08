@@ -30,9 +30,19 @@ export const VisualizationConfig: React.FC<VisualizationConfigProps> = ({
   const visualization = widget.config.visualization || {};
   const showTitle =
     visualization.showTitle !== undefined ? visualization.showTitle : false; // Por defecto false
+  const filterDisplayMode = visualization.filterDisplayMode;
 
   // Verificar si hay título para habilitar/deshabilitar la opción
   const hasTitleDisabled = !widget.title || widget.title.trim() === "";
+
+  // Verificar si hay filtros de widget configurados
+  const widgetFilters = widget.config.widgetFilters;
+  const hasWidgetFilters =
+    widgetFilters &&
+    ((widgetFilters.products && widgetFilters.products.length > 0) ||
+      (widgetFilters.sections && widgetFilters.sections.length > 0) ||
+      (widgetFilters.dateRange &&
+        (widgetFilters.dateRange.start || widgetFilters.dateRange.end)));
 
   // Manejar cambio de tamaño
   const handleSizeChange = (size: "small" | "medium" | "large") => {
@@ -62,6 +72,30 @@ export const VisualizationConfig: React.FC<VisualizationConfigProps> = ({
         visualization: {
           ...visualization,
           showTitle: show,
+        },
+      },
+    });
+  };
+
+  // Manejar el modo de visualización de filtros
+  const handleFilterDisplayMode = (mode: "badges" | "info") => {
+    // Si clico en la opción ya activa, cambia a hidden
+    // Si clico en otra opción, la activa
+    // Si está en hidden, la activa
+    let newMode: "badges" | "info" | "hidden" | undefined;
+
+    if (mode === filterDisplayMode) {
+      newMode = "hidden"; // Ocultar filtros si se clica en la opción activa
+    } else {
+      newMode = mode; // Activar la opción clicada
+    }
+
+    updateWidget(widget.id, {
+      config: {
+        ...widget.config,
+        visualization: {
+          ...visualization,
+          filterDisplayMode: newMode,
         },
       },
     });
@@ -284,6 +318,37 @@ export const VisualizationConfig: React.FC<VisualizationConfigProps> = ({
         </div>
       </div>
 
+      {/* Sección de visibilidad de filtros - Solo visible si hay filtros de widget */}
+      {hasWidgetFilters && (
+        <div className="viz-config-section viz-filters-display">
+          <div className="viz-section-header viz-filters-display-header">
+            <h3 className="viz-section-title">Visibilidad de Filtros</h3>
+            <div className="viz-filters-display-controls">
+              <button
+                className={`viz-control-btn ${
+                  filterDisplayMode === "badges"
+                    ? "viz-control-btn--active"
+                    : ""
+                }`}
+                onClick={() => handleFilterDisplayMode("badges")}
+                data-tooltip-id="badges-mode-tooltip"
+              >
+                <Icon name="label" size={16} />
+              </button>
+              <button
+                className={`viz-control-btn ${
+                  filterDisplayMode === "info" ? "viz-control-btn--active" : ""
+                }`}
+                onClick={() => handleFilterDisplayMode("info")}
+                data-tooltip-id="info-mode-tooltip"
+              >
+                <Icon name="filter" size={16} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Sección de formatos condicionales - usando estilos de tabla */}
       {availableColumns.length > 0 && (
         <div className="viz-conditional-formats">
@@ -392,6 +457,11 @@ export const VisualizationConfig: React.FC<VisualizationConfigProps> = ({
       />
       <Tooltip id="metric-align-center-tooltip" content="Alinear al centro" />
       <Tooltip id="metric-align-right-tooltip" content="Alinear a la derecha" />
+      <Tooltip
+        id="badges-mode-tooltip"
+        content="Mostrar filtros como etiquetas"
+      />
+      <Tooltip id="info-mode-tooltip" content="Mostrar filtros como iconos" />
     </div>
   );
 };

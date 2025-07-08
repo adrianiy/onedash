@@ -189,22 +189,6 @@ function getVariableDisplayName(key: string): string {
 }
 
 /**
- * Obtiene la etiqueta amigable de un valor de variable
- */
-function getVariableLabel(key: string, value: unknown): string {
-  if (typeof value === "string") {
-    const metadata = ModifiersMetadata[key as keyof typeof ModifiersMetadata];
-    if (metadata) {
-      const option = metadata.options.find((opt) => opt.value === value);
-      return option ? option.label : value;
-    }
-    return value;
-  }
-
-  return String(value);
-}
-
-/**
  * Filtra variables basándose en un texto de búsqueda
  */
 export function filterVariables(

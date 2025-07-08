@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useDashboardStore } from "../../store/dashboardStore";
 import { useWidgetStore } from "../../store/widgetStore";
+import { Tooltip } from "react-tooltip";
 import { Icon } from "../common/Icon";
 import {
   ChartWidget,
@@ -69,11 +70,52 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
   widget,
   isSelected = false,
 }) => {
-  const { isEditing, selectWidget, openConfigSidebar } = useDashboardStore();
+  const {
+    isEditing,
+    selectWidget,
+    openConfigSidebar,
+    tempDashboard,
+    updateTempDashboard,
+    currentDashboard,
+    updateDashboard,
+  } = useDashboardStore();
   const { deleteWidget, addWidget } = useWidgetStore();
+  const [showFloatingHeader, setShowFloatingHeader] = useState(false);
+  const [isHiding, setIsHiding] = useState(false);
+  const [isPinned, setIsPinned] = useState(true); // Pinned por defecto
+  const hideTimeoutRef = useRef<number | undefined>(undefined);
 
   const handleDelete = () => {
-    deleteWidget(widget.id);
+    if (isEditing && tempDashboard) {
+      // En modo edición, solo eliminar el widget del dashboard temporal
+      const updatedWidgets = tempDashboard.widgets.filter(
+        (id) => id !== widget.id
+      );
+      const updatedLayout = tempDashboard.layout.filter(
+        (item) => item.i !== widget.id
+      );
+
+      updateTempDashboard({
+        widgets: updatedWidgets,
+        layout: updatedLayout,
+      });
+    } else if (currentDashboard) {
+      // Fuera de modo edición, eliminar el widget del dashboard actual y del store
+      const updatedWidgets = currentDashboard.widgets.filter(
+        (id) => id !== widget.id
+      );
+      const updatedLayout = currentDashboard.layout.filter(
+        (item) => item.i !== widget.id
+      );
+
+      updateDashboard(currentDashboard.id, {
+        widgets: updatedWidgets,
+        layout: updatedLayout,
+      });
+
+      // También eliminar del store de widgets
+      deleteWidget(widget.id);
+    }
   };
 
   const handleCopy = () => {
@@ -157,6 +199,174 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
     e.preventDefault();
   };
 
+  const handleMouseEnter = () => {
+    // Cancelar timeout si existe
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = undefined;
+    }
+
+    setShowFloatingHeader(true);
+    setIsHiding(false);
+  };
+
+  const handleMouseLeave = () => {
+    // Si el widget está seleccionado y no está pinned, aplicamos la transición con delay
+    if (isSelected && !isPinned) {
+      // Iniciar countdown para ocultar
+      hideTimeoutRef.current = setTimeout(() => {
+        setIsHiding(true);
+        // Después de la transición, ocultar completamente
+        setTimeout(() => {
+          setShowFloatingHeader(false);
+          setIsHiding(false);
+        }, 400); // duración de la transición
+      }, 1000); // 1 segundo de delay
+    } else if (!isSelected) {
+      // Si no está seleccionado, ocultar inmediatamente
+      setShowFloatingHeader(false);
+      setIsHiding(false);
+    }
+    // Si está pinned, no hacer nada al salir del widget
+  };
+
+  const handleTogglePin = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setIsPinned(!isPinned);
+  };
+
+  // Limpiar el timeout cuando se desmonta el componente
+  useEffect(() => {
+    return () => {
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Función para renderizar filtros de widget si existen
+  const renderWidgetFilters = () => {
+    // Solo tabla tiene filtros de widget por ahora
+    if (widget.type === "table" && widget.config.widgetFilters) {
+      const widgetFilters = widget.config.widgetFilters;
+      // Indicador de que el widget tiene filtros propios
+      const hasWidgetFilters =
+        widgetFilters &&
+        ((widgetFilters.products && widgetFilters.products.length > 0) ||
+          (widgetFilters.sections && widgetFilters.sections.length > 0) ||
+          (widgetFilters.dateRange &&
+            (widgetFilters.dateRange.start || widgetFilters.dateRange.end)));
+
+      if (!hasWidgetFilters) return null;
+
+      const visualization = widget.config.visualization || {};
+      // Tratamiento para el valor "hidden" y establecer "badges" por defecto
+      let filterDisplayMode: "badges" | "info" | undefined;
+
+      if (visualization.filterDisplayMode === "hidden") {
+        // Si está explícitamente oculto, no mostrar nada
+        filterDisplayMode = undefined;
+      } else if (visualization.filterDisplayMode === undefined) {
+        // Si no está configurado, usar "badges" por defecto
+        filterDisplayMode = "badges";
+      } else {
+        // Usar el valor configurado (badges o info)
+        filterDisplayMode = visualization.filterDisplayMode;
+      }
+
+      if (!filterDisplayMode) return null;
+
+      return (
+        <div className="widget-filters-container">
+          {filterDisplayMode === "info" && (
+            <div
+              className="widget-filter-indicator"
+              data-tooltip-id="widget-filters-tooltip"
+              data-tooltip-content={`${
+                widgetFilters?.products?.length
+                  ? `Productos: ${widgetFilters.products.join(", ")}\n`
+                  : ""
+              }${
+                widgetFilters?.sections?.length
+                  ? `Secciones: ${widgetFilters.sections.join(", ")}\n`
+                  : ""
+              }${
+                widgetFilters?.dateRange?.start || widgetFilters?.dateRange?.end
+                  ? `Fechas: ${widgetFilters.dateRange.start || ""} - ${
+                      widgetFilters.dateRange.end || ""
+                    }`
+                  : ""
+              }`}
+            >
+              <Icon name="filter" size={12} />
+            </div>
+          )}
+
+          {filterDisplayMode === "badges" && (
+            <div className="widget-filter-badges">
+              {widgetFilters?.dateRange?.start ||
+              widgetFilters?.dateRange?.end ? (
+                <span
+                  className="widget-filter-badge widget-filter-badge--date"
+                  data-tooltip-id="filter-date-tooltip"
+                  data-tooltip-content={`Fechas: ${
+                    widgetFilters.dateRange.start || ""
+                  } - ${widgetFilters.dateRange.end || ""}`}
+                >
+                  <span>Fecha</span>
+                </span>
+              ) : null}
+
+              {widgetFilters?.products && widgetFilters.products.length > 0 && (
+                <span
+                  className="widget-filter-badge widget-filter-badge--product"
+                  data-tooltip-id="filter-products-tooltip"
+                  data-tooltip-content={`Productos: ${widgetFilters.products.join(
+                    ", "
+                  )}`}
+                >
+                  <span>
+                    {widgetFilters.products.length === 1
+                      ? widgetFilters.products[0]
+                      : `${widgetFilters.products.length} Productos`}
+                  </span>
+                </span>
+              )}
+
+              {widgetFilters?.sections && widgetFilters.sections.length > 0 && (
+                <span
+                  className="widget-filter-badge widget-filter-badge--section"
+                  data-tooltip-id="filter-sections-tooltip"
+                  data-tooltip-content={`Secciones: ${widgetFilters.sections.join(
+                    ", "
+                  )}`}
+                >
+                  <span>
+                    {widgetFilters.sections.length === 1
+                      ? widgetFilters.sections[0]
+                      : `${widgetFilters.sections.length} Secciones`}
+                  </span>
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Tooltips para filtros */}
+          <Tooltip
+            id="widget-filters-tooltip"
+            place="top"
+            style={{ whiteSpace: "pre-line" }}
+          />
+          <Tooltip id="filter-date-tooltip" place="top" />
+          <Tooltip id="filter-products-tooltip" place="top" />
+          <Tooltip id="filter-sections-tooltip" place="top" />
+        </div>
+      );
+    }
+    return null;
+  };
+
   const renderWidgetContent = () => {
     switch (widget.type) {
       case "chart":
@@ -176,9 +386,19 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
     <div
       className={`widget-container ${isSelected ? "widget-selected" : ""}`}
       onClick={handleWidgetClick}
+      onMouseEnter={isEditing ? handleMouseEnter : undefined}
+      onMouseLeave={isEditing ? handleMouseLeave : undefined}
     >
       {isEditing && (
-        <div className="floating-widget-header draggable-handle">
+        <div
+          className={`floating-widget-header draggable-handle ${
+            showFloatingHeader
+              ? isHiding
+                ? "floating-widget-header--hiding"
+                : "floating-widget-header--visible"
+              : ""
+          }`}
+        >
           <div className="floating-widget-title-section">
             <Icon name="grip-vertical" size={14} className="drag-icon" />
             <h4 className="floating-widget-title">{widget.title}</h4>
@@ -187,11 +407,27 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
             className="floating-widget-actions no-drag"
             onMouseDown={handleButtonMouseDown}
           >
+            {isSelected && (
+              <button
+                className={`floating-action-btn pin ${
+                  isPinned ? "active" : ""
+                }`}
+                onClick={handleTogglePin}
+                onMouseDown={handleButtonMouseDown}
+                data-tooltip-id="pin-tooltip"
+                data-tooltip-content={
+                  isPinned ? "Desanclar cabecera" : "Anclar cabecera"
+                }
+              >
+                <Icon name={isPinned ? "pin" : "pin-off"} size={14} />
+              </button>
+            )}
             <button
               className="floating-action-btn copy"
               onClick={handleCopy}
               onMouseDown={handleButtonMouseDown}
-              title="Copy widget"
+              data-tooltip-id="copy-tooltip"
+              data-tooltip-content="Copiar widget"
             >
               <Icon name="copy" size={14} />
             </button>
@@ -199,7 +435,8 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
               className="floating-action-btn edit"
               onClick={handleEdit}
               onMouseDown={handleButtonMouseDown}
-              title="Edit widget"
+              data-tooltip-id="edit-widget-tooltip"
+              data-tooltip-content="Editar widget"
             >
               <Icon name="edit" size={14} />
             </button>
@@ -207,26 +444,42 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
               className="floating-action-btn delete"
               onClick={handleDelete}
               onMouseDown={handleButtonMouseDown}
-              title="Delete widget"
+              data-tooltip-id="delete-tooltip"
+              data-tooltip-content="Eliminar widget"
             >
               <Icon name="trash" size={14} />
             </button>
           </div>
+
+          {/* Tooltips */}
+          <Tooltip id="pin-tooltip" place="bottom" />
+          <Tooltip id="copy-tooltip" place="bottom" />
+          <Tooltip id="edit-widget-tooltip" place="bottom" />
+          <Tooltip id="delete-tooltip" place="bottom" />
         </div>
       )}
 
-      {/* Solo mostrar el encabezado si el widget tiene título y la configuración permite mostrarlo */}
+      {/* Header del widget con título y filtros */}
       {(() => {
         // Para widgets de tabla, verificar la configuración de visualización
         if (widget.type === "table") {
           const visualization = widget.config.visualization || {};
           const showTitle = visualization.showTitle !== false;
+          const filters = renderWidgetFilters();
+          const hasFilters =
+            !!filters && widget.config.visualization?.filterDisplayMode;
 
-          return widget.title && showTitle ? (
-            <div className="widget-header">
-              <h4 className="widget-title">{widget.title}</h4>
-            </div>
-          ) : null;
+          if ((widget.title && showTitle) || hasFilters) {
+            return (
+              <div className="widget-header-container">
+                {widget.title && showTitle && (
+                  <h4 className="widget-title">{widget.title}</h4>
+                )}
+                {hasFilters && filters}
+              </div>
+            );
+          }
+          return null;
         }
 
         // Para widgets de métrica, verificar la configuración de visualización
@@ -238,7 +491,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
               : false; // Por defecto false
 
           return widget.title && showTitle ? (
-            <div className="widget-header">
+            <div className="widget-header-container">
               <h4 className="widget-title">{widget.title}</h4>
             </div>
           ) : null;
@@ -246,45 +499,13 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
 
         // Para otros tipos de widgets, mostrar el título si existe
         return widget.title ? (
-          <div className="widget-header">
+          <div className="widget-header-container">
             <h4 className="widget-title">{widget.title}</h4>
           </div>
         ) : null;
       })()}
 
-      {(() => {
-        // Determinar si debemos mostrar el título del widget
-        let shouldShowTitle = false;
-
-        if (widget.type === "table") {
-          const visualization = widget.config.visualization || {};
-          const showTitle = visualization.showTitle !== false;
-          shouldShowTitle = !!(widget.title && showTitle);
-        } else if (widget.type === "metric") {
-          const visualization = widget.config.visualization || {};
-          const showTitle =
-            visualization.showTitle !== undefined
-              ? visualization.showTitle
-              : false; // Por defecto false
-          shouldShowTitle = !!(widget.title && showTitle);
-        } else {
-          shouldShowTitle = !!widget.title;
-        }
-
-        // Determinar si necesitamos padding para el floating header
-        const needsFloatingPadding =
-          isEditing && isSelected && !shouldShowTitle;
-
-        return (
-          <div
-            className={`widget-content ${
-              needsFloatingPadding ? "widget-content--floating-padding" : ""
-            }`}
-          >
-            {renderWidgetContent()}
-          </div>
-        );
-      })()}
+      <div className="widget-content">{renderWidgetContent()}</div>
     </div>
   );
 };

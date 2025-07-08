@@ -1,10 +1,9 @@
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Select, { components } from "react-select";
 import type {
   StylesConfig,
   SingleValue,
   MultiValue,
-  ActionMeta,
   DropdownIndicatorProps,
 } from "react-select";
 import { Icon } from "./Icon";
@@ -50,12 +49,34 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   menuPortalTarget,
   styles: customStyles,
 }) => {
+  // Añadir ref para el contenedor y estado para controlar la apertura del menú
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Manejar click outside para forzar cierre del menú
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
   const selectedOption = options.find((opt) => opt.value === value) || null;
 
   const handleChange = (
-    newValue: SingleValue<SelectOption> | MultiValue<SelectOption>,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    actionMeta: ActionMeta<SelectOption>
+    newValue: SingleValue<SelectOption> | MultiValue<SelectOption>
   ) => {
     // Para select simple, newValue es un objeto con value y label
     if (newValue && "value" in newValue) {
@@ -159,22 +180,27 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   };
 
   return (
-    <Select
-      className={`custom-select ${className}`}
-      classNamePrefix="custom-select"
-      options={options}
-      value={selectedOption}
-      onChange={handleChange}
-      placeholder={placeholder}
-      isDisabled={isDisabled}
-      isSearchable={false}
-      styles={{ ...baseStyles, ...customStyles }}
-      menuPlacement={menuPlacement}
-      menuPortalTarget={menuPortalTarget}
-      components={{
-        DropdownIndicator,
-        IndicatorSeparator,
-      }}
-    />
+    <div className={`custom-select-container ${className}`} ref={containerRef}>
+      <Select
+        className="custom-select"
+        classNamePrefix="custom-select"
+        options={options}
+        value={selectedOption}
+        onChange={handleChange}
+        placeholder={placeholder}
+        isDisabled={isDisabled}
+        isSearchable={false}
+        styles={{ ...baseStyles, ...customStyles }}
+        menuPlacement={menuPlacement}
+        menuPortalTarget={menuPortalTarget}
+        menuIsOpen={isMenuOpen}
+        onMenuOpen={() => setIsMenuOpen(true)}
+        onMenuClose={() => setIsMenuOpen(false)}
+        components={{
+          DropdownIndicator,
+          IndicatorSeparator,
+        }}
+      />
+    </div>
   );
 };

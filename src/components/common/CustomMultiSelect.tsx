@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Select, { components } from "react-select";
 import type {
   StylesConfig,
@@ -106,6 +106,30 @@ export const CustomMultiSelect: React.FC<CustomMultiSelectProps> = ({
   className = "",
   isActive = false,
 }) => {
+  // Añadir ref para el contenedor y estado para controlar la apertura del menú
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Manejar click outside para forzar cierre del menú
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
   const selectedOptions = options.filter((opt) => value.includes(opt.value));
 
   const handleChange = (newValue: MultiValue<SelectOption>) => {
@@ -250,7 +274,7 @@ export const CustomMultiSelect: React.FC<CustomMultiSelectProps> = ({
   };
 
   return (
-    <div className={`custom-multiselect ${className}`}>
+    <div className={`custom-multiselect ${className}`} ref={containerRef}>
       <Select
         className={`custom-multiselect__select ${
           isActive ? "filter-bar__filter-control--active" : ""
@@ -266,6 +290,9 @@ export const CustomMultiSelect: React.FC<CustomMultiSelectProps> = ({
         closeMenuOnSelect={false}
         hideSelectedOptions={false}
         styles={customStyles}
+        menuIsOpen={isMenuOpen}
+        onMenuOpen={() => setIsMenuOpen(true)}
+        onMenuClose={() => setIsMenuOpen(false)}
         components={{
           DropdownIndicator,
           IndicatorSeparator,

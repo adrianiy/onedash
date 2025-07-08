@@ -1,6 +1,7 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import type { Widget, TableWidgetConfig } from "../../../../types/widget";
 import type { MetricDefinition } from "../../../../types/metricConfig";
+import { getDisplayTitle } from "../../../../types/metricConfig";
 import { ConfigDropdown } from "../../common/ConfigDropdown";
 import { EmptyPlaceholder } from "../../common/EmptyPlaceholder";
 import { Icon } from "../../../common/Icon";
@@ -37,25 +38,33 @@ export const TableColumnsConfig: React.FC<TableColumnsConfigProps> = ({
   widget,
 }) => {
   const tableConfig = widget.type === "table" ? widget.config : { columns: [] };
-  // Convertimos las columnas base a ColumnConfig
-  const columnsFromConfig: ColumnConfig[] = (
-    (tableConfig as TableWidgetConfig).columns || []
-  ).map((column) => {
-    // Usar el valor visible existente o establecer true por defecto
-    const columnWithVisibility = column as ColumnConfig;
-    return {
-      ...column,
-      visible:
-        columnWithVisibility.visible !== undefined
-          ? columnWithVisibility.visible
-          : true,
-      selected: false,
-    };
-  });
+  // Convertimos las columnas base a ColumnConfig y memorizamos el resultado
+  const columnsFromConfig: ColumnConfig[] = useMemo(() => {
+    return ((tableConfig as TableWidgetConfig).columns || []).map((column) => {
+      // Usar el valor visible existente o establecer true por defecto
+      const columnWithVisibility = column as ColumnConfig;
+      return {
+        ...column,
+        visible:
+          columnWithVisibility.visible !== undefined
+            ? columnWithVisibility.visible
+            : true,
+        selected: false,
+      };
+    });
+  }, [tableConfig.columns]);
 
   // Estado para controlar qué columnas están seleccionadas
   // (la visibilidad se maneja directamente en la configuración del widget)
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
+
+  // Estado para controlar la columna en edición
+  const [editingColumnId, setEditingColumnId] = useState<string | null>(null);
+
+  // Estado para almacenar la columna que se está editando
+  const [editingColumn, setEditingColumn] = useState<MetricDefinition | null>(
+    null
+  );
 
   // Referencia para controlar el estado del dropdown
   const setDropdownOpenRef = useRef<((isOpen: boolean) => void) | null>(null);
@@ -67,6 +76,20 @@ export const TableColumnsConfig: React.FC<TableColumnsConfigProps> = ({
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
+
+  // Efecto para establecer la columna en edición cuando cambia el ID
+  useEffect(() => {
+    if (editingColumnId && widget.type === "table") {
+      const column = columnsFromConfig.find(
+        (col) => col.id === editingColumnId
+      );
+      if (column) {
+        setEditingColumn(column);
+      }
+    } else {
+      setEditingColumn(null);
+    }
+  }, [editingColumnId, widget.type, columnsFromConfig]);
 
   // Función para actualizar el widget con las nuevas columnas
   const handleAddColumns = (newMetrics: MetricDefinition[]) => {
@@ -107,6 +130,89 @@ export const TableColumnsConfig: React.FC<TableColumnsConfigProps> = ({
     // Cerrar el dropdown después de seleccionar
     if (setDropdownOpenRef.current) {
       setDropdownOpenRef.current(false);
+    }
+
+    // Resetear el modo de edición
+    setEditingColumnId(null);
+  };
+
+  // Función para editar una columna existente
+  const handleEditColumn = (updatedMetric: MetricDefinition) => {
+    if (widget.type === "table" && editingColumnId) {
+      // Obtener el store para actualizar el widget
+      const { updateWidget } = useWidgetStore.getState();
+
+      // Crear una copia de las columnas actuales
+      const updatedColumns = columnsFromConfig.map((column) => {
+        if (column.id === editingColumnId) {
+          // Mantener el id, visible y selected de la columna original
+          return {
+            ...updatedMetric,
+            id: editingColumnId,
+            visible: column.visible,
+            selected: column.selected,
+          };
+        }
+        return column;
+      });
+
+      // Actualizar el widget
+      updateWidget(widget.id, {
+        config: {
+          ...widget.config,
+          columns: updatedColumns,
+        },
+      });
+
+      // Resetear el modo de edición
+      setEditingColumnId(null);
+
+      // Cerrar el dropdown
+      if (setDropdownOpenRef.current) {
+        setDropdownOpenRef.current(false);
+      }
+    }
+  };
+
+  // Función para copiar una columna
+  const handleCopyColumn = (columnId: string) => {
+    if (widget.type === "table") {
+      // Obtener el store para actualizar el widget
+      const { updateWidget } = useWidgetStore.getState();
+
+      // Encontrar la columna a copiar
+      const columnToCopy = columnsFromConfig.find(
+        (column) => column.id === columnId
+      );
+
+      if (columnToCopy) {
+        // Crear una copia de la columna con un nuevo ID único
+        const newId = `${columnToCopy.id}_copy_${Date.now()}`;
+        const copiedColumn: ColumnConfig = {
+          ...JSON.parse(JSON.stringify(columnToCopy)), // Deep copy para evitar problemas de referencia
+          id: newId,
+          displayName: `${
+            columnToCopy.displayName || getDisplayTitle(columnToCopy, {})
+          } (Copia)`,
+        };
+
+        // Encontrar el índice de la columna original para insertar la copia justo después
+        const originalIndex = columnsFromConfig.findIndex(
+          (column) => column.id === columnId
+        );
+
+        // Crear un nuevo array con todas las columnas, insertando la copia después de la original
+        const updatedColumns = [...columnsFromConfig];
+        updatedColumns.splice(originalIndex + 1, 0, copiedColumn);
+
+        // Actualizar el widget
+        updateWidget(widget.id, {
+          config: {
+            ...widget.config,
+            columns: updatedColumns,
+          },
+        });
+      }
     }
   };
 
@@ -320,6 +426,14 @@ export const TableColumnsConfig: React.FC<TableColumnsConfigProps> = ({
                   onToggleVisibility={handleToggleVisibility}
                   onToggleSelect={handleToggleSelect}
                   onRename={handleRenameColumn}
+                  onCopy={handleCopyColumn}
+                  onEdit={(id) => {
+                    setEditingColumnId(id);
+                    // Abrir el dropdown
+                    if (setDropdownOpenRef.current) {
+                      setDropdownOpenRef.current(true);
+                    }
+                  }}
                 />
               );
             })}
@@ -400,13 +514,27 @@ export const TableColumnsConfig: React.FC<TableColumnsConfigProps> = ({
           )
         }
       >
-        <MetricSelector
-          mode="multiple"
-          onSelectMetrics={handleAddColumns}
-          onClose={() =>
-            setDropdownOpenRef.current && setDropdownOpenRef.current(false)
-          }
-        />
+        {editingColumnId ? (
+          <MetricSelector
+            mode="single"
+            selectedMetric={editingColumn || undefined}
+            onSelectMetric={handleEditColumn}
+            onClose={() => {
+              setEditingColumnId(null);
+              if (setDropdownOpenRef.current) {
+                setDropdownOpenRef.current(false);
+              }
+            }}
+          />
+        ) : (
+          <MetricSelector
+            mode="multiple"
+            onSelectMetrics={handleAddColumns}
+            onClose={() =>
+              setDropdownOpenRef.current && setDropdownOpenRef.current(false)
+            }
+          />
+        )}
       </ConfigDropdown>
     </div>
   );

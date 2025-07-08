@@ -9,6 +9,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { ConfigDropdown } from "../../../common/ConfigDropdown";
 import MetricSelector from "../../../common/MetricSelector/MetricSelector";
 import { useVariableStore } from "../../../../../store/variableStore";
+import { Tooltip } from "react-tooltip";
 
 interface MetricItemProps {
   id: string;
@@ -220,7 +221,10 @@ export const MetricItem: React.FC<MetricItemProps> = ({
         <button
           onClick={handleToggleExpand}
           className="column-item__expand"
-          title={isExpanded ? "Contraer detalles" : "Expandir detalles"}
+          data-tooltip-id={`metric-expand-tooltip-${id}`}
+          data-tooltip-content={
+            isExpanded ? "Contraer detalles" : "Expandir detalles"
+          }
         >
           <Icon
             name={isExpanded ? "chevrons-down-up" : "chevrons-up-down"}
@@ -237,7 +241,8 @@ export const MetricItem: React.FC<MetricItemProps> = ({
               ref={ref}
               onClick={onClick}
               className="column-item__visibility"
-              title="Editar métrica"
+              data-tooltip-id={`metric-edit-tooltip-${id}`}
+              data-tooltip-content="Editar métrica"
               {...referenceProps}
             >
               <Icon name="edit" size={14} />
@@ -258,10 +263,16 @@ export const MetricItem: React.FC<MetricItemProps> = ({
         <button
           onClick={handleRemove}
           className="column-item__remove config-item__remove"
-          title="Eliminar métrica"
+          data-tooltip-id={`metric-remove-tooltip-${id}`}
+          data-tooltip-content="Eliminar métrica"
         >
           <Icon name="trash" size={14} />
         </button>
+
+        {/* Tooltips */}
+        <Tooltip id={`metric-expand-tooltip-${id}`} place="top" />
+        <Tooltip id={`metric-edit-tooltip-${id}`} place="top" />
+        <Tooltip id={`metric-remove-tooltip-${id}`} place="top" />
       </div>
 
       {/* Contenedor de chips expandible */}

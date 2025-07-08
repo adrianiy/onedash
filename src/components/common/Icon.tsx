@@ -58,6 +58,12 @@ import {
   PanelBottom,
   Filter,
   RotateCcw,
+  LayoutGrid,
+  LayoutList,
+  Rows3,
+  Rows4,
+  Pin,
+  PinOff,
   type LucideIcon,
 } from "lucide-react";
 
@@ -66,6 +72,8 @@ import {
   IconTable,
   IconBoxAlignTop,
   IconBoxAlignBottom,
+  IconTableRow,
+  IconTag,
 } from "@tabler/icons-react";
 
 const lucideIconMap = {
@@ -89,6 +97,8 @@ const lucideIconMap = {
   "alert-circle": AlertCircle,
   warning: AlertTriangle,
   copy: Copy,
+  pin: Pin,
+  "pin-off": PinOff,
   "chevron-up": ChevronUp,
   "chevron-down": ChevronDown,
   "chevron-right": ChevronRight,
@@ -113,6 +123,10 @@ const lucideIconMap = {
   palette: Palette,
   "paint-bucket": PaintBucket,
   "layout-dashboard": LayoutDashboard,
+  "layout-grid": LayoutGrid,
+  "layout-list": LayoutList,
+  "rows-3": Rows3,
+  "rows-4": Rows4,
   type: Type,
   heading: Heading,
   bold: Bold,
@@ -134,6 +148,8 @@ const tablerIconMap = {
   "table-striped": IconTable,
   "box-align-top": IconBoxAlignTop,
   "box-align-bottom": IconBoxAlignBottom,
+  "table-row": IconTableRow,
+  label: IconTag,
 } as const;
 
 export type IconName = keyof typeof lucideIconMap | keyof typeof tablerIconMap;

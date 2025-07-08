@@ -4,6 +4,7 @@ import type { MetricWidget as MetricWidgetType } from "../../../types/widget";
 import { formatValue } from "../../../utils/format";
 import { useVariableStore } from "../../../store/variableStore";
 import { useResolvedMetric } from "../../../hooks/useResolvedMetric";
+import { Tooltip } from "react-tooltip";
 
 interface MetricWidgetProps {
   widget: MetricWidgetType;
@@ -17,6 +18,15 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
   const alignment = widget.config.alignment || "center";
   const conditionalFormats =
     widget.config.visualization?.conditionalFormats || [];
+  const filterDisplayMode = widget.config.visualization?.filterDisplayMode;
+  const widgetFilters = widget.config.widgetFilters || {};
+
+  // Verificar si hay filtros configurados para mostrar
+  const hasFilters =
+    (widgetFilters.products && widgetFilters.products.length > 0) ||
+    (widgetFilters.sections && widgetFilters.sections.length > 0) ||
+    (widgetFilters.dateRange &&
+      (widgetFilters.dateRange.start || widgetFilters.dateRange.end));
 
   // Detectar si el widget tiene eventos de click configurados
   const clickEvent = useMemo(() => {
@@ -107,6 +117,97 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
     return finalStyle;
   };
 
+  // Función para renderizar los filtros según el modo
+  const renderFilters = () => {
+    if (!hasFilters || !filterDisplayMode || filterDisplayMode === "hidden") {
+      return null;
+    }
+
+    // Modo badge: mostrar etiquetas con los valores de los filtros
+    if (filterDisplayMode === "badges") {
+      return (
+        <div className="metric-widget__filters metric-widget__filters--badges">
+          {widgetFilters.products && widgetFilters.products.length > 0 && (
+            <span
+              className="metric-widget__filter-badge metric-widget__filter-badge--product"
+              data-tooltip-id="filter-products-tooltip"
+              data-tooltip-content={`Productos: ${widgetFilters.products.join(
+                ", "
+              )}`}
+            >
+              <span>
+                {widgetFilters.products.length === 1
+                  ? widgetFilters.products[0]
+                  : `${widgetFilters.products.length} Productos`}
+              </span>
+            </span>
+          )}
+
+          {widgetFilters.sections && widgetFilters.sections.length > 0 && (
+            <span
+              className="metric-widget__filter-badge metric-widget__filter-badge--section"
+              data-tooltip-id="filter-sections-tooltip"
+              data-tooltip-content={`Secciones: ${widgetFilters.sections.join(
+                ", "
+              )}`}
+            >
+              <span>
+                {widgetFilters.sections.length === 1
+                  ? widgetFilters.sections[0]
+                  : `${widgetFilters.sections.length} Secciones`}
+              </span>
+            </span>
+          )}
+
+          {widgetFilters.dateRange &&
+            (widgetFilters.dateRange.start || widgetFilters.dateRange.end) && (
+              <span
+                className="metric-widget__filter-badge metric-widget__filter-badge--date"
+                data-tooltip-id="filter-date-tooltip"
+                data-tooltip-content={`Fechas: ${
+                  widgetFilters.dateRange.start || ""
+                } - ${widgetFilters.dateRange.end || ""}`}
+              >
+                <span>Fecha</span>
+              </span>
+            )}
+        </div>
+      );
+    }
+
+    // Modo info: mostrar solo un icono de filtro
+    if (filterDisplayMode === "info") {
+      return (
+        <div
+          className="metric-widget__filters metric-widget__filters--info"
+          data-tooltip-id="metric-filters-tooltip"
+          data-tooltip-content={`${
+            widgetFilters.products?.length
+              ? `Productos: ${widgetFilters.products.join(", ")}\n`
+              : ""
+          }${
+            widgetFilters.sections?.length
+              ? `Secciones: ${widgetFilters.sections.join(", ")}\n`
+              : ""
+          }${
+            widgetFilters.dateRange &&
+            (widgetFilters.dateRange.start || widgetFilters.dateRange.end)
+              ? `Fechas: ${widgetFilters.dateRange.start || ""} - ${
+                  widgetFilters.dateRange.end || ""
+                }`
+              : ""
+          }`}
+        >
+          <div className="metric-widget__filter-indicator">
+            <Icon name="filter" size={12} />
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
   // Si no hay métricas configuradas, mostrar placeholder
   if (!primaryMetricData) {
     return (
@@ -123,7 +224,11 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
 
   return (
     <div
-      className={`metric-widget-wrapper metric-widget-wrapper--${alignment}`}
+      className={`metric-widget-wrapper metric-widget-wrapper--${alignment} ${
+        hasFilters && filterDisplayMode
+          ? "metric-widget-wrapper--with-filters"
+          : ""
+      }`}
     >
       <div
         className={`metric-widget metric-widget--${size} ${
@@ -132,6 +237,15 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
         onClick={handleWidgetClick}
         style={{ cursor: isClickable ? "pointer" : "default" }}
       >
+        {renderFilters()}
+        <Tooltip id="filter-date-tooltip" place="top" />
+        <Tooltip id="filter-products-tooltip" place="top" />
+        <Tooltip id="filter-sections-tooltip" place="top" />
+        <Tooltip
+          id="metric-filters-tooltip"
+          place="top"
+          style={{ whiteSpace: "pre-line" }}
+        />
         {/* Valor principal arriba en grande */}
         <div
           className={`metric-widget__primary-value ${
@@ -143,7 +257,11 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
         </div>
 
         {/* Footer con título del widget y métrica secundaria */}
-        <div className="metric-widget__footer">
+        <div
+          className={`metric-widget__footer ${
+            !secondaryMetricData ? "metric-widget__footer--centered" : ""
+          }`}
+        >
           <div className="metric-widget__title">{widget.title}</div>
           {secondaryMetricData && (
             <div

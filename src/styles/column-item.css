@@ -41,14 +41,44 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  border-radius: var(--radius-sm);
   flex-shrink: 0;
   transition: all 0.2s ease;
+  opacity: 0;
+}
+
+.column-item__content:hover .column-item__visibility {
+  opacity: 1;
 }
 
 .column-item__visibility:hover {
   background-color: rgba(var(--color-info-rgb), 0.1);
   color: var(--color-info);
+}
+
+/* Botones de acción (copiar y editar) */
+.column-item__action {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  opacity: 0;
+}
+
+.column-item__content:hover .column-item__action {
+  opacity: 1;
+}
+
+.column-item__action:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
 }
 
 /* Estilos específicos para botón de visibilidad */
@@ -71,6 +101,27 @@
 [data-theme="dark"] .column-item__visibility:hover {
   background-color: rgba(var(--color-info-rgb), 0.2);
   color: var(--color-info);
+}
+
+/* Estilos para tema oscuro - botones de acción */
+[data-theme="dark"] .column-item__action {
+  color: #9ca3af;
+}
+
+/* Mantener visibles algunos botones específicos aunque no haya hover */
+.column-item__remove,
+.column-item__action[data-tooltip-content^="Editar"] {
+  opacity: 1;
+}
+
+[data-theme="dark"] .column-item__action:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.2);
+  color: var(--color-primary);
+}
+
+/* Eliminar tooltips nativos del navegador para evitar duplicados */
+[data-tooltip-id] {
+  pointer-events: auto !important;
 }
 
 /* Estilos para columnas ocultas */
@@ -163,7 +214,7 @@
   padding: 0;
   border: none;
   background: transparent;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   color: var(--color-text-secondary);
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -202,7 +253,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  border-radius: var(--radius-sm);
   flex-shrink: 0;
   transition: all 0.2s ease;
   opacity: 0;

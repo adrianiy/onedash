@@ -3,6 +3,7 @@ import type { MetricDefinition } from "../../../../../types/metricConfig";
 import MetricSelector from "../../../common/MetricSelector/MetricSelector";
 import { ConfigDropdown } from "../../../common/ConfigDropdown";
 import { Icon } from "../../../../common/Icon";
+import { Tooltip } from "react-tooltip";
 
 interface MetricSelectorSingleProps {
   value?: MetricDefinition;
@@ -61,7 +62,8 @@ export const MetricSelectorSingle: React.FC<MetricSelectorSingleProps> = ({
                 type="button"
                 className="metric-selector-single__clear"
                 onClick={handleClear}
-                title="Limpiar selección"
+                data-tooltip-id="metric-selector-clear-tooltip"
+                data-tooltip-content="Limpiar selección"
               >
                 <Icon name="close" size={14} />
               </button>
@@ -83,6 +85,9 @@ export const MetricSelectorSingle: React.FC<MetricSelectorSingleProps> = ({
           setDropdownOpenRef.current && setDropdownOpenRef.current(false)
         }
       />
+
+      {/* Tooltip */}
+      <Tooltip id="metric-selector-clear-tooltip" place="top" />
     </ConfigDropdown>
   );
 };

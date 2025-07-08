@@ -128,9 +128,11 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
           });
         }
 
-        // Seleccionar el widget recién creado
-        const { selectWidget } = useDashboardStore.getState();
+        // Seleccionar el widget recién creado y abrir el sidebar de configuración
+        const { selectWidget, openConfigSidebar } =
+          useDashboardStore.getState();
         selectWidget(newWidget.id);
+        openConfigSidebar();
       }
 
       // Resetear el tamaño del droppingItem al finalizar el drop

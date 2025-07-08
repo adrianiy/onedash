@@ -257,18 +257,46 @@ function generateDimensionCombinations(
 }
 
 /**
+ * Interfaz para los filtros aplicables a la generación de datos
+ */
+export interface TableDataFilters {
+  dateStart?: string | null;
+  dateEnd?: string | null;
+  selectedProducts?: string[];
+  selectedSections?: string[];
+}
+
+/**
  * Genera datos coherentes para una tabla basados en la configuración
  */
 export function generateTableData(
   columns: MetricDefinition[],
   breakdownLevels: string[],
+  filters?: TableDataFilters | number,
   rowCount: number = 50
 ): Record<string, unknown>[] {
   // Si no hay columnas o niveles de desglose, devolver array vacío
   if (!columns.length || !breakdownLevels.length) return [];
 
+  // Compatiblidad con versiones anteriores
+  if (typeof filters === "number") {
+    rowCount = filters;
+    filters = undefined;
+  }
+
   // Limitar el número de filas para evitar explosión combinatoria
   const safeRowCount = Math.min(rowCount, 100);
+
+  // Extraer filtros si están disponibles
+  const filterProducts =
+    filters && Array.isArray(filters.selectedProducts)
+      ? filters.selectedProducts
+      : [];
+
+  const filterSections =
+    filters && Array.isArray(filters.selectedSections)
+      ? filters.selectedSections
+      : [];
 
   // Generar todas las combinaciones posibles de valores de dimensión
   const combinations = generateDimensionCombinations(breakdownLevels);
@@ -287,7 +315,7 @@ export function generateTableData(
   }
 
   // Generar datos para cada combinación
-  const data = selectedCombinations.map((dimensionCombo) => {
+  let data = selectedCombinations.map((dimensionCombo) => {
     const row: Record<string, unknown> = {};
 
     // Añadir dimensiones al row
@@ -366,6 +394,25 @@ export function generateTableData(
 
     return row;
   });
+
+  // Aplicar filtros a los datos generados
+  if (filters && typeof filters !== "number") {
+    // Filtrar por productos si hay seleccionados
+    if (filterProducts.length > 0) {
+      data = data.filter((row) => {
+        const rowProduct = row["product"] as string;
+        return !rowProduct || filterProducts.includes(rowProduct);
+      });
+    }
+
+    // Filtrar por secciones si hay seleccionadas
+    if (filterSections.length > 0) {
+      data = data.filter((row) => {
+        const rowSection = row["section"] as string;
+        return !rowSection || filterSections.includes(rowSection);
+      });
+    }
+  }
 
   return data;
 }

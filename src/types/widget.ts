@@ -41,10 +41,21 @@ export interface MetricWidgetConfig {
   // Alineación del contenido (por defecto center)
   alignment?: "left" | "center" | "right";
 
+  // Filtros específicos del widget
+  widgetFilters?: {
+    products?: string[];
+    sections?: string[];
+    dateRange?: {
+      start: string | null;
+      end: string | null;
+    };
+  };
+
   // Configuración visual
   visualization?: {
     showTitle?: boolean;
     conditionalFormats?: ConditionalFormatRule[];
+    filterDisplayMode?: "badges" | "info" | "hidden";
   };
 
   // Compatibilidad con mock actual (deprecado)
@@ -60,14 +71,24 @@ export interface TableWidgetConfig {
   pagination?: boolean;
   breakdownLevels?: string[];
   dataSource?: string;
+  widgetFilters?: {
+    products?: string[];
+    sections?: string[];
+    dateRange?: {
+      start: string | null;
+      end: string | null;
+    };
+  };
   visualization?: {
     showTitle?: boolean;
     compact?: boolean;
     showBorders?: boolean;
     alternateRowColors?: boolean;
     showPagination?: boolean;
+    showHeaderBackground?: boolean;
     textAlign?: "left" | "center" | "right";
     totalRow?: "top" | "bottom" | "none";
+    filterDisplayMode?: "badges" | "info" | "hidden";
     conditionalFormats?: ConditionalFormatRule[];
   };
   conditionalFormatting?: {

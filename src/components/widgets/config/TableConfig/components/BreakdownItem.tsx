@@ -1,4 +1,5 @@
 import React from "react";
+import { Tooltip } from "react-tooltip";
 import { Icon, type IconName } from "../../../../common/Icon";
 import { useSortable } from "@dnd-kit/sortable";
 import type { BreakdownOption } from "../../../../../types/breakdownLevels";
@@ -89,10 +90,14 @@ export const BreakdownItem: React.FC<BreakdownItemProps> = ({
         <button
           onClick={() => onRemove(id)}
           className="breakdown-level__remove config-item__remove"
-          title="Eliminar nivel"
+          data-tooltip-id={`breakdown-tooltip-${id}`}
+          data-tooltip-content="Eliminar nivel"
         >
           <Icon name="trash" size={14} />
         </button>
+
+        {/* Tooltip para este breakdown item */}
+        <Tooltip id={`breakdown-tooltip-${id}`} place="top" />
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import { CustomSelect } from "../../../../common/CustomSelect";
 import type { SelectOption } from "../../../../common/CustomSelect";
 import { CustomColorPicker } from "../../../../common/CustomColorPicker";
 import { ConfigDropdown } from "../../../common/ConfigDropdown";
+import { Tooltip } from "react-tooltip";
 
 interface ConditionalFormatFormProps {
   columns: (MetricDefinition & { visible?: boolean })[];
@@ -204,7 +205,8 @@ export const ConditionalFormatForm: React.FC<ConditionalFormatFormProps> = ({
                   ref={ref}
                   className="style-button"
                   onClick={onClick}
-                  title="Color de fondo"
+                  data-tooltip-id="bg-color-tooltip"
+                  data-tooltip-content="Color de fondo"
                   type="button"
                   {...referenceProps}
                 >
@@ -231,7 +233,8 @@ export const ConditionalFormatForm: React.FC<ConditionalFormatFormProps> = ({
                   ref={ref}
                   className="style-button"
                   onClick={onClick}
-                  title="Color de texto"
+                  data-tooltip-id="text-color-tooltip"
+                  data-tooltip-content="Color de texto"
                   type="button"
                   {...referenceProps}
                 >
@@ -249,7 +252,8 @@ export const ConditionalFormatForm: React.FC<ConditionalFormatFormProps> = ({
             <button
               className={`style-button ${isBold ? "style-button--active" : ""}`}
               onClick={() => setIsBold(!isBold)}
-              title="Negrita"
+              data-tooltip-id="bold-tooltip"
+              data-tooltip-content="Negrita"
               type="button"
             >
               <Icon name="bold" size={16} />
@@ -259,7 +263,8 @@ export const ConditionalFormatForm: React.FC<ConditionalFormatFormProps> = ({
                 isItalic ? "style-button--active" : ""
               }`}
               onClick={() => setIsItalic(!isItalic)}
-              title="Cursiva"
+              data-tooltip-id="italic-tooltip"
+              data-tooltip-content="Cursiva"
               type="button"
             >
               <Icon name="italic" size={16} />
@@ -272,6 +277,12 @@ export const ConditionalFormatForm: React.FC<ConditionalFormatFormProps> = ({
           {initialData ? "Guardar Cambios" : "Guardar Regla"}
         </button>
       </div>
+
+      {/* Tooltips */}
+      <Tooltip id="bg-color-tooltip" />
+      <Tooltip id="text-color-tooltip" />
+      <Tooltip id="bold-tooltip" />
+      <Tooltip id="italic-tooltip" />
     </div>
   );
 };
