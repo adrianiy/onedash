@@ -112,4 +112,6 @@ export interface MetricModifiersPanelProps {
   handleCustomValueChange: (key: string, value: unknown) => void;
   willApplyDefaultValue: (modifier: string) => boolean;
   getDefaultValue: (modifier: string) => string | null;
+  shouldShowDynamicOption?: (modifierType: string) => boolean;
+  getDynamicLabel?: (context: string) => string;
 }

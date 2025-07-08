@@ -129,7 +129,7 @@ export function getActiveVariablesByType(
  * Map modifier types to variable types
  */
 export const MODIFIER_TO_VARIABLE_TYPE_MAP = {
-  saleType: "sale_type",
+  saleType: "saleType",
   scope: "scope",
   timeframe: "timeframe",
   comparison: "comparison",

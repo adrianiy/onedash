@@ -1,69 +1,40 @@
 /* Estilos para la barra de filtros */
 
 .filter-bar {
-  width: 100%;
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
-  padding: var(--spacing-md) var(--spacing-lg);
   position: sticky;
-  top: 0;
-  z-index: 100;
+  top: var(--header-height);
+  z-index: 998;
+  width: 100%;
   backdrop-filter: blur(8px);
-  background: rgba(var(--color-surface-rgb), 0.95);
+  transition: all var(--transition-normal);
 }
 
-.filter-bar__content {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-lg);
-  max-width: 1200px;
-  margin: 0 auto;
+.filter-bar.editing {
+  top: calc(var(--header-height) + var(--edit-toolbar-height));
 }
 
-.filter-bar__icon {
+.filter-bar__container {
   display: flex;
   align-items: center;
-  color: var(--color-text-secondary);
-  flex-shrink: 0;
+  gap: var(--spacing-md);
+  width: 100%;
+  padding: var(--spacing-lg) var(--spacing-3xl);
 }
 
 .filter-bar__filters {
   display: flex;
   align-items: center;
-  gap: var(--spacing-lg);
-  flex: 1;
+  gap: var(--spacing-md);
+  padding: 0 var(--spacing-xl);
   flex-wrap: wrap;
 }
 
-.filter-bar__item {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-  min-width: 140px;
+.filter-bar__filter-item {
+  min-width: 160px;
 }
 
-.filter-bar__label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.filter-bar__input {
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface);
-  color: var(--color-text-primary);
-  font-size: 0.875rem;
-  transition: all var(--transition-fast);
-}
-
-.filter-bar__input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.1);
+.filter-bar__filter-control {
+  /* Los estilos específicos están en los componentes individuales */
 }
 
 .filter-bar__actions {
@@ -73,7 +44,291 @@
   flex-shrink: 0;
 }
 
-.filter-bar__clear {
+.filter-bar__clear-button {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  display: flex;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-weight: 400;
+  text-decoration: underline;
+}
+
+.filter-bar__clear-button:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-hover);
+}
+
+/* Estilos para DateRangePicker */
+.date-range-picker {
+  position: relative;
+}
+
+.date-range-picker__control {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  min-height: 38px;
+}
+
+.date-range-picker__control:hover {
+  border-color: var(--color-border-hover);
+}
+
+.date-range-picker__control--open {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.1);
+}
+
+.date-range-picker__control--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.date-range-picker__icon {
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.date-range-picker__text {
+  flex: 1;
+  color: var(--color-text-primary);
+  font-weight: 400;
+}
+
+.date-range-picker__chevron {
+  display: flex;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+  transform: rotate(0deg);
+  transition: transform var(--transition-fast);
+}
+
+.date-range-picker__control--open .date-range-picker__chevron {
+  transform: rotate(180deg);
+}
+
+.date-range-picker__dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: min-content;
+  margin-top: 4px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.date-range-picker__layout {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  min-height: 300px;
+}
+
+.date-range-picker__quick-section {
+  padding: var(--spacing-md);
+  border-right: 1px solid var(--color-border);
+  background: var(--color-surface-secondary);
+}
+
+.date-range-picker__quick-title {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--spacing-sm);
+}
+
+.date-range-picker__quick-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.date-range-picker__calendar-section {
+  padding: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.date-range-picker__quick-option {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+  font-weight: 400;
+}
+
+.date-range-picker__quick-option:hover {
+  background: var(--color-surface-hover);
+}
+
+.date-range-picker__quick-option--active {
+  background: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.date-range-picker__quick-option--active:hover {
+  background: rgba(var(--color-primary-rgb), 0.15);
+}
+
+/* Estilos para react-calendar */
+.date-range-picker__calendar {
+  border: none !important;
+  font-family: inherit;
+  width: 100%;
+}
+
+.date-range-picker__calendar .react-calendar__navigation {
+  margin-bottom: var(--spacing-sm);
+}
+
+.date-range-picker__calendar .react-calendar__navigation button {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  margin: 0 2px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.date-range-picker__calendar .react-calendar__navigation button:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-hover);
+}
+
+.date-range-picker__calendar .react-calendar__navigation button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.date-range-picker__calendar .react-calendar__month-view__weekdays {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+}
+
+.date-range-picker__calendar .react-calendar__month-view__weekdays__weekday {
+  padding: var(--spacing-xs);
+  text-align: center;
+}
+
+.date-range-picker__calendar .react-calendar__tile {
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.date-range-picker__calendar .react-calendar__tile:hover {
+  background: var(--color-surface-hover);
+}
+
+.date-range-picker__calendar .react-calendar__tile--active {
+  background: var(--color-primary) !important;
+  color: white !important;
+}
+
+.date-range-picker__calendar .react-calendar__tile--range {
+  background: rgba(var(--color-primary-rgb), 0.1) !important;
+  color: var(--color-primary) !important;
+}
+
+.date-range-picker__calendar .react-calendar__tile--rangeStart,
+.date-range-picker__calendar .react-calendar__tile--rangeEnd {
+  background: var(--color-primary) !important;
+  color: white !important;
+}
+
+.date-range-picker__calendar .react-calendar__tile--now {
+  background: rgba(var(--color-primary-rgb), 0.1);
+  font-weight: 500;
+}
+
+.date-range-picker__calendar
+  .react-calendar__month-view__days__day--neighboringMonth {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.date-range-picker__custom {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.date-range-picker__custom-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.date-range-picker__label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.date-range-picker__input {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  transition: all var(--transition-fast);
+  font-weight: 400;
+}
+
+.date-range-picker__input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.1);
+}
+
+.date-range-picker__actions {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.date-range-picker__clear {
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
@@ -85,9 +340,10 @@
   font-size: 0.875rem;
   cursor: pointer;
   transition: all var(--transition-fast);
+  font-weight: 400;
 }
 
-.filter-bar__clear:hover {
+.date-range-picker__clear:hover {
   background: var(--color-surface-hover);
   color: var(--color-text-primary);
   border-color: var(--color-border-hover);
@@ -96,10 +352,15 @@
 /* Responsive */
 @media (max-width: 768px) {
   .filter-bar {
-    padding: var(--spacing-sm) var(--spacing-md);
+    top: var(--header-height-mobile);
   }
 
-  .filter-bar__content {
+  .filter-bar.editing {
+    top: calc(var(--header-height-mobile) + var(--edit-toolbar-height-mobile));
+  }
+
+  .filter-bar__container {
+    padding: var(--spacing-sm) var(--spacing-md);
     flex-wrap: wrap;
     gap: var(--spacing-md);
   }
@@ -109,14 +370,44 @@
     gap: var(--spacing-md);
   }
 
-  .filter-bar__item {
-    min-width: 120px;
+  .filter-bar__filter-item {
+    min-width: 140px;
     flex: 1;
   }
 
   .filter-bar__actions {
     width: 100%;
     justify-content: flex-end;
+  }
+
+  .date-range-picker__dropdown {
+    left: -20px;
+    right: -20px;
+    width: auto;
+  }
+
+  .date-range-picker__layout {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .date-range-picker__quick-section {
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .date-range-picker__quick-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-xs);
+  }
+
+  .date-range-picker__calendar-section {
+    padding: var(--spacing-sm);
+  }
+
+  .date-range-picker__calendar .react-calendar {
+    max-width: 100%;
   }
 }
 
@@ -126,23 +417,44 @@
   border-color: var(--color-border);
 }
 
-[data-theme="dark"] .filter-bar__input {
-  background: var(--color-surface-secondary);
+[data-theme="dark"] .date-range-picker__control {
+  background: var(--color-surface);
   border-color: var(--color-border);
   color: var(--color-text-primary);
 }
 
-[data-theme="dark"] .filter-bar__input:focus {
+[data-theme="dark"] .date-range-picker__control:focus {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.2);
 }
 
-[data-theme="dark"] .filter-bar__clear {
-  background: var(--color-surface-secondary);
+[data-theme="dark"] .date-range-picker__dropdown {
+  background: var(--color-surface);
   border-color: var(--color-border);
 }
 
-[data-theme="dark"] .filter-bar__clear:hover {
-  background: var(--color-surface-tertiary);
+[data-theme="dark"] .date-range-picker__tab--active {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+[data-theme="dark"] .date-range-picker__input {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .date-range-picker__input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.2);
+}
+
+[data-theme="dark"] .filter-bar__clear-button {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .filter-bar__clear-button:hover {
+  background: var(--color-surface-hover);
   border-color: var(--color-border-hover);
 }

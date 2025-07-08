@@ -221,7 +221,27 @@ export function generateMetricTitle(
     if (value && shouldIncludeModifier) {
       if (isDynamic(value)) {
         const variableKey = (value as VariableBinding).key;
-        parts.push(variableKey);
+
+        // Resolver el valor actual de la variable si se proporcionaron variables
+        const resolvedValue = variables ? variables[variableKey] : undefined;
+
+        if (resolvedValue !== undefined && resolvedValue !== null) {
+          // Traducir el valor resuelto usando los metadatos del modificador
+          const label = getOptionLabel(key, String(resolvedValue));
+          if (label) {
+            if (key === "comparison") {
+              parts.push(`vs ${label}`);
+            } else {
+              parts.push(label);
+            }
+          } else {
+            // Si no hay traducción disponible, usar el valor tal como está
+            parts.push(String(resolvedValue));
+          }
+        } else {
+          // Si no se puede resolver la variable, mostrar como dinámico
+          parts.push(`Dinámico (${variableKey})`);
+        }
       } else if (typeof value === "string") {
         const label = getOptionLabel(key, value);
         if (label) {

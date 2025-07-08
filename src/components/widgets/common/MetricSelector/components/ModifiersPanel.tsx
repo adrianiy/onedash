@@ -20,6 +20,8 @@ export const ModifiersPanel: React.FC<MetricModifiersPanelProps> = ({
   handleCustomValueChange,
   willApplyDefaultValue,
   getDefaultValue,
+  shouldShowDynamicOption,
+  getDynamicLabel,
 }) => {
   // Handler para el CheckboxItem
   const handleChange = (
@@ -48,6 +50,39 @@ export const ModifiersPanel: React.FC<MetricModifiersPanelProps> = ({
                   )}
               </h4>
               <div className="metric-selector__checkbox-group">
+                {/* Opción dinámica para saleType */}
+                {shouldShowDynamicOption &&
+                  shouldShowDynamicOption("saleType") && (
+                    <CheckboxItem
+                      key="dynamic-saleType"
+                      label={
+                        getDynamicLabel
+                          ? getDynamicLabel("saleType")
+                          : "Tipo de Venta Dinámico"
+                      }
+                      value={{ type: "variable", key: "saleType" }}
+                      checked={
+                        selectedModifiers.saleType?.some(
+                          (item) =>
+                            typeof item === "object" &&
+                            item !== null &&
+                            "type" in item &&
+                            (item as VariableBinding).type === "variable" &&
+                            (item as VariableBinding).key === "saleType"
+                        ) || false
+                      }
+                      onChange={(value, isChecked) =>
+                        handleChange("saleType", value, isChecked)
+                      }
+                      mode={mode}
+                      radioGroupName="metric-selector-saleType"
+                      icon="zap"
+                      iconColor="#10b981"
+                      isDynamic={true}
+                    />
+                  )}
+
+                {/* Opciones estáticas para saleType */}
                 {ModifiersMetadata.saleType.options.map((option) => (
                   <CheckboxItem
                     key={option.value}
@@ -85,6 +120,39 @@ export const ModifiersPanel: React.FC<MetricModifiersPanelProps> = ({
                   )}
               </h4>
               <div className="metric-selector__checkbox-group">
+                {/* Opción dinámica para scope */}
+                {shouldShowDynamicOption &&
+                  shouldShowDynamicOption("scope") && (
+                    <CheckboxItem
+                      key="dynamic-scope"
+                      label={
+                        getDynamicLabel
+                          ? getDynamicLabel("scope")
+                          : "Tiendas Dinámico"
+                      }
+                      value={{ type: "variable", key: "scope" }}
+                      checked={
+                        selectedModifiers.scope?.some(
+                          (item) =>
+                            typeof item === "object" &&
+                            item !== null &&
+                            "type" in item &&
+                            (item as VariableBinding).type === "variable" &&
+                            (item as VariableBinding).key === "scope"
+                        ) || false
+                      }
+                      onChange={(value, isChecked) =>
+                        handleChange("scope", value, isChecked)
+                      }
+                      mode={mode}
+                      radioGroupName="metric-selector-scope"
+                      icon="zap"
+                      iconColor="#10b981"
+                      isDynamic={true}
+                    />
+                  )}
+
+                {/* Opciones estáticas para scope */}
                 {ModifiersMetadata.scope.options.map((option) => (
                   <CheckboxItem
                     key={option.value}

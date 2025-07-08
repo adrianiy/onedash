@@ -221,7 +221,7 @@
 
 .dashboard-container.editing {
   background-color: var(--color-background-editing);
-  padding-top: 175px; /* 70px header + 95px toolbar */
+  padding-top: 170px; /* 70px header + 95px toolbar */
 }
 
 /* Adjust grid width when sidebar is open */

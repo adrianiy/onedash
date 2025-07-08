@@ -5,15 +5,15 @@ import {
   ModifiersMetadata,
 } from "../../../../types/metricConfig";
 import { useMetricGeneration } from "../../../../hooks/useMetricGeneration";
-import { useVariableStore } from "../../../../store/variableStore";
+import { useDashboardStore } from "../../../../store/dashboardStore";
+import { useWidgetStore } from "../../../../store/widgetStore";
 import {
-  getActiveVariablesByType,
   MODIFIER_TO_VARIABLE_TYPE_MAP,
   SELECTOR_TO_VARIABLE_TYPE_MAP,
   DYNAMIC_LABELS,
-  type SimpleVariable,
 } from "../../../../utils/variableResolver";
 import type { SelectedModifiers } from "./types";
+import type { Widget } from "../../../../types/widget";
 
 /**
  * Hook personalizado para gestionar las funcionalidades del MetricSelector
@@ -424,28 +424,57 @@ export const useMetricSelector = (
   // Variable para controlar la habilitación del botón
   const isButtonEnabled = allIndicatorsMeetRequirements();
 
-  // Obtener variables activas del store
-  const { variables } = useVariableStore();
+  // Obtener datos del dashboard y widgets
+  const { currentDashboard, tempDashboard, isEditing } = useDashboardStore();
+  const { widgets: allWidgets } = useWidgetStore();
 
-  // Detectar variables activas por tipo (solo las que tienen valores válidos)
-  const activeVariablesByType = useMemo(() => {
-    const simpleVariables: SimpleVariable[] = Object.entries(variables)
-      .filter(([, value]) => value !== null && value !== undefined)
-      .map(([key, value]) => ({
-        id: key,
-        name: key,
-        value: value,
-        type: key,
-      }));
-    return getActiveVariablesByType(simpleVariables);
-  }, [variables]);
+  // Función para obtener variables que pueden ser seteadas por widgets del dashboard
+  const getSetteableVariables = useCallback((widgets: Widget[]): string[] => {
+    const setteableVars = new Set<string>();
 
-  // Verificar si hay variable activa de un tipo específico
-  const hasActiveVariableOfType = useCallback(
+    widgets.forEach((widget) => {
+      widget.events?.forEach((event) => {
+        if (event.trigger === "click" && event.setVariables) {
+          Object.keys(event.setVariables).forEach((varKey) => {
+            setteableVars.add(varKey);
+          });
+        }
+      });
+    });
+
+    return Array.from(setteableVars);
+  }, []);
+
+  // Obtener widgets del dashboard actual y detectar variables seteables
+  const setteableVariables = useMemo(() => {
+    // Usar el dashboard temporal si estamos editando, sino el actual
+    const activeDashboard =
+      isEditing && tempDashboard ? tempDashboard : currentDashboard;
+
+    if (!activeDashboard || !activeDashboard.widgets) {
+      return [];
+    }
+
+    // Filtrar solo los widgets que pertenecen al dashboard activo
+    const dashboardWidgets = allWidgets.filter((widget) =>
+      activeDashboard.widgets?.includes(widget.id)
+    );
+
+    return getSetteableVariables(dashboardWidgets);
+  }, [
+    currentDashboard,
+    tempDashboard,
+    isEditing,
+    allWidgets,
+    getSetteableVariables,
+  ]);
+
+  // Verificar si una variable específica puede ser seteada por algún widget
+  const isVariableSetteable = useCallback(
     (variableType: string): boolean => {
-      return activeVariablesByType[variableType]?.length > 0;
+      return setteableVariables.includes(variableType);
     },
-    [activeVariablesByType]
+    [setteableVariables]
   );
 
   // Obtener la etiqueta dinámica para un contexto
@@ -460,9 +489,9 @@ export const useMetricSelector = (
         MODIFIER_TO_VARIABLE_TYPE_MAP[
           modifierType as keyof typeof MODIFIER_TO_VARIABLE_TYPE_MAP
         ];
-      return variableType ? hasActiveVariableOfType(variableType) : false;
+      return variableType ? isVariableSetteable(variableType) : false;
     },
-    [hasActiveVariableOfType]
+    [isVariableSetteable]
   );
 
   // Verificar si debe mostrar opción dinámica para un selector (indicators, timerange)
@@ -472,9 +501,9 @@ export const useMetricSelector = (
         SELECTOR_TO_VARIABLE_TYPE_MAP[
           selectorType as keyof typeof SELECTOR_TO_VARIABLE_TYPE_MAP
         ];
-      return variableType ? hasActiveVariableOfType(variableType) : false;
+      return variableType ? isVariableSetteable(variableType) : false;
     },
-    [hasActiveVariableOfType]
+    [isVariableSetteable]
   );
 
   // Verificar si un modificador es compatible con alguno de los indicadores seleccionados
@@ -559,8 +588,6 @@ export const useMetricSelector = (
     isCompatibleModifier,
     getModifierLabel,
     // Variables dinámicas
-    activeVariablesByType,
-    hasActiveVariableOfType,
     getDynamicLabel,
     shouldShowDynamicOption,
     shouldShowDynamicOptionForSelector,

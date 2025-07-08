@@ -3,6 +3,7 @@
   --color-background: #ffffff;
   --color-background-editing: #f5f5f5;
   --color-surface: #ffffff;
+  --color-surface-rgb: 255, 255, 255;
   --color-surface-hover: #f8f9fa;
   --color-surface-secondary: rgb(249 250 251 / var(--tw-bg-opacity, 1));
   --color-surface-tertiary: #e5e7eb;
@@ -63,6 +64,12 @@
   --spacing-3xl: 3rem; /* 48px */
   --spacing-4xl: 4rem; /* 64px */
 
+  /* Layout Heights */
+  --header-height: 70px;
+  --edit-toolbar-height: 100px;
+  --header-height-mobile: 60px;
+  --edit-toolbar-height-mobile: 70px;
+
   /* Grid */
   --grid-cols: 12;
   --grid-row-height: 60px;
@@ -101,6 +108,7 @@
   --color-background: #111827;
   --color-background-editing: #0f172a;
   --color-surface: #1e293b;
+  --color-surface-rgb: 30, 41, 59;
   --color-surface-hover: #334155;
   --color-surface-secondary: #1e293b;
   --color-surface-tertiary: #0f172a;

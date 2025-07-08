@@ -19,13 +19,21 @@ interface VariableState {
 }
 
 // Variables por defecto para nuevos dashboards
-const getDefaultVariables = (): Record<string, VariableValue> => ({
-  indicator: null,
-  saleType: null,
-  timeframe: null,
-  comparison: null,
-  scope: null,
-});
+const getDefaultVariables = (): Record<string, VariableValue> => {
+  const today = new Date().toISOString().split("T")[0];
+  return {
+    indicator: null,
+    saleType: null,
+    timeframe: null,
+    comparison: null,
+    scope: null,
+    // Filter variables
+    dateStart: today,
+    dateEnd: today,
+    selectedProducts: [],
+    selectedSections: [],
+  };
+};
 
 // Función para cargar variables de localStorage por dashboard
 const loadDashboardVariables = (

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Icon } from "../../../common/Icon";
 import { useWidgetStore } from "../../../../store/widgetStore";
 import type { MetricWidget, WidgetEvent } from "../../../../types/widget";
+import type { MetricDefinition } from "../../../../types/metricConfig";
+import { ModifiersMetadata } from "../../../../types/metricConfig";
 
 interface EventsConfigProps {
   widget: MetricWidget;
@@ -24,14 +26,22 @@ export const EventsConfig: React.FC<EventsConfigProps> = ({ widget }) => {
   );
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Extract available variables from widget metrics (only when primary metric changes)
-  useEffect(() => {
+  // Helper function to check if a value is dynamic (variable binding)
+  const isDynamicValue = (value: unknown): boolean => {
+    return (
+      typeof value === "object" &&
+      value !== null &&
+      "type" in value &&
+      (value as { type: string }).type === "variable"
+    );
+  };
+
+  // Helper function to get static mappings from metric
+  const getStaticMappings = (metric: MetricDefinition): VariableMapping[] => {
     const mappings: VariableMapping[] = [];
 
-    // Primary metric variables
-    if (widget.config.primaryMetric) {
-      const metric = widget.config.primaryMetric;
-
+    // Check indicator - only add if it's static
+    if (!isDynamicValue(metric.indicator)) {
       mappings.push({
         id: "primary_indicator",
         label: "Indicador Principal",
@@ -39,39 +49,39 @@ export const EventsConfig: React.FC<EventsConfigProps> = ({ widget }) => {
         variableId: "indicator",
         isSelected: false,
       });
+    }
 
-      if (metric.modifiers.saleType) {
+    // Check each modifier - only add if it's static and not a data transformation
+    Object.entries(metric.modifiers).forEach(([key, value]) => {
+      if (
+        value &&
+        !isDynamicValue(value) &&
+        key !== "calculation" &&
+        key !== "comparison"
+      ) {
+        // Get label from metadata or use key as fallback
+        const label = ModifiersMetadata[key]?.name || key;
+
         mappings.push({
-          id: "primary_sale_type",
-          label: "Tipo de Venta",
-          value: metric.modifiers.saleType,
-          variableId: "sale_type_filter",
+          id: `primary_${key}`,
+          label: label,
+          value: value,
+          variableId: key,
           isSelected: false,
         });
       }
+    });
 
-      if (metric.modifiers.scope) {
-        mappings.push({
-          id: "primary_scope",
-          label: "Alcance",
-          value: metric.modifiers.scope,
-          variableId: "scope_filter",
-          isSelected: false,
-        });
-      }
+    return mappings;
+  };
 
-      if (metric.modifiers.timeframe) {
-        mappings.push({
-          id: "primary_timeframe",
-          label: "Período",
-          value: metric.modifiers.timeframe,
-          variableId: "timeframe_filter",
-          isSelected: false,
-        });
-      }
+  // Extract available static variables from widget metrics (only when primary metric changes)
+  useEffect(() => {
+    let mappings: VariableMapping[] = [];
 
-      // Note: Only certain modifiers can be used as filterable variables
-      // comparison and calculation are excluded as they are data transformations, not filterable variables
+    // Primary metric variables - only static ones
+    if (widget.config.primaryMetric) {
+      mappings = getStaticMappings(widget.config.primaryMetric);
     }
 
     setVariableMappings(mappings);
@@ -155,9 +165,9 @@ export const EventsConfig: React.FC<EventsConfigProps> = ({ widget }) => {
     // Mapear IDs técnicos a nombres de negocio
     const businessNames: Record<string, string> = {
       indicator: "Indicador Seleccionado",
-      sale_type_filter: "Filtro de Tipo de Venta",
-      scope_filter: "Filtro de Alcance",
-      timeframe_filter: "Filtro de Período",
+      saleType: "Filtro de Tipo de Venta",
+      scope: "Filtro de Alcance",
+      timeframe: "Filtro de Período",
     };
 
     return businessNames[variableId] || variableId;
@@ -199,9 +209,7 @@ export const EventsConfig: React.FC<EventsConfigProps> = ({ widget }) => {
             {variableMappings.map((mapping) => (
               <span
                 key={mapping.id}
-                className={`metric-selector__chip-tag metric-selector__chip-tag--${
-                  mapping.id.split("_")[1] || "default"
-                } viz-events-badge ${
+                className={`metric-selector__chip-tag metric-selector__chip-tag--indicator viz-events-badge ${
                   mapping.isSelected ? "viz-events-badge--selected" : ""
                 }`}
                 onClick={() => handleToggleVariable(mapping.id)}

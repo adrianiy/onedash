@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Dashboard } from "./pages/Dashboard";
 import { Header } from "./components/layout/Header";
+import { FilterBar } from "./components/layout/FilterBar";
 import { FloatingActionBar } from "./components/layout/FloatingActionBar";
 import { DashboardSidebar } from "./components/layout/DashboardSidebar";
 import { useThemeStore } from "./store/themeStore";
@@ -33,6 +34,7 @@ function App() {
   return (
     <BrowserRouter>
       <Header />
+      <FilterBar />
       <Routes>
         <Route path="/dashboard/:dashboardId" element={<Dashboard />} />
         <Route

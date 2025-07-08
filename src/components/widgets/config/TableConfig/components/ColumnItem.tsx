@@ -54,11 +54,42 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
   const getModifierLabel = (
     modKey: string,
     modValue: string | number | boolean | MetricModifiers[keyof MetricModifiers]
-  ): string => {
+  ): React.ReactNode => {
     if (!modValue) return "";
 
     const metadata =
       ModifiersMetadata[modKey as keyof typeof ModifiersMetadata];
+
+    // Verificar si es un valor dinámico (variable binding)
+    if (
+      typeof modValue === "object" &&
+      modValue !== null &&
+      "type" in modValue &&
+      (modValue as { type: string }).type === "variable"
+    ) {
+      const variableBinding = modValue as { type: "variable"; key: string };
+      const resolvedValue = variables[variableBinding.key];
+
+      let text = "Dinámico";
+      if (resolvedValue !== undefined && resolvedValue !== null) {
+        // Si tenemos metadatos, buscar la etiqueta correspondiente
+        if (metadata) {
+          const option = metadata.options.find(
+            (opt) => opt.value === resolvedValue
+          );
+          text = option ? option.label : String(resolvedValue);
+        } else {
+          text = String(resolvedValue);
+        }
+      }
+
+      return (
+        <>
+          <Icon name="zap" size={12} />
+          {text}
+        </>
+      );
+    }
 
     if (!metadata) return String(modValue);
 
@@ -407,7 +438,14 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
               {Object.entries(column.modifiers).map(([modKey, modValue]) =>
                 modValue ? (
                   <span
-                    className={`metric-selector__chip-tag metric-selector__chip-tag--${modKey}`}
+                    className={`metric-selector__chip-tag metric-selector__chip-tag--${modKey} ${
+                      typeof modValue === "object" &&
+                      modValue !== null &&
+                      "type" in modValue &&
+                      (modValue as { type: string }).type === "variable"
+                        ? "metric-selector__chip-tag--dynamic"
+                        : ""
+                    }`}
                     key={`${column.id}-${modKey}`}
                   >
                     {getModifierLabel(modKey, modValue)}

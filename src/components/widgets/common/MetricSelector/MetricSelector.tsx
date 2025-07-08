@@ -208,6 +208,8 @@ const MetricSelector: React.FC<MetricSelectorProps> = ({
             handleCustomValueChange={handleCustomValueChange}
             willApplyDefaultValue={willApplyDefaultValue}
             getDefaultValue={getDefaultValue}
+            shouldShowDynamicOption={shouldShowDynamicOption}
+            getDynamicLabel={getDynamicLabel}
           />
         )}
       </div>

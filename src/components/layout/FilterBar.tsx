@@ -1,150 +1,113 @@
 import React from "react";
+import { CustomMultiSelect } from "../common/CustomMultiSelect";
+import { DateRangePicker } from "../common/DateRangePicker";
 import { Icon } from "../common/Icon";
-import { CustomSelect } from "../common/CustomSelect";
 import { useVariableStore } from "../../store/variableStore";
+import { useDashboardStore } from "../../store/dashboardStore";
 
 interface FilterBarProps {
   className?: string;
 }
 
-type VariableType =
-  | "indicator"
-  | "sale_type"
-  | "scope"
-  | "timeframe"
-  | "date_range";
+// Opciones para los filtros
+const PRODUCT_OPTIONS = [
+  { value: "Ropa", label: "Ropa" },
+  { value: "Calzado", label: "Calzado" },
+  { value: "Perfumería", label: "Perfumería" },
+];
 
-interface DashboardVariable {
-  id: string;
-  name: string;
-  type: VariableType;
-  value: unknown;
-  isVisible: boolean;
-}
-
-const getVariableOptions = (type: VariableType) => {
-  switch (type) {
-    case "indicator":
-      return [
-        { value: "importe", label: "Importe" },
-        { value: "unidades", label: "Unidades" },
-        { value: "pedidos", label: "Pedidos" },
-      ];
-    case "sale_type":
-      return [
-        { value: "bruto", label: "Bruto" },
-        { value: "neto", label: "Neto" },
-        { value: "devos", label: "Devoluciones" },
-      ];
-    case "scope":
-      return [
-        { value: "mismas_tiendas", label: "Mismas Tiendas" },
-        { value: "total_tiendas", label: "Total Tiendas" },
-      ];
-    case "timeframe":
-      return [
-        { value: "hoy", label: "Hoy" },
-        { value: "ayer", label: "Ayer" },
-        { value: "semana", label: "Semana" },
-        { value: "mes", label: "Mes" },
-        { value: "año", label: "Año" },
-      ];
-    default:
-      return [];
-  }
-};
-
-const renderVariableInput = (
-  variable: DashboardVariable,
-  onValueChange: (value: unknown) => void
-) => {
-  const options = getVariableOptions(variable.type);
-
-  if (options.length > 0) {
-    return (
-      <CustomSelect
-        value={variable.value as string}
-        onChange={onValueChange}
-        options={options}
-        placeholder={`Seleccionar ${variable.name.toLowerCase()}`}
-      />
-    );
-  }
-
-  // For custom variables or date ranges, show a simple input
-  if (variable.type === "date_range") {
-    return (
-      <input
-        type="date"
-        value={variable.value as string}
-        onChange={(e) => onValueChange(e.target.value)}
-        className="filter-bar__input"
-      />
-    );
-  }
-
-  return (
-    <input
-      type="text"
-      value={String(variable.value || "")}
-      onChange={(e) => onValueChange(e.target.value)}
-      placeholder={variable.name}
-      className="filter-bar__input"
-    />
-  );
-};
+const SECTION_OPTIONS = [
+  { value: "Señora", label: "Señora" },
+  { value: "Caballero", label: "Caballero" },
+  { value: "Niño", label: "Niño" },
+];
 
 export const FilterBar: React.FC<FilterBarProps> = ({ className = "" }) => {
   const { variables, setVariable } = useVariableStore();
+  const { isEditing } = useDashboardStore();
 
-  // Convertir variables del store a formato DashboardVariable
-  const visibleVariables: DashboardVariable[] = Object.entries(variables)
-    .filter(([, value]) => value !== null && value !== undefined)
-    .map(([key, value]) => ({
-      id: key,
-      name: key.charAt(0).toUpperCase() + key.slice(1),
-      type: key as VariableType,
-      value: value,
-      isVisible: true,
-    }));
+  // Extraer variables de filtro
+  const dateStart = variables.dateStart || null;
+  const dateEnd = variables.dateEnd || null;
+  const selectedProducts = variables.selectedProducts || [];
+  const selectedSections = variables.selectedSections || [];
 
-  if (visibleVariables.length === 0) {
-    return null;
-  }
+  // Handlers para los filtros
+  const handleDateRangeChange = (
+    startDate: string | null,
+    endDate: string | null
+  ) => {
+    setVariable("dateStart", startDate);
+    setVariable("dateEnd", endDate);
+  };
+
+  const handleProductsChange = (products: string[]) => {
+    setVariable("selectedProducts", products);
+  };
+
+  const handleSectionsChange = (sections: string[]) => {
+    setVariable("selectedSections", sections);
+  };
+
+  const handleClearAll = () => {
+    setVariable("dateStart", null);
+    setVariable("dateEnd", null);
+    setVariable("selectedProducts", []);
+    setVariable("selectedSections", []);
+  };
+
+  // Verificar si hay filtros activos
+  const hasActiveFilters =
+    dateStart ||
+    dateEnd ||
+    selectedProducts.length > 0 ||
+    selectedSections.length > 0;
 
   return (
-    <div className={`filter-bar ${className}`}>
-      <div className="filter-bar__content">
-        <div className="filter-bar__icon">
-          <Icon name="filter" size={20} />
-        </div>
-
+    <div className={`filter-bar ${isEditing ? "editing" : ""} ${className}`}>
+      <div className="filter-bar__container">
         <div className="filter-bar__filters">
-          {visibleVariables.map((variable) => (
-            <div key={variable.id} className="filter-bar__item">
-              <label className="filter-bar__label">{variable.name}</label>
-              {renderVariableInput(variable, (value) =>
-                setVariable(variable.id, value)
-              )}
-            </div>
-          ))}
+          <div className="filter-bar__filter-item">
+            <DateRangePicker
+              startDate={dateStart}
+              endDate={dateEnd}
+              onChange={handleDateRangeChange}
+              placeholder="Fecha"
+              className="filter-bar__filter-control"
+            />
+          </div>
+
+          <div className="filter-bar__filter-item">
+            <CustomMultiSelect
+              options={PRODUCT_OPTIONS}
+              value={selectedProducts}
+              onChange={handleProductsChange}
+              placeholder="Producto"
+              className="filter-bar__filter-control"
+            />
+          </div>
+
+          <div className="filter-bar__filter-item">
+            <CustomMultiSelect
+              options={SECTION_OPTIONS}
+              value={selectedSections}
+              onChange={handleSectionsChange}
+              placeholder="Sección"
+              className="filter-bar__filter-control"
+            />
+          </div>
         </div>
 
         <div className="filter-bar__actions">
-          <button
-            className="filter-bar__clear"
-            onClick={() => {
-              // Reset all variables to their default values
-              visibleVariables.forEach((variable) => {
-                const defaultValue =
-                  getVariableOptions(variable.type)[0]?.value || "";
-                setVariable(variable.id, defaultValue);
-              });
-            }}
-          >
-            <Icon name="x" size={16} />
-            Limpiar
-          </button>
+          {hasActiveFilters && (
+            <button
+              className="filter-bar__clear-button"
+              onClick={handleClearAll}
+              title="Limpiar todos los filtros"
+            >
+              <Icon name="trash" size={16} />
+            </button>
+          )}
         </div>
       </div>
     </div>
