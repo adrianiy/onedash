@@ -21,6 +21,7 @@ interface CustomMultiSelectProps {
   placeholder?: string;
   isDisabled?: boolean;
   className?: string;
+  isActive?: boolean;
 }
 
 // Componente custom para el dropdown indicator (chevron)
@@ -44,9 +45,16 @@ const IndicatorSeparator = () => null;
 
 // Componente custom para el botón de limpiar todo
 const ClearIndicator = (props: ClearIndicatorProps<SelectOption>) => {
+  const { hasValue } = props;
+
+  // Solo mostrar el indicador de limpieza cuando hay valores seleccionados
+  if (!hasValue) {
+    return null;
+  }
+
   return (
     <components.ClearIndicator {...props}>
-      <Icon name="x" size={14} />
+      <Icon name="x" size={14} className="custom-multiselect__reset-icon" />
     </components.ClearIndicator>
   );
 };
@@ -96,6 +104,7 @@ export const CustomMultiSelect: React.FC<CustomMultiSelectProps> = ({
   placeholder = "Seleccionar...",
   isDisabled = false,
   className = "",
+  isActive = false,
 }) => {
   const selectedOptions = options.filter((opt) => value.includes(opt.value));
 
@@ -112,11 +121,7 @@ export const CustomMultiSelect: React.FC<CustomMultiSelectProps> = ({
       border: "1px solid var(--color-border)",
       borderRadius: "6px",
       backgroundColor: "var(--color-background)",
-      boxShadow: state.isFocused
-        ? "0 0 0 2px rgba(var(--color-primary-rgb), 0.2)"
-        : state.hasValue
-        ? "0 2px 4px rgba(var(--color-primary-rgb), 0.1)"
-        : "none",
+      boxShadow: "none", // Eliminamos todos los box-shadow
       borderColor: state.isFocused
         ? "var(--color-primary)"
         : state.hasValue
@@ -247,7 +252,9 @@ export const CustomMultiSelect: React.FC<CustomMultiSelectProps> = ({
   return (
     <div className={`custom-multiselect ${className}`}>
       <Select
-        className="custom-multiselect__select"
+        className={`custom-multiselect__select ${
+          isActive ? "filter-bar__filter-control--active" : ""
+        }`}
         classNamePrefix="custom-multiselect"
         options={options}
         value={selectedOptions}

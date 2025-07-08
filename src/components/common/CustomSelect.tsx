@@ -3,6 +3,8 @@ import Select, { components } from "react-select";
 import type {
   StylesConfig,
   SingleValue,
+  MultiValue,
+  ActionMeta,
   DropdownIndicatorProps,
 } from "react-select";
 import { Icon } from "./Icon";
@@ -19,6 +21,10 @@ interface CustomSelectProps {
   placeholder?: string;
   isDisabled?: boolean;
   className?: string;
+  menuPlacement?: "auto" | "bottom" | "top";
+  menuPortalTarget?: HTMLElement | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  styles?: any;
 }
 
 // Componente custom para el dropdown indicator (chevron)
@@ -40,17 +46,26 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   placeholder = "Seleccionar...",
   isDisabled = false,
   className = "",
+  menuPlacement,
+  menuPortalTarget,
+  styles: customStyles,
 }) => {
   const selectedOption = options.find((opt) => opt.value === value) || null;
 
-  const handleChange = (newValue: SingleValue<SelectOption>) => {
-    if (newValue) {
+  const handleChange = (
+    newValue: SingleValue<SelectOption> | MultiValue<SelectOption>,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    actionMeta: ActionMeta<SelectOption>
+  ) => {
+    // Para select simple, newValue es un objeto con value y label
+    if (newValue && "value" in newValue) {
       onChange(newValue.value);
     }
   };
 
   // Estilos personalizados usando los tokens de diseño existentes
-  const customStyles: StylesConfig<SelectOption, false> = {
+  // Crear una copia de los estilos base y fusionarla con los estilos personalizados si existen
+  const baseStyles: StylesConfig<SelectOption, false> = {
     control: (provided, state) => ({
       ...provided,
       minHeight: "38px",
@@ -153,7 +168,9 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
       placeholder={placeholder}
       isDisabled={isDisabled}
       isSearchable={false}
-      styles={customStyles}
+      styles={{ ...baseStyles, ...customStyles }}
+      menuPlacement={menuPlacement}
+      menuPortalTarget={menuPortalTarget}
       components={{
         DropdownIndicator,
         IndicatorSeparator,

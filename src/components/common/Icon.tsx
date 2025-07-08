@@ -57,6 +57,7 @@ import {
   PanelTop,
   PanelBottom,
   Filter,
+  RotateCcw,
   type LucideIcon,
 } from "lucide-react";
 
@@ -126,6 +127,7 @@ const lucideIconMap = {
   "panel-top": PanelTop,
   "panel-bottom": PanelBottom,
   filter: Filter,
+  "rotate-ccw": RotateCcw,
 } as const;
 
 const tablerIconMap = {

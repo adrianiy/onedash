@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { CustomMultiSelect } from "../common/CustomMultiSelect";
 import { DateRangePicker } from "../common/DateRangePicker";
 import { Icon } from "../common/Icon";
@@ -32,6 +32,28 @@ export const FilterBar: React.FC<FilterBarProps> = ({ className = "" }) => {
   const selectedProducts = variables.selectedProducts || [];
   const selectedSections = variables.selectedSections || [];
 
+  // Función auxiliar para formatear fechas preservando la fecha local
+  const formatLocalDate = (date: Date) => {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}-${String(date.getDate()).padStart(2, "0")}`;
+  };
+
+  // Determinar si cada filtro está activo (diferente del valor por defecto)
+  const today = useMemo(() => formatLocalDate(new Date()), []);
+  const isDateFilterActive = useMemo(() => {
+    return dateStart && dateEnd && (dateStart !== today || dateEnd !== today);
+  }, [dateStart, dateEnd, today]);
+
+  const isProductFilterActive = useMemo(() => {
+    return selectedProducts.length > 0;
+  }, [selectedProducts]);
+
+  const isSectionFilterActive = useMemo(() => {
+    return selectedSections.length > 0;
+  }, [selectedSections]);
+
   // Handlers para los filtros
   const handleDateRangeChange = (
     startDate: string | null,
@@ -50,18 +72,18 @@ export const FilterBar: React.FC<FilterBarProps> = ({ className = "" }) => {
   };
 
   const handleClearAll = () => {
-    setVariable("dateStart", null);
-    setVariable("dateEnd", null);
+    // Obtener la fecha actual (hoy) como valor predeterminado para las fechas
+    const today = formatLocalDate(new Date());
+    setVariable("dateStart", today);
+    setVariable("dateEnd", today);
+    // Para los productos y secciones, el valor por defecto es array vacío
     setVariable("selectedProducts", []);
     setVariable("selectedSections", []);
   };
 
-  // Verificar si hay filtros activos
+  // Verificar si hay filtros activos (diferentes a los valores predeterminados)
   const hasActiveFilters =
-    dateStart ||
-    dateEnd ||
-    selectedProducts.length > 0 ||
-    selectedSections.length > 0;
+    isDateFilterActive || isProductFilterActive || isSectionFilterActive;
 
   return (
     <div className={`filter-bar ${isEditing ? "editing" : ""} ${className}`}>
@@ -74,6 +96,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ className = "" }) => {
               onChange={handleDateRangeChange}
               placeholder="Fecha"
               className="filter-bar__filter-control"
+              isActive={isDateFilterActive}
             />
           </div>
 
@@ -84,6 +107,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ className = "" }) => {
               onChange={handleProductsChange}
               placeholder="Producto"
               className="filter-bar__filter-control"
+              isActive={isProductFilterActive}
             />
           </div>
 
@@ -94,6 +118,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ className = "" }) => {
               onChange={handleSectionsChange}
               placeholder="Sección"
               className="filter-bar__filter-control"
+              isActive={isSectionFilterActive}
             />
           </div>
         </div>

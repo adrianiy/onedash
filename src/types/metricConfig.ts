@@ -1,4 +1,5 @@
 // --- Tipos Base y de Vinculación ---
+import { interpolateText } from "../utils/textInterpolation";
 
 export type VariableBinding = {
   type: "variable";
@@ -267,7 +268,7 @@ export function generateMetricTitle(
 
 /**
  * Obtiene el título para mostrar según la lógica de prioridad:
- * 1. displayName (nombre personalizado por el usuario)
+ * 1. displayName (nombre personalizado por el usuario) - con interpolación de variables @variable
  * 2. título generado automáticamente (si hay elementos dinámicos)
  * 3. title (título por defecto)
  */
@@ -275,9 +276,9 @@ export function getDisplayTitle(
   column: MetricDefinition,
   variables?: Record<string, unknown>
 ): string {
-  // 1. Si hay displayName personalizado, usarlo siempre
+  // 1. Si hay displayName personalizado, procesarlo con interpolación de variables
   if (column.displayName && column.displayName.trim() !== "") {
-    return column.displayName;
+    return interpolateText(column.displayName, variables || {}, column);
   }
 
   // 2. Si hay elementos dinámicos, generar título automáticamente
