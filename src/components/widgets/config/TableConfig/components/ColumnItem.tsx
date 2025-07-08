@@ -10,6 +10,7 @@ import {
   getDisplayTitle,
 } from "../../../../../types/metricConfig";
 import { useVariableStore } from "../../../../../store/variableStore";
+import { TextInterpolationInput } from "../../../../common/TextInterpolationInput";
 
 interface ColumnItemProps {
   id: string;
@@ -34,18 +35,18 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
   onToggleSelect,
   onRename,
 }) => {
+  // Obtener variables actuales del store
+  const { variables } = useVariableStore();
+
   // Estados
   const [isEditing, setIsEditing] = useState(false);
   const [titleValue, setTitleValue] = useState(
-    column.displayName || column.title
+    column.displayName || getDisplayTitle(column, variables)
   );
   const [isClosing, setIsClosing] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const isSavingRef = useRef(false);
-
-  // Obtener variables actuales del store
-  const { variables } = useVariableStore();
 
   // Usar la función getDisplayTitle centralizada que maneja la prioridad correctamente
   const displayTitle = getDisplayTitle(column, variables);
@@ -165,6 +166,13 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
     setIsExpanded(!isExpanded);
   };
 
+  // Actualizar titleValue cuando cambien las variables (solo si no hay displayName personalizado)
+  useEffect(() => {
+    if (!column.displayName && !isEditing) {
+      setTitleValue(getDisplayTitle(column, variables));
+    }
+  }, [variables, column, isEditing]);
+
   // Enfocar el input al entrar en modo edición
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -179,11 +187,6 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
     setIsEditing(true);
   };
 
-  // Manejar cambios en el input
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitleValue(e.target.value);
-  };
-
   // Manejar teclas especiales (Enter para guardar, Escape para cancelar)
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -194,7 +197,7 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
       if (titleValue.trim() !== "") {
         onRename(id, titleValue.trim());
       } else {
-        setTitleValue(column.displayName || column.title);
+        setTitleValue(column.displayName || getDisplayTitle(column, variables));
       }
       setIsEditing(false);
 
@@ -204,7 +207,7 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
       }, 100);
     } else if (e.key === "Escape") {
       // Solo cancelar sin guardar cambios
-      setTitleValue(column.displayName || column.title);
+      setTitleValue(column.displayName || getDisplayTitle(column, variables));
       setIsEditing(false);
     }
   };
@@ -226,7 +229,7 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
       ) {
         // Restaurar el valor original y salir del modo edición
         setIsClosing(true);
-        setTitleValue(column.displayName || column.title);
+        setTitleValue(column.displayName || getDisplayTitle(column, variables));
         setIsEditing(false);
 
         // Resetear la bandera después de un breve retraso
@@ -306,14 +309,14 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
                   className="column-item__name-edit-container"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    className="column-item__name-input"
+                  <TextInterpolationInput
                     value={titleValue}
-                    onChange={handleTitleChange}
+                    onChange={setTitleValue}
                     onKeyDown={handleKeyDown}
-                    onClick={(e) => e.stopPropagation()}
+                    variables={variables}
+                    metric={column}
+                    className="column-item__name-input"
+                    autoFocus={true}
                   />
                   <div
                     className="column-item__name-actions"
@@ -329,7 +332,10 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
                         if (titleValue.trim() !== "") {
                           onRename(id, titleValue.trim());
                         } else {
-                          setTitleValue(column.displayName || column.title);
+                          setTitleValue(
+                            column.displayName ||
+                              getDisplayTitle(column, variables)
+                          );
                         }
                         setIsEditing(false);
 
@@ -349,7 +355,10 @@ export const ColumnItem: React.FC<ColumnItemProps> = ({
                         // Marcar que estamos cancelando para evitar que otros eventos interfieran
                         isSavingRef.current = true;
 
-                        setTitleValue(column.displayName || column.title);
+                        setTitleValue(
+                          column.displayName ||
+                            getDisplayTitle(column, variables)
+                        );
                         setIsEditing(false);
 
                         // Restaurar la bandera después de un breve retraso

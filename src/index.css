@@ -19,6 +19,7 @@
 @import "./styles/metric-widget.css";
 @import "./styles/events-config.css";
 @import "./styles/filter-bar.css";
+@import "./styles/text-interpolation-input.css";
 
 /* Global Styles */
 *,

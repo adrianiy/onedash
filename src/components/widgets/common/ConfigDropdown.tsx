@@ -23,7 +23,7 @@ interface ConfigDropdownProps {
     referenceProps: Record<string, unknown>;
   }) => ReactNode;
   children: ReactNode;
-  placement?: "top" | "right" | "bottom" | "left" | "left-start";
+  placement?: "top" | "right" | "bottom" | "left" | "left-start" | "bottom-end";
   offsetDistance?: number;
   className?: string;
   // Acceso al setter del estado para controlar externamente

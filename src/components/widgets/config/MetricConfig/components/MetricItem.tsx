@@ -1,9 +1,14 @@
-import React, { useRef } from "react";
-import type { MetricDefinition } from "../../../../../types/metricConfig";
+import React, { useRef, useState } from "react";
+import type {
+  MetricDefinition,
+  MetricModifiers,
+} from "../../../../../types/metricConfig";
+import { ModifiersMetadata } from "../../../../../types/metricConfig";
 import { Icon } from "../../../../common/Icon";
 import { useSortable } from "@dnd-kit/sortable";
 import { ConfigDropdown } from "../../../common/ConfigDropdown";
 import MetricSelector from "../../../common/MetricSelector/MetricSelector";
+import { useVariableStore } from "../../../../../store/variableStore";
 
 interface MetricItemProps {
   id: string;
@@ -20,6 +25,12 @@ export const MetricItem: React.FC<MetricItemProps> = ({
   onRemove,
   onChange,
 }) => {
+  // Estado para expansión
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  // Obtener variables actuales del store
+  const { variables } = useVariableStore();
+
   const {
     attributes,
     listeners,
@@ -37,6 +48,120 @@ export const MetricItem: React.FC<MetricItemProps> = ({
       : undefined,
     transition,
     zIndex: isDragging ? 10 : undefined,
+  };
+
+  // Función para obtener la etiqueta de un modificador para mostrar en los chips
+  const getModifierLabel = (
+    modKey: string,
+    modValue: string | number | boolean | MetricModifiers[keyof MetricModifiers]
+  ): React.ReactNode => {
+    if (!modValue) return "";
+
+    const metadata =
+      ModifiersMetadata[modKey as keyof typeof ModifiersMetadata];
+
+    // Verificar si es un valor dinámico (variable binding)
+    if (
+      typeof modValue === "object" &&
+      modValue !== null &&
+      "type" in modValue &&
+      (modValue as { type: string }).type === "variable"
+    ) {
+      const variableBinding = modValue as { type: "variable"; key: string };
+      const resolvedValue = variables[variableBinding.key];
+
+      let text = "Dinámico";
+      if (resolvedValue !== undefined && resolvedValue !== null) {
+        // Si tenemos metadatos, buscar la etiqueta correspondiente
+        if (metadata) {
+          const option = metadata.options.find(
+            (opt) => opt.value === resolvedValue
+          );
+          text = option ? option.label : String(resolvedValue);
+        } else {
+          text = String(resolvedValue);
+        }
+      }
+
+      return (
+        <>
+          <Icon name="zap" size={12} />
+          {text}
+        </>
+      );
+    }
+
+    if (!metadata) return String(modValue);
+
+    if (
+      typeof modValue === "object" &&
+      modValue !== null &&
+      "type" in modValue &&
+      "value" in modValue
+    ) {
+      // Caso especial para comparison con type a-n
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if ((modValue as any).type === "a-n") {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return `Hace ${(modValue as any).value} años`;
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return String((modValue as any).value);
+    }
+
+    // Buscar la opción correspondiente
+    const option = metadata.options.find((opt) => opt.value === modValue);
+    return option ? option.label : String(modValue);
+  };
+
+  // Función para obtener la etiqueta del indicador para mostrar en los chips
+  const getIndicatorLabel = (): React.ReactNode => {
+    // Si es dinámico, resolver con las variables actuales
+    const isDynamic =
+      typeof metric.indicator === "object" &&
+      metric.indicator !== null &&
+      "type" in metric.indicator &&
+      metric.indicator.type === "variable";
+
+    if (isDynamic) {
+      const variableBinding = metric.indicator as {
+        type: "variable";
+        key: string;
+      };
+      const resolvedIndicator = variables[variableBinding.key];
+      const text = resolvedIndicator ? String(resolvedIndicator) : "Dinámico";
+
+      return (
+        <>
+          <Icon name="zap" size={12} />
+          {text}
+        </>
+      );
+    }
+
+    // Si es estático, buscar en los metadatos de indicadores
+    const text =
+      typeof metric.indicator === "string"
+        ? metric.indicator
+        : String(metric.indicator);
+
+    return text;
+  };
+
+  // Función para verificar si el indicador es dinámico
+  const isIndicatorDynamic = (): boolean => {
+    return (
+      typeof metric.indicator === "object" &&
+      metric.indicator !== null &&
+      "type" in metric.indicator &&
+      metric.indicator.type === "variable"
+    );
+  };
+
+  // Manejar clic en el botón de expandir/contraer
+  const handleToggleExpand = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsExpanded(!isExpanded);
   };
 
   const handleRemove = (e: React.MouseEvent) => {
@@ -92,6 +217,17 @@ export const MetricItem: React.FC<MetricItemProps> = ({
         </div>
 
         {/* Acciones reutilizando clases existentes */}
+        <button
+          onClick={handleToggleExpand}
+          className="column-item__expand"
+          title={isExpanded ? "Contraer detalles" : "Expandir detalles"}
+        >
+          <Icon
+            name={isExpanded ? "chevrons-down-up" : "chevrons-up-down"}
+            size={14}
+          />
+        </button>
+
         <ConfigDropdown
           className="metrics-dropdown"
           setIsOpenRef={dropdownRef}
@@ -126,6 +262,46 @@ export const MetricItem: React.FC<MetricItemProps> = ({
         >
           <Icon name="trash" size={14} />
         </button>
+      </div>
+
+      {/* Contenedor de chips expandible */}
+      <div
+        className={`column-item__chips-container ${
+          isExpanded ? "column-item__chips-container--expanded" : ""
+        }`}
+      >
+        <div className="column-item__chips-content">
+          <div className="metric-selector__chip-modifiers">
+            {/* Chip del indicador (siempre visible) */}
+            <span
+              className={`metric-selector__chip-tag metric-selector__chip-tag--indicator ${
+                isIndicatorDynamic() ? "metric-selector__chip-tag--dynamic" : ""
+              }`}
+              key={`${metric.id}-indicator`}
+            >
+              {getIndicatorLabel()}
+            </span>
+
+            {/* Chips de modificadores */}
+            {Object.entries(metric.modifiers).map(([modKey, modValue]) =>
+              modValue ? (
+                <span
+                  className={`metric-selector__chip-tag metric-selector__chip-tag--${modKey} ${
+                    typeof modValue === "object" &&
+                    modValue !== null &&
+                    "type" in modValue &&
+                    (modValue as { type: string }).type === "variable"
+                      ? "metric-selector__chip-tag--dynamic"
+                      : ""
+                  }`}
+                  key={`${metric.id}-${modKey}`}
+                >
+                  {getModifierLabel(modKey, modValue)}
+                </span>
+              ) : null
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
