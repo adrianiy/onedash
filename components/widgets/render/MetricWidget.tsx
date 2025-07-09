@@ -130,7 +130,7 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
           {widgetFilters.products && widgetFilters.products.length > 0 && (
             <span
               className="metric-widget__filter-badge metric-widget__filter-badge--product"
-              data-tooltip-id="filter-products-tooltip"
+              data-tooltip-id={`filter-products-tooltip-${widget._id}`}
               data-tooltip-content={`Productos: ${widgetFilters.products.join(
                 ", "
               )}`}
@@ -146,7 +146,7 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
           {widgetFilters.sections && widgetFilters.sections.length > 0 && (
             <span
               className="metric-widget__filter-badge metric-widget__filter-badge--section"
-              data-tooltip-id="filter-sections-tooltip"
+              data-tooltip-id={`filter-sections-tooltip-${widget._id}`}
               data-tooltip-content={`Secciones: ${widgetFilters.sections.join(
                 ", "
               )}`}
@@ -163,7 +163,7 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
             (widgetFilters.dateRange.start || widgetFilters.dateRange.end) && (
               <span
                 className="metric-widget__filter-badge metric-widget__filter-badge--date"
-                data-tooltip-id="filter-date-tooltip"
+                data-tooltip-id={`filter-date-tooltip-${widget._id}`}
                 data-tooltip-content={`Fechas: ${
                   widgetFilters.dateRange.start || ""
                 } - ${widgetFilters.dateRange.end || ""}`}
@@ -180,7 +180,7 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
       return (
         <div
           className="metric-widget__filters metric-widget__filters--info"
-          data-tooltip-id="metric-filters-tooltip"
+          data-tooltip-id={`metric-filters-tooltip-${widget._id}`}
           data-tooltip-content={`${
             widgetFilters.products?.length
               ? `Productos: ${widgetFilters.products.join(", ")}\n`
@@ -238,11 +238,11 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
         style={{ cursor: isClickable ? "pointer" : "default" }}
       >
         {renderFilters()}
-        <Tooltip id="filter-date-tooltip" place="top" />
-        <Tooltip id="filter-products-tooltip" place="top" />
-        <Tooltip id="filter-sections-tooltip" place="top" />
+        <Tooltip id={`filter-date-tooltip-${widget._id}`} place="top" />
+        <Tooltip id={`filter-products-tooltip-${widget._id}`} place="top" />
+        <Tooltip id={`filter-sections-tooltip-${widget._id}`} place="top" />
         <Tooltip
-          id="metric-filters-tooltip"
+          id={`metric-filters-tooltip-${widget._id}`}
           place="top"
           style={{ whiteSpace: "pre-line" }}
         />

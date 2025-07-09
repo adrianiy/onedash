@@ -440,7 +440,7 @@ export const useMetricSelector = (
   const isButtonEnabled = allIndicatorsMeetRequirements();
 
   // Obtener datos del dashboard y widgets
-  const { currentDashboard, tempDashboard, isEditing } = useDashboardStore();
+  const { currentDashboard } = useDashboardStore();
   const { widgets: allWidgets } = useWidgetStore();
 
   // Función para obtener variables que pueden ser seteadas por widgets del dashboard
@@ -462,9 +462,8 @@ export const useMetricSelector = (
 
   // Obtener widgets del dashboard actual y detectar variables seteables
   const setteableVariables = useMemo(() => {
-    // Usar el dashboard temporal si estamos editando, sino el actual
-    const activeDashboard =
-      isEditing && tempDashboard ? tempDashboard : currentDashboard;
+    // Usar siempre currentDashboard
+    const activeDashboard = currentDashboard;
 
     if (!activeDashboard || !activeDashboard.widgets) {
       return [];
@@ -476,13 +475,7 @@ export const useMetricSelector = (
     );
 
     return getSetteableVariables(dashboardWidgets);
-  }, [
-    currentDashboard,
-    tempDashboard,
-    isEditing,
-    allWidgets,
-    getSetteableVariables,
-  ]);
+  }, [currentDashboard, allWidgets, getSetteableVariables]);
 
   // Verificar si una variable específica puede ser seteada por algún widget
   const isVariableSetteable = useCallback(

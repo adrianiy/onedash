@@ -78,6 +78,7 @@ export const EditToolbar: React.FC = () => {
     saveChanges,
     discardChanges,
     createDashboard,
+    isDiscarding,
   } = useDashboardStore();
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [showReadonlyModal, setShowReadonlyModal] = useState(false);
@@ -159,15 +160,15 @@ export const EditToolbar: React.FC = () => {
 
   const saveButtonContent = getSaveButtonContent();
 
-  const handleCloseEditing = () => {
+  const handleCloseEditing = async () => {
     if (hasUnsavedChanges) {
-      // TODO: Mostrar confirmación antes de perder cambios
+      // Mostrar confirmación antes de perder cambios
       const confirmDiscard = window.confirm(
         "Tienes cambios sin guardar. ¿Estás seguro de que quieres cerrar la edición?"
       );
 
       if (confirmDiscard) {
-        discardChanges();
+        await discardChanges();
       }
     } else {
       toggleEditing();
@@ -181,16 +182,15 @@ export const EditToolbar: React.FC = () => {
   ) => {
     const {
       currentDashboard,
-      tempDashboard,
-      updateTempDashboard,
+      isEditing,
       updateDashboard,
+      updateCurrentDashboard,
       selectWidget,
       openConfigSidebar,
     } = useDashboardStore.getState();
 
     // Add widget to current dashboard
-    const targetDashboard = tempDashboard || currentDashboard;
-    if (targetDashboard) {
+    if (currentDashboard) {
       const newLayout = {
         i: widget._id,
         x: 0,
@@ -199,18 +199,18 @@ export const EditToolbar: React.FC = () => {
         h: layout.h,
       };
 
-      const updatedWidgets = [...targetDashboard.widgets, widget._id];
-      const updatedLayout = [...targetDashboard.layout, newLayout];
+      const updatedWidgets = [...currentDashboard.widgets, widget._id];
+      const updatedLayout = [...currentDashboard.layout, newLayout];
 
-      if (tempDashboard) {
-        // En modo edición, actualizar dashboard temporal
-        updateTempDashboard({
+      if (isEditing) {
+        // En modo edición, actualizar dashboard directamente
+        updateCurrentDashboard({
           widgets: updatedWidgets,
           layout: updatedLayout,
         });
       } else {
         // Fuera de modo edición, actualizar directamente
-        updateDashboard(targetDashboard._id, {
+        updateDashboard(currentDashboard._id, {
           widgets: updatedWidgets,
           layout: updatedLayout,
         });
@@ -486,12 +486,15 @@ export const EditToolbar: React.FC = () => {
               </button>
 
               <button
-                className="edit-toolbar__button edit-toolbar__button--danger"
+                className={`edit-toolbar__button edit-toolbar__button--danger ${
+                  isDiscarding ? "edit-toolbar__button--saving" : ""
+                }`}
                 onClick={handleCloseEditing}
                 data-tooltip-id="close-tooltip"
+                disabled={isDiscarding}
               >
-                <Icon name="close" size={20} />
-                <span>Cerrar</span>
+                <Icon name={isDiscarding ? "loader" : "close"} size={20} />
+                <span>{isDiscarding ? "Restaurando..." : "Cerrar"}</span>
               </button>
             </div>
             <span className="edit-toolbar__section-title">Archivo</span>
@@ -578,7 +581,7 @@ export const EditToolbar: React.FC = () => {
       />
       <Tooltip
         id="close-tooltip"
-        content="Cerrar modo edición"
+        content={isDiscarding ? "Recargando datos..." : "Cerrar modo edición"}
         place="bottom"
       />
       <Tooltip

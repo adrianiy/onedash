@@ -45,11 +45,10 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
 }) => {
   const {
     currentDashboard,
-    tempDashboard,
     isEditing,
     selectedWidgetId,
     clearSelection,
-    updateTempDashboard,
+    updateCurrentDashboard,
     updateDashboard,
     droppingItemSize,
     resetDroppingItemSize,
@@ -57,9 +56,8 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
   const { getWidgetsByIds } = useWidgetStore();
   const { getGridProps } = useGridLayout();
 
-  // En modo edición usar tempDashboard, si no usar currentDashboard
-  const activeDashboard =
-    isEditing && tempDashboard ? tempDashboard : currentDashboard;
+  // Usar siempre currentDashboard
+  const activeDashboard = currentDashboard;
 
   if (!activeDashboard) {
     return (
@@ -127,8 +125,7 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
       });
 
       // Añadir el widget al dashboard en la posición donde se soltó
-      const targetDashboard = tempDashboard || currentDashboard;
-      if (targetDashboard) {
+      if (currentDashboard) {
         const newLayout = {
           i: newWidget._id,
           x: item.x,
@@ -137,18 +134,18 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
           h: dragData.h,
         };
 
-        const updatedWidgets = [...targetDashboard.widgets, newWidget._id];
-        const updatedLayout = [...targetDashboard.layout, newLayout];
+        const updatedWidgets = [...currentDashboard.widgets, newWidget._id];
+        const updatedLayout = [...currentDashboard.layout, newLayout];
 
-        if (tempDashboard) {
-          // En modo edición, actualizar dashboard temporal
-          updateTempDashboard({
+        if (isEditing) {
+          // En modo edición, actualizar dashboard directamente
+          updateCurrentDashboard({
             widgets: updatedWidgets,
             layout: updatedLayout,
           });
         } else {
-          // Fuera de modo edición, actualizar directamente
-          updateDashboard(targetDashboard._id, {
+          // Fuera de modo edición, persistir directamente
+          updateDashboard(currentDashboard._id, {
             widgets: updatedWidgets,
             layout: updatedLayout,
           });

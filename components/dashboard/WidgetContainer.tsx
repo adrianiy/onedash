@@ -74,9 +74,8 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
     isEditing,
     selectWidget,
     openConfigSidebar,
-    tempDashboard,
-    updateTempDashboard,
     currentDashboard,
+    updateCurrentDashboard,
     updateDashboard,
     clearSelection,
   } = useDashboardStore();
@@ -88,35 +87,30 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
   const hideTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const handleDelete = () => {
-    if (isEditing && tempDashboard) {
-      // En modo edición, solo eliminar el widget del dashboard temporal
-      const updatedWidgets = tempDashboard.widgets.filter(
-        (id) => id !== widget._id
-      );
-      const updatedLayout = tempDashboard.layout.filter(
-        (item) => item.i !== widget._id
-      );
-
-      updateTempDashboard({
-        widgets: updatedWidgets,
-        layout: updatedLayout,
-      });
-    } else if (currentDashboard) {
-      // Fuera de modo edición, eliminar el widget del dashboard actual y del store
+    if (currentDashboard) {
       const updatedWidgets = currentDashboard.widgets.filter(
-        (id) => id !== widget._id
+        (id: string) => id !== widget._id
       );
       const updatedLayout = currentDashboard.layout.filter(
-        (item) => item.i !== widget._id
+        (item: DashboardLayout) => item.i !== widget._id
       );
 
-      updateDashboard(currentDashboard._id, {
-        widgets: updatedWidgets,
-        layout: updatedLayout,
-      });
+      if (isEditing) {
+        // En modo edición, actualizar dashboard directamente
+        updateCurrentDashboard({
+          widgets: updatedWidgets,
+          layout: updatedLayout,
+        });
+      } else {
+        // Fuera de modo edición, persistir directamente
+        updateDashboard(currentDashboard._id, {
+          widgets: updatedWidgets,
+          layout: updatedLayout,
+        });
 
-      // También eliminar del store de widgets
-      deleteWidget(widget._id);
+        // También eliminar del store de widgets si no estamos en modo edición
+        deleteWidget(widget._id);
+      }
     }
 
     // Limpiar la selección si el widget eliminado está seleccionado
@@ -130,22 +124,19 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
       config: { ...widget.config },
     });
 
-    // Add to current dashboard or temp dashboard if in editing mode
+    // Add to current dashboard
     const {
       currentDashboard,
-      tempDashboard,
       isEditing,
       updateDashboard,
-      updateTempDashboard,
+      updateCurrentDashboard,
       settings,
     } = useDashboardStore.getState();
 
-    const targetDashboard = isEditing ? tempDashboard : currentDashboard;
-
-    if (targetDashboard) {
+    if (currentDashboard) {
       // Find the original widget in the layout to get its size
-      const originalLayout = targetDashboard.layout.find(
-        (item) => item.i === widget._id
+      const originalLayout = currentDashboard.layout.find(
+        (item: DashboardLayout) => item.i === widget._id
       );
 
       // Use original widget size or default values
@@ -154,7 +145,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
 
       // Find the first free position for the copied widget
       const freePosition = findFirstFreePosition(
-        targetDashboard.layout,
+        currentDashboard.layout,
         widgetWidth,
         widgetHeight,
         settings.gridCols
@@ -169,16 +160,16 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
       };
 
       if (isEditing) {
-        // En modo edición, actualizar el dashboard temporal
-        updateTempDashboard({
-          widgets: [...targetDashboard.widgets, newWidget._id],
-          layout: [...targetDashboard.layout, newLayout],
+        // En modo edición, actualizar dashboard directamente
+        updateCurrentDashboard({
+          widgets: [...currentDashboard.widgets, newWidget._id],
+          layout: [...currentDashboard.layout, newLayout],
         });
       } else {
-        // Fuera del modo edición, actualizar directamente
-        updateDashboard(targetDashboard._id, {
-          widgets: [...targetDashboard.widgets, newWidget._id],
-          layout: [...targetDashboard.layout, newLayout],
+        // Fuera del modo edición, persistir directamente
+        updateDashboard(currentDashboard._id, {
+          widgets: [...currentDashboard.widgets, newWidget._id],
+          layout: [...currentDashboard.layout, newLayout],
         });
       }
     }

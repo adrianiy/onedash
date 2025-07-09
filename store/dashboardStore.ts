@@ -14,8 +14,6 @@ import { useAuthStore } from "./authStore";
 interface DashboardState {
   dashboards: Dashboard[];
   currentDashboard: Dashboard | null;
-  originalDashboard: Dashboard | null;
-  tempDashboard: Dashboard | null;
   settings: DashboardSettings;
   isEditing: boolean;
   hasUnsavedChanges: boolean;
@@ -23,6 +21,7 @@ interface DashboardState {
   isConfigSidebarOpen: boolean;
   droppingItemSize: { w: number; h: number };
   isLoading: boolean;
+  isDiscarding: boolean;
 
   // Actions
   createDashboard: (
@@ -37,6 +36,7 @@ interface DashboardState {
   ) => Promise<boolean>;
   deleteDashboard: (id: string) => Promise<boolean>;
   fetchDashboards: () => Promise<void>;
+  fetchDashboardById: (id: string) => Promise<void>;
   setCurrentDashboard: (dashboard: Dashboard | null) => void;
   updateLayout: (layout: DashboardLayout[]) => void;
   toggleEditing: () => void;
@@ -46,8 +46,8 @@ interface DashboardState {
     dashboard?: Dashboard;
     error?: unknown;
   }>;
-  discardChanges: () => void;
-  updateTempDashboard: (updates: Partial<Dashboard>) => void;
+  discardChanges: () => Promise<void>;
+  updateCurrentDashboard: (updates: Partial<Dashboard>) => void;
   updateSettings: (settings: Partial<DashboardSettings>) => void;
   selectWidget: (widgetId: string) => void;
   clearSelection: () => void;
@@ -71,8 +71,6 @@ export const useDashboardStore = create<DashboardState>()(
     (set, get) => ({
       dashboards: [],
       currentDashboard: null,
-      originalDashboard: null,
-      tempDashboard: null,
       settings: defaultSettings,
       isEditing: false,
       hasUnsavedChanges: false,
@@ -80,6 +78,7 @@ export const useDashboardStore = create<DashboardState>()(
       isConfigSidebarOpen: false,
       droppingItemSize: { w: 6, h: 6 },
       isLoading: false,
+      isDiscarding: false,
 
       // Crear un nuevo dashboard con persistencia en MongoDB
       createDashboard: async (dashboardData) => {
@@ -111,8 +110,6 @@ export const useDashboardStore = create<DashboardState>()(
             set((state) => ({
               dashboards: [...state.dashboards, newDashboard],
               currentDashboard: newDashboard,
-              originalDashboard: null,
-              tempDashboard: null,
               isEditing: false,
               hasUnsavedChanges: false,
               isLoading: false,
@@ -260,24 +257,25 @@ export const useDashboardStore = create<DashboardState>()(
       },
 
       updateLayout: (layout) => {
-        const { currentDashboard, isEditing, tempDashboard } = get();
+        const { currentDashboard, isEditing } = get();
 
         // Debug logging
         if (process.env.NODE_ENV === "development") {
           console.log("📋 Store updateLayout called:", {
             isEditing,
-            hasTempDashboard: !!tempDashboard,
             hasCurrentDashboard: !!currentDashboard,
             layoutCount: layout.length,
           });
         }
 
-        if (isEditing && tempDashboard) {
-          // En modo edición, actualizar la copia temporal
-          get().updateTempDashboard({ layout });
-        } else if (currentDashboard) {
-          // Fuera de modo edición, actualizar directamente
-          get().updateDashboard(currentDashboard._id, { layout });
+        if (currentDashboard) {
+          if (isEditing) {
+            // En modo edición, actualizar directamente y marcar cambios
+            get().updateCurrentDashboard({ layout });
+          } else {
+            // Fuera de modo edición, persistir directamente
+            get().updateDashboard(currentDashboard._id, { layout });
+          }
         }
       },
 
@@ -304,14 +302,7 @@ export const useDashboardStore = create<DashboardState>()(
 
         // Solo iniciar edición si hay un dashboard actual
         if (currentDashboard) {
-          // Crear copia profunda del dashboard actual
-          const tempDashboard: Dashboard = JSON.parse(
-            JSON.stringify(currentDashboard)
-          );
-
           set({
-            originalDashboard: currentDashboard,
-            tempDashboard,
             isEditing: true,
             hasUnsavedChanges: false,
           });
@@ -319,64 +310,38 @@ export const useDashboardStore = create<DashboardState>()(
       },
 
       saveChanges: async () => {
-        const { originalDashboard, tempDashboard } = get();
+        const { currentDashboard } = get();
 
-        // Si no hay dashboard original o temporal, no hacer nada
-        if (!originalDashboard || !tempDashboard) {
+        // Si no hay dashboard actual, no hacer nada
+        if (!currentDashboard) {
           return { needsConfirmation: false };
         }
 
         // Comprobar si el usuario tiene permisos para editar este dashboard
         const currentUser = useAuthStore.getState().user;
-
-        // El userId puede ser un string o un objeto con _id
-        const dashboardOwnerId = originalDashboard.userId;
-
+        const dashboardOwnerId = currentDashboard.userId;
         const isOwner = currentUser && dashboardOwnerId === currentUser._id;
-
         const isCollaborator =
           currentUser &&
-          originalDashboard.collaborators?.some(
-            (id) => id.toString() === currentUser._id
+          currentDashboard.collaborators?.some(
+            (id: string) => id.toString() === currentUser._id
           );
 
         if (!isOwner && !isCollaborator) {
           // El usuario no es ni propietario ni colaborador, mostrar confirmación para crear copia
           return {
             needsConfirmation: true,
-            dashboard: tempDashboard,
+            dashboard: currentDashboard,
           };
         }
 
         try {
           console.log("🚀 Iniciando guardado del dashboard...");
 
-          // 1. Gestión de widgets borrados
-          const deletedWidgetIds = originalDashboard.widgets.filter(
-            (widgetId) => !tempDashboard.widgets.includes(widgetId)
-          );
-
-          console.log("🗑️ Widgets a eliminar:", deletedWidgetIds);
-
-          // Eliminar widgets que ya no existen en el dashboard
-          if (deletedWidgetIds.length > 0) {
-            const { widgets } = useWidgetStore.getState();
-            await Promise.all(
-              deletedWidgetIds.map(async (widgetId) => {
-                const widget = widgets.find((w) => w._id === widgetId);
-                // Solo eliminar si el widget está persistido en la base de datos
-                if (widget && widget.persisted) {
-                  console.log(`🗑️ Eliminando widget: ${widgetId}`);
-                  await apiService.delete(`/widgets/${widgetId}`);
-                }
-              })
-            );
-          }
-
-          // 2. Guardar widgets existentes y crear nuevos
+          // 1. Guardar widgets existentes y crear nuevos
           const { widgets } = useWidgetStore.getState();
           const dashboardWidgets = widgets.filter((w) =>
-            tempDashboard.widgets.includes(w._id)
+            currentDashboard.widgets.includes(w._id)
           );
 
           console.log("💾 Widgets a guardar:", dashboardWidgets.length);
@@ -394,7 +359,7 @@ export const useDashboardStore = create<DashboardState>()(
                     config: widget.config,
                     events: widget.events,
                     isConfigured: widget.isConfigured,
-                    dashboardId: originalDashboard._id,
+                    dashboardId: currentDashboard._id,
                   }
                 );
                 return (response.data as Widget)?._id || widget._id;
@@ -408,7 +373,7 @@ export const useDashboardStore = create<DashboardState>()(
                   config: widget.config,
                   events: widget.events || [],
                   isConfigured: widget.isConfigured || false,
-                  dashboardId: originalDashboard._id,
+                  dashboardId: currentDashboard._id,
                 });
 
                 // Marcar el widget como persistido en el store local
@@ -422,11 +387,11 @@ export const useDashboardStore = create<DashboardState>()(
 
           console.log("🔄 IDs de widgets actualizados:", updatedWidgetIds);
 
-          // 3. Actualizar dashboard con los IDs de widgets actualizados
+          // 2. Actualizar dashboard con los IDs de widgets actualizados
           const dashboardData = {
-            name: tempDashboard.name,
-            description: tempDashboard.description,
-            layout: tempDashboard.layout.map((item) => {
+            name: currentDashboard.name,
+            description: currentDashboard.description,
+            layout: currentDashboard.layout.map((item: DashboardLayout) => {
               // Actualizar los IDs de layout si han cambiado
               const widgetIndex = dashboardWidgets.findIndex(
                 (w) => w._id === item.i
@@ -437,56 +402,25 @@ export const useDashboardStore = create<DashboardState>()(
               return item;
             }),
             widgets: updatedWidgetIds,
-            visibility: tempDashboard.visibility,
+            visibility: currentDashboard.visibility,
           };
 
-          // 4. Actualizar o crear el dashboard
-          let updatedDashboard;
+          // 3. Actualizar o crear el dashboard
+          const success = await get().updateDashboard(
+            currentDashboard._id,
+            dashboardData
+          );
 
-          if (/^[0-9a-f]{24}$/.test(originalDashboard._id)) {
-            // Actualizar dashboard existente
-            console.log(`📝 Actualizando dashboard: ${originalDashboard._id}`);
-            const response = await apiService.put(
-              `/dashboards/${originalDashboard._id}`,
-              dashboardData
-            );
-            updatedDashboard = response.data;
-          } else {
-            // Crear nuevo dashboard
-            console.log("✨ Creando nuevo dashboard");
-            const response = await apiService.post(
-              `/dashboards`,
-              dashboardData
-            );
-            updatedDashboard = response.data;
-          }
+          if (success) {
+            // 4. Recargar widgets desde la API para obtener datos actualizados
+            const { fetchWidgetsByDashboardId } = useWidgetStore.getState();
+            await fetchWidgetsByDashboardId(currentDashboard._id);
 
-          // 5. Actualizar estado local con los datos de la BD
-          if (updatedDashboard) {
-            const dashboardData = updatedDashboard as Dashboard;
-            const newId = dashboardData._id;
-            const dashboardWithCorrectId = {
-              ...dashboardData,
-              _id: newId,
-              updatedAt: new Date(dashboardData.updatedAt),
-              createdAt: new Date(dashboardData.createdAt),
-            } as Dashboard;
-
-            set((state) => ({
-              dashboards: state.dashboards.map((d) =>
-                d._id === originalDashboard._id ? dashboardWithCorrectId : d
-              ),
-              currentDashboard: dashboardWithCorrectId,
-              originalDashboard: null,
-              tempDashboard: null,
+            set({
               isEditing: false,
               hasUnsavedChanges: false,
               selectedWidgetId: null,
-            }));
-
-            // 6. Recargar widgets desde la API para obtener los IDs actualizados
-            const { fetchWidgetsByDashboardId } = useWidgetStore.getState();
-            await fetchWidgetsByDashboardId(newId);
+            });
 
             console.log("✅ Dashboard guardado exitosamente");
           }
@@ -494,38 +428,34 @@ export const useDashboardStore = create<DashboardState>()(
           return { needsConfirmation: false };
         } catch (error) {
           console.error("❌ Error guardando el dashboard:", error);
-          // Mantener el estado de edición en caso de error
           return { needsConfirmation: false, error };
         }
       },
 
-      discardChanges: () => {
-        const { originalDashboard } = get();
+      discardChanges: async () => {
+        const { currentDashboard } = get();
 
-        set({
-          currentDashboard: originalDashboard,
-          originalDashboard: null,
-          tempDashboard: null,
-          isEditing: false,
-          hasUnsavedChanges: false,
-          selectedWidgetId: null,
-        });
-      },
+        set({ isDiscarding: true });
 
-      updateTempDashboard: (updates) => {
-        const { tempDashboard } = get();
+        try {
+          if (currentDashboard && /^[0-9a-f]{24}$/.test(currentDashboard._id)) {
+            // Recargar dashboard desde MongoDB
+            await get().fetchDashboardById(currentDashboard._id);
 
-        if (tempDashboard) {
-          const updatedDashboard = {
-            ...tempDashboard,
-            ...updates,
-            updatedAt: new Date(),
-          };
+            // Recargar widgets desde MongoDB
+            const { fetchWidgetsByDashboardId } = useWidgetStore.getState();
+            await fetchWidgetsByDashboardId(currentDashboard._id);
+          }
 
           set({
-            tempDashboard: updatedDashboard,
-            hasUnsavedChanges: true,
+            isEditing: false,
+            hasUnsavedChanges: false,
+            selectedWidgetId: null,
+            isDiscarding: false,
           });
+        } catch (error) {
+          console.error("❌ Error al descartar cambios:", error);
+          set({ isDiscarding: false });
         }
       },
 
@@ -586,6 +516,73 @@ export const useDashboardStore = create<DashboardState>()(
         } catch (error) {
           console.error("❌ Error al obtener dashboards:", error);
           set({ isLoading: false });
+        }
+      },
+
+      // Cargar un dashboard específico desde MongoDB
+      fetchDashboardById: async (id: string) => {
+        // Validar que sea un ID de MongoDB
+        if (!/^[0-9a-f]{24}$/.test(id)) {
+          console.log(
+            "⚠️ ID de dashboard no válido para MongoDB, omitiendo recarga"
+          );
+          return;
+        }
+
+        set({ isLoading: true });
+
+        try {
+          const response = await apiService.get(`/dashboards/${id}`);
+
+          if (response.success && response.data) {
+            const dashboardFromAPI = response.data as Dashboard;
+            const reloadedDashboard = {
+              ...dashboardFromAPI,
+              createdAt: new Date(dashboardFromAPI.createdAt),
+              updatedAt: new Date(dashboardFromAPI.updatedAt),
+            };
+
+            set((state) => ({
+              dashboards: state.dashboards.map((dashboard) =>
+                dashboard._id === id ? reloadedDashboard : dashboard
+              ),
+              currentDashboard:
+                state.currentDashboard && state.currentDashboard._id === id
+                  ? reloadedDashboard
+                  : state.currentDashboard,
+              isLoading: false,
+            }));
+
+            console.log(`✅ Dashboard ${id} recargado desde MongoDB`);
+          } else {
+            set({ isLoading: false });
+          }
+        } catch (error) {
+          console.error(`❌ Error al recargar dashboard ${id}:`, error);
+          set({ isLoading: false });
+        }
+      },
+
+      // Actualizar currentDashboard directamente (para modo edición)
+      updateCurrentDashboard: (updates: Partial<Dashboard>) => {
+        const { currentDashboard } = get();
+
+        if (currentDashboard) {
+          const updatedDashboard = {
+            ...currentDashboard,
+            ...updates,
+            updatedAt: new Date(),
+          };
+
+          set((state) => ({
+            dashboards: state.dashboards.map((dashboard) =>
+              dashboard._id === currentDashboard._id
+                ? updatedDashboard
+                : dashboard
+            ),
+            currentDashboard: updatedDashboard,
+            hasUnsavedChanges: true,
+          }));
         }
       },
 
