@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { signIn, getSession } from "next-auth/react";
 import { Card } from "../components/common/Card";
 import { Icon } from "../components/common/Icon";
 import { useAuthStore } from "../store/authStore";
@@ -54,6 +55,27 @@ export default function Login() {
     if (!validateForm()) return;
 
     await login(email, password);
+  };
+
+  const handleOAuthLogin = async (provider: string) => {
+    try {
+      const result = await signIn(provider, {
+        callbackUrl: "/dashboard",
+        redirect: false,
+      });
+
+      if (result?.error) {
+        console.error("OAuth login error:", result.error);
+      } else if (result?.ok) {
+        // Check session and redirect
+        const session = await getSession();
+        if (session) {
+          router.push("/dashboard");
+        }
+      }
+    } catch (error) {
+      console.error("OAuth login error:", error);
+    }
   };
 
   return (
@@ -125,6 +147,46 @@ export default function Login() {
           >
             {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
           </button>
+
+          {/* Separador OAuth */}
+          <div className="auth-form__separator">
+            <span className="auth-form__separator-line"></span>
+            <span className="auth-form__separator-text">O</span>
+            <span className="auth-form__separator-line"></span>
+          </div>
+
+          {/* Botones OAuth */}
+          <div className="auth-form__oauth">
+            <button
+              type="button"
+              className="auth-form__oauth-button auth-form__oauth-button--google"
+              onClick={() => handleOAuthLogin("google")}
+              disabled={isLoading}
+            >
+              <Icon name="google" size={20} />
+              Continuar con Google
+            </button>
+
+            <button
+              type="button"
+              className="auth-form__oauth-button auth-form__oauth-button--github"
+              onClick={() => handleOAuthLogin("github")}
+              disabled={isLoading}
+            >
+              <Icon name="github" size={20} />
+              Continuar con GitHub
+            </button>
+
+            <button
+              type="button"
+              className="auth-form__oauth-button auth-form__oauth-button--microsoft"
+              onClick={() => handleOAuthLogin("azure-ad")}
+              disabled={isLoading}
+            >
+              <Icon name="microsoft" size={20} />
+              Continuar con Microsoft
+            </button>
+          </div>
 
           {/* Footer con link a registro */}
           <div className="auth-form__footer">

@@ -4,8 +4,13 @@ export interface IUser {
   _id?: string;
   name: string;
   email: string;
-  password: string;
+  password?: string; // Optional for OAuth users
+  image?: string; // Avatar from OAuth provider
   role: "user" | "admin";
+  providerAccounts?: {
+    provider: string;
+    providerAccountId: string;
+  }[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -27,10 +32,26 @@ const UserSchema = new Schema<IUser>(
     },
     password: {
       type: String,
-      required: [true, "Por favor, añade una contraseña"],
+      required: false, // Not required for OAuth users
       minlength: 6,
       select: false, // No devolver el password en las consultas
     },
+    image: {
+      type: String,
+      required: false,
+    },
+    providerAccounts: [
+      {
+        provider: {
+          type: String,
+          required: true,
+        },
+        providerAccountId: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
     role: {
       type: String,
       enum: ["user", "admin"],

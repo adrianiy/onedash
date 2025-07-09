@@ -73,6 +73,7 @@ import {
   Globe,
   Loader,
   Lock,
+  Github,
   type LucideIcon,
 } from "lucide-react";
 
@@ -160,6 +161,9 @@ const lucideIconMap = {
   "panel-bottom": PanelBottom,
   filter: Filter,
   "rotate-ccw": RotateCcw,
+  github: Github,
+  google: Globe, // Using Globe as placeholder for Google
+  microsoft: Globe, // Using Globe as placeholder for Microsoft
 } as const;
 
 const tablerIconMap = {

@@ -1,12 +1,16 @@
 import { useEffect } from "react";
 import type { AppProps } from "next/app";
+import { SessionProvider } from "next-auth/react";
 import { useThemeStore } from "../store/themeStore";
 import { useAuthStore } from "../store/authStore";
 import { useDashboardStore } from "../store/dashboardStore";
 import "react-tooltip/dist/react-tooltip.css";
 import "../styles/index.css";
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppProps) {
   const { theme } = useThemeStore();
   const { checkAuth, isAuthenticated } = useAuthStore();
   const { fetchDashboards } = useDashboardStore();
@@ -33,5 +37,9 @@ export default function App({ Component, pageProps }: AppProps) {
     init();
   }, [fetchDashboards, isAuthenticated]);
 
-  return <Component {...pageProps} />;
+  return (
+    <SessionProvider session={session}>
+      <Component {...pageProps} />
+    </SessionProvider>
+  );
 }
