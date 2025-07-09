@@ -83,16 +83,16 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
   const [showFloatingHeader, setShowFloatingHeader] = useState(false);
   const [isHiding, setIsHiding] = useState(false);
   const [isPinned, setIsPinned] = useState(true); // Pinned por defecto
-  const hideTimeoutRef = useRef<number | undefined>(undefined);
+  const hideTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const handleDelete = () => {
     if (isEditing && tempDashboard) {
       // En modo edición, solo eliminar el widget del dashboard temporal
       const updatedWidgets = tempDashboard.widgets.filter(
-        (id) => id !== widget.id
+        (id) => id !== widget._id
       );
       const updatedLayout = tempDashboard.layout.filter(
-        (item) => item.i !== widget.id
+        (item) => item.i !== widget._id
       );
 
       updateTempDashboard({
@@ -102,19 +102,19 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
     } else if (currentDashboard) {
       // Fuera de modo edición, eliminar el widget del dashboard actual y del store
       const updatedWidgets = currentDashboard.widgets.filter(
-        (id) => id !== widget.id
+        (id) => id !== widget._id
       );
       const updatedLayout = currentDashboard.layout.filter(
-        (item) => item.i !== widget.id
+        (item) => item.i !== widget._id
       );
 
-      updateDashboard(currentDashboard.id, {
+      updateDashboard(currentDashboard._id, {
         widgets: updatedWidgets,
         layout: updatedLayout,
       });
 
       // También eliminar del store de widgets
-      deleteWidget(widget.id);
+      deleteWidget(widget._id);
     }
   };
 
@@ -140,7 +140,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
     if (targetDashboard) {
       // Find the original widget in the layout to get its size
       const originalLayout = targetDashboard.layout.find(
-        (item) => item.i === widget.id
+        (item) => item.i === widget._id
       );
 
       // Use original widget size or default values
@@ -156,7 +156,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
       );
 
       const newLayout = {
-        i: newWidget.id,
+        i: newWidget._id,
         x: freePosition.x,
         y: freePosition.y,
         w: widgetWidth,
@@ -166,13 +166,13 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
       if (isEditing) {
         // En modo edición, actualizar el dashboard temporal
         updateTempDashboard({
-          widgets: [...targetDashboard.widgets, newWidget.id],
+          widgets: [...targetDashboard.widgets, newWidget._id],
           layout: [...targetDashboard.layout, newLayout],
         });
       } else {
         // Fuera del modo edición, actualizar directamente
-        updateDashboard(targetDashboard.id, {
-          widgets: [...targetDashboard.widgets, newWidget.id],
+        updateDashboard(targetDashboard._id, {
+          widgets: [...targetDashboard.widgets, newWidget._id],
           layout: [...targetDashboard.layout, newLayout],
         });
       }
@@ -180,7 +180,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
   };
 
   const handleEdit = () => {
-    selectWidget(widget.id);
+    selectWidget(widget._id);
     openConfigSidebar();
   };
 
@@ -189,7 +189,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
     if (isEditing) {
       e.stopPropagation(); // Evitar propagación para no interferir con grid layout
       if (!isSelected) {
-        selectWidget(widget.id); // Seleccionar solo si no está ya seleccionado
+        selectWidget(widget._id); // Seleccionar solo si no está ya seleccionado
       }
     }
   };

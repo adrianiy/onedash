@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Icon } from "../../common/Icon";
-import { Tooltip } from "react-tooltip";
 import type {
   TableWidget as TableWidgetType,
   ConditionalFormatRule,
@@ -827,16 +826,6 @@ export const TableWidget: React.FC<TableWidgetProps> = ({ widget }) => {
           </div>
         </div>
       )}
-
-      {/* Tooltips para filtros */}
-      <Tooltip
-        id="table-filters-tooltip"
-        place="top"
-        style={{ whiteSpace: "pre-line" }}
-      />
-      <Tooltip id="filter-date-tooltip" place="top" />
-      <Tooltip id="filter-products-tooltip" place="top" />
-      <Tooltip id="filter-sections-tooltip" place="top" />
     </div>
   );
 };

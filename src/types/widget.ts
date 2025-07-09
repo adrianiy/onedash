@@ -57,12 +57,6 @@ export interface MetricWidgetConfig {
     conditionalFormats?: ConditionalFormatRule[];
     filterDisplayMode?: "badges" | "info" | "hidden";
   };
-
-  // Compatibilidad con mock actual (deprecado)
-  value?: number | string;
-  unit?: string;
-  trend?: "up" | "down" | "neutral";
-  trendValue?: number;
 }
 
 export interface TableWidgetConfig {
@@ -112,13 +106,15 @@ export interface TextWidgetConfig {
 }
 
 export interface BaseWidget {
-  id: string;
+  _id: string;
   title: string;
   description?: string;
+  dashboardId?: string; // ID del dashboard al que pertenece el widget
   createdAt: Date;
   updatedAt: Date;
   isConfigured?: boolean;
   events?: WidgetEvent[];
+  persisted?: boolean; // Indica si el widget ya está guardado en la base de datos
 }
 
 export interface ChartWidget extends BaseWidget {

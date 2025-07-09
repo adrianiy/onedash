@@ -52,7 +52,7 @@ export const DataConfig: React.FC<DataConfigProps> = ({ widget }) => {
   const handleMetricSelect = (metric: MetricDefinition) => {
     if (editingType) {
       // Editando una métrica existente
-      updateWidget(widget.id, {
+      updateWidget(widget._id, {
         config: {
           ...widget.config,
           [`${editingType}Metric`]: metric,
@@ -62,7 +62,7 @@ export const DataConfig: React.FC<DataConfigProps> = ({ widget }) => {
       // Añadiendo nueva métrica
       if (!primaryMetric) {
         // Asignar como primaria si no existe
-        updateWidget(widget.id, {
+        updateWidget(widget._id, {
           config: {
             ...widget.config,
             primaryMetric: metric,
@@ -70,7 +70,7 @@ export const DataConfig: React.FC<DataConfigProps> = ({ widget }) => {
         });
       } else if (!secondaryMetric) {
         // Asignar como secundaria si primaria existe
-        updateWidget(widget.id, {
+        updateWidget(widget._id, {
           config: {
             ...widget.config,
             secondaryMetric: metric,
@@ -90,7 +90,7 @@ export const DataConfig: React.FC<DataConfigProps> = ({ widget }) => {
   const handleRemoveMetric = (type: "primary" | "secondary") => {
     if (type === "primary") {
       // Si eliminamos primaria y hay secundaria, promover secundaria a primaria
-      updateWidget(widget.id, {
+      updateWidget(widget._id, {
         config: {
           ...widget.config,
           primaryMetric: secondaryMetric,
@@ -99,7 +99,7 @@ export const DataConfig: React.FC<DataConfigProps> = ({ widget }) => {
       });
     } else {
       // Eliminar secundaria
-      updateWidget(widget.id, {
+      updateWidget(widget._id, {
         config: {
           ...widget.config,
           secondaryMetric: undefined,
@@ -113,7 +113,7 @@ export const DataConfig: React.FC<DataConfigProps> = ({ widget }) => {
     type: "primary" | "secondary",
     metric: MetricDefinition
   ) => {
-    updateWidget(widget.id, {
+    updateWidget(widget._id, {
       config: {
         ...widget.config,
         [`${type}Metric`]: metric,
@@ -136,7 +136,7 @@ export const DataConfig: React.FC<DataConfigProps> = ({ widget }) => {
     if (over && active.id !== over.id) {
       // Solo intercambiar si ambas métricas existen
       if (primaryMetric && secondaryMetric) {
-        updateWidget(widget.id, {
+        updateWidget(widget._id, {
           config: {
             ...widget.config,
             primaryMetric: secondaryMetric,

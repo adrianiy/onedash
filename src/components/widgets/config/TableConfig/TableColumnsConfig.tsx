@@ -116,7 +116,7 @@ export const TableColumnsConfig: React.FC<TableColumnsConfigProps> = ({
       const typedConfig = tableConfig as TableWidgetConfig;
 
       // Actualizar el widget con las nuevas columnas
-      updateWidget(widget.id, {
+      updateWidget(widget._id, {
         config: {
           columns: updatedColumns,
           data: typedConfig.data || [],
@@ -157,7 +157,7 @@ export const TableColumnsConfig: React.FC<TableColumnsConfigProps> = ({
       });
 
       // Actualizar el widget
-      updateWidget(widget.id, {
+      updateWidget(widget._id, {
         config: {
           ...widget.config,
           columns: updatedColumns,
@@ -206,7 +206,7 @@ export const TableColumnsConfig: React.FC<TableColumnsConfigProps> = ({
         updatedColumns.splice(originalIndex + 1, 0, copiedColumn);
 
         // Actualizar el widget
-        updateWidget(widget.id, {
+        updateWidget(widget._id, {
           config: {
             ...widget.config,
             columns: updatedColumns,
@@ -228,7 +228,7 @@ export const TableColumnsConfig: React.FC<TableColumnsConfigProps> = ({
       );
 
       // Actualizar el widget
-      updateWidget(widget.id, {
+      updateWidget(widget._id, {
         config: {
           ...widget.config,
           columns: updatedColumns,
@@ -286,7 +286,7 @@ export const TableColumnsConfig: React.FC<TableColumnsConfigProps> = ({
       );
 
       // Actualizar el widget con las columnas actualizadas
-      updateWidget(widget.id, {
+      updateWidget(widget._id, {
         config: {
           ...widget.config,
           columns: updatedColumns,
@@ -328,7 +328,7 @@ export const TableColumnsConfig: React.FC<TableColumnsConfigProps> = ({
       );
 
       // Actualizar el widget
-      updateWidget(widget.id, {
+      updateWidget(widget._id, {
         config: {
           ...widget.config,
           columns: updatedColumns,
@@ -355,7 +355,7 @@ export const TableColumnsConfig: React.FC<TableColumnsConfigProps> = ({
       });
 
       // Actualizar el widget con las columnas actualizadas
-      updateWidget(widget.id, {
+      updateWidget(widget._id, {
         config: {
           ...widget.config,
           columns: updatedColumns,
@@ -385,7 +385,7 @@ export const TableColumnsConfig: React.FC<TableColumnsConfigProps> = ({
 
       // Actualizar el widget
       if (widget.type === "table") {
-        updateWidget(widget.id, {
+        updateWidget(widget._id, {
           config: {
             ...widget.config,
             columns: newOrderColumns,

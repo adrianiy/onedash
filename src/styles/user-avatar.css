@@ -1,0 +1,184 @@
+/* Estilos para el avatar de usuario y el panel desplegable */
+
+/* Contenedor principal */
+.user-avatar__container {
+  position: relative;
+}
+
+/* Estilos del avatar base */
+.user-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  font-weight: 400;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  box-shadow: var(--shadow-xs);
+}
+
+.user-avatar:hover {
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.user-avatar--active {
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Texto de iniciales */
+.user-avatar-initials {
+  font-size: calc(var(--spacing-lg) - 2px);
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  user-select: none;
+}
+
+/* Panel de usuario desplegable */
+.user-avatar__panel {
+  width: 240px;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  z-index: 1000;
+  border: 1px solid var(--color-border);
+  /* Eliminamos la animación CSS para permitir que FloatingUI maneje la transición */
+  animation: none;
+}
+
+/* Tema oscuro */
+:root[data-theme="dark"] .user-avatar__panel {
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+/* Flecha del panel */
+.user-avatar__panel-arrow {
+  fill: var(--color-surface);
+  stroke: var(--color-border);
+  stroke-width: 1px;
+}
+
+:root[data-theme="dark"] .user-avatar__panel-arrow {
+  fill: var(--color-surface);
+  stroke: var(--color-border);
+}
+
+/* Encabezado del panel con info del usuario */
+.user-avatar__panel-header {
+  padding: var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+/* Avatar pequeño dentro del panel */
+.user-avatar__panel-avatar {
+  width: calc(var(--spacing-xl) + var(--spacing-lg));
+  height: calc(var(--spacing-xl) + var(--spacing-lg));
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 400;
+}
+
+/* Información del usuario */
+.user-avatar__panel-user-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Nombre del usuario */
+.user-avatar__panel-name {
+  margin: 0;
+  font-size: var(--spacing-lg);
+  font-weight: 400;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Email del usuario */
+.user-avatar__panel-email {
+  margin: 0;
+  font-size: calc(var(--spacing-lg) - 2px);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Separador */
+.user-avatar__panel-divider {
+  height: 1px;
+  width: 100%;
+  background-color: var(--color-border);
+}
+
+:root[data-theme="dark"] .user-avatar__panel-divider {
+  background-color: var(--color-border);
+}
+
+/* Menú de opciones */
+.user-avatar__panel-menu {
+  padding: var(--spacing-sm);
+}
+
+/* Item del menú */
+.user-avatar__panel-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-weight: 400;
+  font-size: calc(var(--spacing-lg) - 1px);
+  color: var(--color-text-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  text-align: left;
+}
+
+.user-avatar__panel-item:hover {
+  background-color: var(--color-surface-hover);
+}
+
+/* Item para cerrar sesión */
+.user-avatar__panel-item--danger {
+  color: var(--color-danger);
+}
+
+.user-avatar__panel-item--danger:hover {
+  background-color: rgba(var(--color-danger-rgb), 0.1);
+  color: var(--color-danger);
+}
+
+/* Removemos la animación CSS y dejamos que FloatingUI la maneje */
+
+/* Transiciones */
+.user-avatar,
+.user-avatar__panel-item {
+  transition: var(--transition-fast);
+}
+
+/* Soporte para modo móvil */
+@media (max-width: 768px) {
+  .user-avatar__panel {
+    width: 200px;
+    right: 0;
+  }
+}

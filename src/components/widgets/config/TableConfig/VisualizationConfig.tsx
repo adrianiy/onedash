@@ -62,7 +62,7 @@ export const VisualizationConfig: React.FC<VisualizationConfigProps> = ({
 
   // Manejadores de eventos para actualizar configuración
   const handleToggleOption = (option: string, value: boolean) => {
-    updateWidget(widget.id, {
+    updateWidget(widget._id, {
       config: {
         ...widget.config,
         visualization: {
@@ -85,7 +85,7 @@ export const VisualizationConfig: React.FC<VisualizationConfigProps> = ({
       newMode = mode; // Activar la opción clicada
     }
 
-    updateWidget(widget.id, {
+    updateWidget(widget._id, {
       config: {
         ...widget.config,
         visualization: {
@@ -97,7 +97,7 @@ export const VisualizationConfig: React.FC<VisualizationConfigProps> = ({
   };
 
   const handleChangeAlignment = (alignment: "left" | "center" | "right") => {
-    updateWidget(widget.id, {
+    updateWidget(widget._id, {
       config: {
         ...widget.config,
         visualization: {
@@ -109,7 +109,7 @@ export const VisualizationConfig: React.FC<VisualizationConfigProps> = ({
   };
 
   const handleChangeTotalRow = (position: "top" | "bottom" | "none") => {
-    updateWidget(widget.id, {
+    updateWidget(widget._id, {
       config: {
         ...widget.config,
         visualization: {
@@ -155,7 +155,7 @@ export const VisualizationConfig: React.FC<VisualizationConfigProps> = ({
     const updatedFormats = conditionalFormats.map((f) =>
       f.id === formatId ? { ...f, isEnabled: !f.isEnabled } : f
     );
-    updateWidget(widget.id, {
+    updateWidget(widget._id, {
       config: {
         ...widget.config,
         visualization: {
@@ -187,7 +187,7 @@ export const VisualizationConfig: React.FC<VisualizationConfigProps> = ({
       updatedFormats = [...conditionalFormats, newFormat];
     }
 
-    updateWidget(widget.id, {
+    updateWidget(widget._id, {
       config: {
         ...widget.config,
         visualization: {
@@ -202,7 +202,7 @@ export const VisualizationConfig: React.FC<VisualizationConfigProps> = ({
 
   const removeConditionalFormat = (formatId: string) => {
     const updatedFormats = conditionalFormats.filter((f) => f.id !== formatId);
-    updateWidget(widget.id, {
+    updateWidget(widget._id, {
       config: {
         ...widget.config,
         visualization: {

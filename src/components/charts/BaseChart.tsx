@@ -1,5 +1,5 @@
 import React from "react";
-import type { EChartsOption } from "echarts";
+import type { EChartsOption, ECharts } from "echarts";
 import { useECharts } from "../../hooks/useECharts";
 
 interface BaseChartProps {
@@ -8,7 +8,7 @@ interface BaseChartProps {
   height?: string | number;
   className?: string;
   theme?: "light" | "dark";
-  onChartReady?: (chart: any) => void;
+  onChartReady?: (chart: ECharts) => void;
 }
 
 export const BaseChart: React.FC<BaseChartProps> = ({

@@ -117,7 +117,7 @@ export const EventsConfig: React.FC<EventsConfigProps> = ({ widget }) => {
       const updatedEvents = (widget.events || []).filter(
         (e) => e.trigger !== "click"
       );
-      updateWidget(widget.id, { events: updatedEvents });
+      updateWidget(widget._id, { events: updatedEvents });
     }
   };
 
@@ -151,8 +151,8 @@ export const EventsConfig: React.FC<EventsConfigProps> = ({ widget }) => {
     );
     updatedEvents.push(clickEvent);
 
-    updateWidget(widget.id, { events: updatedEvents });
-  }, [isClickEventEnabled, variableMappings, updateWidget, widget.id]);
+    updateWidget(widget._id, { events: updatedEvents });
+  }, [isClickEventEnabled, variableMappings, updateWidget, widget._id]);
 
   // Auto-save when variables change
   useEffect(() => {

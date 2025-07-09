@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
+import { devtools } from "zustand/middleware";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type VariableValue = any;
@@ -35,231 +35,159 @@ const getDefaultVariables = (): Record<string, VariableValue> => {
   };
 };
 
-// Función para cargar variables de localStorage por dashboard
-const loadDashboardVariables = (
-  dashboardId: string
-): Record<string, VariableValue> => {
-  try {
-    const stored = localStorage.getItem(`dashboard-variables-${dashboardId}`);
-    if (stored) {
-      return JSON.parse(stored);
-    }
-  } catch (error) {
-    console.warn(
-      `Error loading variables for dashboard ${dashboardId}:`,
-      error
-    );
-  }
-  return getDefaultVariables();
-};
-
-// Función para guardar variables en localStorage por dashboard
-const saveDashboardVariables = (
-  dashboardId: string,
-  variables: Record<string, VariableValue>
-) => {
-  try {
-    localStorage.setItem(
-      `dashboard-variables-${dashboardId}`,
-      JSON.stringify(variables)
-    );
-  } catch (error) {
-    console.warn(`Error saving variables for dashboard ${dashboardId}:`, error);
-  }
-};
-
 export const useVariableStore = create<VariableState>()(
-  devtools(
-    persist(
-      (set, get) => ({
-        dashboardVariables: {},
-        currentDashboardId: null,
-        variables: getDefaultVariables(),
+  devtools((set, get) => ({
+    dashboardVariables: {},
+    currentDashboardId: null,
+    variables: getDefaultVariables(),
 
-        setVariable: (key, value) => {
-          const { currentDashboardId } = get();
-          console.log(
-            `🔄 Variable Store - Setting ${key}:`,
-            value,
-            `for dashboard: ${currentDashboardId}`
-          );
+    // Guardar variable (solo local)
+    setVariable: (key, value) => {
+      const { currentDashboardId } = get();
+      console.log(
+        `🔄 Variable Store - Setting ${key}:`,
+        value,
+        `for dashboard: ${currentDashboardId}`
+      );
 
-          if (!currentDashboardId) {
-            console.warn("No current dashboard set, variable change ignored");
-            return;
-          }
-
-          set(
-            (state) => {
-              const newVariables = { ...state.variables, [key]: value };
-              const newDashboardVariables = {
-                ...state.dashboardVariables,
-                [currentDashboardId]: newVariables,
-              };
-
-              // Guardar en localStorage
-              saveDashboardVariables(currentDashboardId, newVariables);
-
-              return {
-                variables: newVariables,
-                dashboardVariables: newDashboardVariables,
-              };
-            },
-            false,
-            `setVariable(${key})`
-          );
-        },
-
-        setMultiple: (updates) => {
-          const { currentDashboardId } = get();
-          console.log(
-            "🔄 Variable Store - Setting multiple:",
-            updates,
-            `for dashboard: ${currentDashboardId}`
-          );
-
-          if (!currentDashboardId) {
-            console.warn("No current dashboard set, variable changes ignored");
-            return;
-          }
-
-          set(
-            (state) => {
-              const newVariables = { ...state.variables, ...updates };
-              const newDashboardVariables = {
-                ...state.dashboardVariables,
-                [currentDashboardId]: newVariables,
-              };
-
-              // Guardar en localStorage
-              saveDashboardVariables(currentDashboardId, newVariables);
-
-              return {
-                variables: newVariables,
-                dashboardVariables: newDashboardVariables,
-              };
-            },
-            false,
-            "setMultiple"
-          );
-        },
-
-        getVariable: (key) => {
-          return get().variables[key];
-        },
-
-        setCurrentDashboard: (dashboardId) => {
-          const { dashboardVariables } = get();
-          console.log(
-            `🔄 Variable Store - Switching to dashboard: ${dashboardId}`
-          );
-
-          if (dashboardId === null) {
-            set({
-              currentDashboardId: null,
-              variables: getDefaultVariables(),
-            });
-            return;
-          }
-
-          // Cargar variables del dashboard desde memoria o localStorage
-          let dashboardVars = dashboardVariables[dashboardId];
-          if (!dashboardVars) {
-            dashboardVars = loadDashboardVariables(dashboardId);
-          }
-
-          set(
-            (state) => ({
-              currentDashboardId: dashboardId,
-              variables: dashboardVars,
-              dashboardVariables: {
-                ...state.dashboardVariables,
-                [dashboardId]: dashboardVars,
-              },
-            }),
-            false,
-            `setCurrentDashboard(${dashboardId})`
-          );
-        },
-
-        initializeDashboardVariables: (dashboardId) => {
-          const { dashboardVariables } = get();
-          console.log(
-            `🔄 Variable Store - Initializing variables for dashboard: ${dashboardId}`
-          );
-
-          // Solo inicializar si no existen ya variables para este dashboard
-          if (!dashboardVariables[dashboardId]) {
-            const defaultVars = getDefaultVariables();
-
-            set(
-              (state) => ({
-                dashboardVariables: {
-                  ...state.dashboardVariables,
-                  [dashboardId]: defaultVars,
-                },
-              }),
-              false,
-              `initializeDashboardVariables(${dashboardId})`
-            );
-
-            // Guardar variables por defecto en localStorage
-            saveDashboardVariables(dashboardId, defaultVars);
-          }
-        },
-
-        clearDashboardVariables: (dashboardId) => {
-          console.log(
-            `🔄 Variable Store - Clearing variables for dashboard: ${dashboardId}`
-          );
-
-          set(
-            (state) => {
-              const newDashboardVariables = { ...state.dashboardVariables };
-              delete newDashboardVariables[dashboardId];
-
-              return {
-                dashboardVariables: newDashboardVariables,
-                // Si estamos limpiando el dashboard actual, resetear variables
-                variables:
-                  state.currentDashboardId === dashboardId
-                    ? getDefaultVariables()
-                    : state.variables,
-                currentDashboardId:
-                  state.currentDashboardId === dashboardId
-                    ? null
-                    : state.currentDashboardId,
-              };
-            },
-            false,
-            `clearDashboardVariables(${dashboardId})`
-          );
-
-          // Eliminar de localStorage
-          try {
-            localStorage.removeItem(`dashboard-variables-${dashboardId}`);
-          } catch (error) {
-            console.warn(
-              `Error removing variables for dashboard ${dashboardId}:`,
-              error
-            );
-          }
-        },
-      }),
-      {
-        name: "variable-storage",
-        partialize: (state) => ({
-          // Solo persistir el mapeo de dashboards, no las variables individuales
-          // (se guardan en localStorage por separado)
-          dashboardVariables: {},
-          currentDashboardId: state.currentDashboardId,
-        }),
+      if (!currentDashboardId) {
+        console.warn("No current dashboard set, variable change ignored");
+        return;
       }
-    ),
-    {
-      name: "variables",
-      enabled: true,
-      trace: true,
-    }
-  )
+
+      // Actualizar estado local
+      set((state) => {
+        const newVariables = { ...state.variables, [key]: value };
+        const newDashboardVariables = {
+          ...state.dashboardVariables,
+          [currentDashboardId]: newVariables,
+        };
+
+        return {
+          variables: newVariables,
+          dashboardVariables: newDashboardVariables,
+        };
+      });
+    },
+
+    // Guardar múltiples variables (solo local)
+    setMultiple: (updates) => {
+      const { currentDashboardId } = get();
+      console.log(
+        "🔄 Variable Store - Setting multiple:",
+        updates,
+        `for dashboard: ${currentDashboardId}`
+      );
+
+      if (!currentDashboardId) {
+        console.warn("No current dashboard set, variable changes ignored");
+        return;
+      }
+
+      // Actualizar estado local
+      set((state) => {
+        const newVariables = { ...state.variables, ...updates };
+        const newDashboardVariables = {
+          ...state.dashboardVariables,
+          [currentDashboardId]: newVariables,
+        };
+
+        return {
+          variables: newVariables,
+          dashboardVariables: newDashboardVariables,
+        };
+      });
+    },
+
+    getVariable: (key) => {
+      return get().variables[key];
+    },
+
+    // Cambiar dashboard actual
+    setCurrentDashboard: (dashboardId) => {
+      console.log(`🔄 Variable Store - Switching to dashboard: ${dashboardId}`);
+
+      if (dashboardId === null) {
+        set({
+          currentDashboardId: null,
+          variables: getDefaultVariables(),
+        });
+        return;
+      }
+
+      // Establecer el ID del dashboard actual
+      set({ currentDashboardId: dashboardId });
+
+      // Cargar variables del dashboard desde memoria local
+      const { dashboardVariables } = get();
+      const dashboardVars = dashboardVariables[dashboardId];
+
+      if (dashboardVars) {
+        set({ variables: dashboardVars });
+      } else {
+        // Si no hay variables, inicializar con valores por defecto
+        const defaultVars = getDefaultVariables();
+        set((state) => ({
+          variables: defaultVars,
+          dashboardVariables: {
+            ...state.dashboardVariables,
+            [dashboardId]: defaultVars,
+          },
+        }));
+      }
+    },
+
+    // Inicializar variables para un nuevo dashboard
+    initializeDashboardVariables: (dashboardId) => {
+      console.log(
+        `🔄 Variable Store - Initializing variables for dashboard: ${dashboardId}`
+      );
+
+      // Verificar si ya tenemos variables para este dashboard en memoria
+      const { dashboardVariables } = get();
+      if (dashboardVariables[dashboardId]) {
+        return; // Ya hay variables inicializadas en memoria
+      }
+
+      // Crear variables por defecto para el nuevo dashboard
+      const defaultVars = getDefaultVariables();
+
+      set((state) => ({
+        variables:
+          dashboardId === state.currentDashboardId
+            ? defaultVars
+            : state.variables,
+        dashboardVariables: {
+          ...state.dashboardVariables,
+          [dashboardId]: defaultVars,
+        },
+      }));
+    },
+
+    // Eliminar variables de un dashboard
+    clearDashboardVariables: (dashboardId) => {
+      console.log(
+        `🔄 Variable Store - Clearing variables for dashboard: ${dashboardId}`
+      );
+
+      // Actualizar estado local
+      set((state) => {
+        const newDashboardVariables = { ...state.dashboardVariables };
+        delete newDashboardVariables[dashboardId];
+
+        return {
+          dashboardVariables: newDashboardVariables,
+          // Si estamos limpiando el dashboard actual, resetear variables
+          variables:
+            state.currentDashboardId === dashboardId
+              ? getDefaultVariables()
+              : state.variables,
+          currentDashboardId:
+            state.currentDashboardId === dashboardId
+              ? null
+              : state.currentDashboardId,
+        };
+      });
+    },
+  }))
 );

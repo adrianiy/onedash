@@ -457,7 +457,7 @@ export const useMetricSelector = (
 
     // Filtrar solo los widgets que pertenecen al dashboard activo
     const dashboardWidgets = allWidgets.filter((widget) =>
-      activeDashboard.widgets?.includes(widget.id)
+      activeDashboard.widgets?.includes(widget._id)
     );
 
     return getSetteableVariables(dashboardWidgets);

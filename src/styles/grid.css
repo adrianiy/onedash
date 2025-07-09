@@ -1,6 +1,7 @@
 /* React Grid Layout Styles */
 .react-grid-layout {
   position: relative;
+  min-height: 100dvh;
   margin: calc(-1 * var(--spacing-md));
 }
 

@@ -3,7 +3,7 @@
 .filter-bar {
   position: sticky;
   top: var(--header-height);
-  z-index: 998;
+  z-index: 98;
   width: 100%;
   backdrop-filter: blur(8px);
   transition: all var(--transition-normal);

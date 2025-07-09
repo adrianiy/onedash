@@ -72,7 +72,8 @@ export const BarChart: React.FC<BarChartProps> = ({
         type: "bar",
         data: data.map((item) => item.value),
         itemStyle: {
-          color: (params: any) => colors[params.dataIndex % colors.length],
+          color: (params: { dataIndex: number }) =>
+            colors[params.dataIndex % colors.length],
         },
       },
     ],

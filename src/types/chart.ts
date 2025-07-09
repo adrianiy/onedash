@@ -1,4 +1,4 @@
-import type { EChartsOption } from "echarts";
+import type { EChartsOption, ECharts } from "echarts";
 
 export interface ChartData {
   labels: string[];
@@ -30,5 +30,5 @@ export interface ChartProps {
   width?: string | number;
   height?: string | number;
   className?: string;
-  onChartReady?: (chart: any) => void;
+  onChartReady?: (chart: ECharts) => void;
 }

@@ -4,7 +4,7 @@ import { useDashboardStore } from "../../store/dashboardStore";
 import { useWidgetStore } from "../../store/widgetStore";
 import { useGridLayout } from "../../hooks/useGridLayout";
 import { WidgetContainer } from "./WidgetContainer";
-import type { WidgetType, TableWidgetConfig } from "../../types/widget";
+import type { WidgetType } from "../../types/widget";
 import type { Layout } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
@@ -30,7 +30,7 @@ interface DropData {
   h: number;
   minW: number;
   minH: number;
-  config: TableWidgetConfig;
+  config: Record<string, unknown>; // Generic config that can be any widget config
   isConfigured: boolean;
 }
 
@@ -104,14 +104,14 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
       const targetDashboard = tempDashboard || currentDashboard;
       if (targetDashboard) {
         const newLayout = {
-          i: newWidget.id,
+          i: newWidget._id,
           x: item.x,
           y: item.y,
           w: dragData.w,
           h: dragData.h,
         };
 
-        const updatedWidgets = [...targetDashboard.widgets, newWidget.id];
+        const updatedWidgets = [...targetDashboard.widgets, newWidget._id];
         const updatedLayout = [...targetDashboard.layout, newLayout];
 
         if (tempDashboard) {
@@ -122,7 +122,7 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
           });
         } else {
           // Fuera de modo edición, actualizar directamente
-          updateDashboard(targetDashboard.id, {
+          updateDashboard(targetDashboard._id, {
             widgets: updatedWidgets,
             layout: updatedLayout,
           });
@@ -131,7 +131,7 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
         // Seleccionar el widget recién creado y abrir el sidebar de configuración
         const { selectWidget, openConfigSidebar } =
           useDashboardStore.getState();
-        selectWidget(newWidget.id);
+        selectWidget(newWidget._id);
         openConfigSidebar();
       }
 
@@ -173,10 +173,10 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
         }}
       >
         {widgets.map((widget) => (
-          <div key={widget.id} className="react-grid-item">
+          <div key={widget._id} className="react-grid-item">
             <WidgetContainer
               widget={widget}
-              isSelected={selectedWidgetId === widget.id}
+              isSelected={selectedWidgetId === widget._id}
             />
           </div>
         ))}

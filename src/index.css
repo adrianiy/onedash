@@ -8,6 +8,7 @@
 @import "./styles/widgets.css";
 @import "./styles/floating-bar.css";
 @import "./styles/modal.css";
+@import "./styles/dashboard-form.css";
 @import "./styles/config-panel.css";
 @import "./styles/breakdown-levels.css";
 @import "./styles/columns-config.css";
@@ -22,6 +23,8 @@
 @import "./styles/filter-bar.css";
 @import "./styles/text-interpolation-input.css";
 @import "./styles/widget-filters.css";
+@import "./styles/auth.css";
+@import "./styles/user-avatar.css";
 
 /* Global Styles */
 *,

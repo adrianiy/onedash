@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Tooltip } from "react-tooltip";
 import { useDashboardStore } from "../../store/dashboardStore";
 import { useWidgetStore } from "../../store/widgetStore";
 import { Icon } from "../common/Icon";
@@ -58,7 +59,7 @@ const ConfigButton: React.FC = () => {
     <button
       className="edit-toolbar__button edit-toolbar__button--config"
       onClick={handleConfigClick}
-      title={`Configurar ${getWidgetTypeName(widget.type)}`}
+      data-tooltip-id="config-tooltip"
     >
       <Icon name={getWidgetIcon(widget.type)} size={20} />
       <span>Configurar {getWidgetTypeName(widget.type)}</span>
@@ -96,6 +97,11 @@ export const EditToolbar: React.FC = () => {
           setShowReadonlyModal(true);
           setIsSaving(false);
           return;
+        }
+
+        if (result.error) {
+          console.error("Error al guardar:", result.error);
+          // Aquí podrías mostrar una notificación de error al usuario
         }
 
         // Mostrar estado de guardado brevemente
@@ -142,14 +148,14 @@ export const EditToolbar: React.FC = () => {
     const targetDashboard = tempDashboard || currentDashboard;
     if (targetDashboard) {
       const newLayout = {
-        i: widget.id,
+        i: widget._id,
         x: 0,
         y: 0,
         w: layout.w,
         h: layout.h,
       };
 
-      const updatedWidgets = [...targetDashboard.widgets, widget.id];
+      const updatedWidgets = [...targetDashboard.widgets, widget._id];
       const updatedLayout = [...targetDashboard.layout, newLayout];
 
       if (tempDashboard) {
@@ -160,14 +166,14 @@ export const EditToolbar: React.FC = () => {
         });
       } else {
         // Fuera de modo edición, actualizar directamente
-        updateDashboard(targetDashboard.id, {
+        updateDashboard(targetDashboard._id, {
           widgets: updatedWidgets,
           layout: updatedLayout,
         });
       }
 
       // Seleccionar el widget recién creado
-      selectWidget(widget.id);
+      selectWidget(widget._id);
 
       // Abrir automáticamente el sidebar de configuración
       openConfigSidebar();
@@ -180,13 +186,8 @@ export const EditToolbar: React.FC = () => {
     // Crear widget de métrica
     const newMetricWidget = addWidget({
       type: "metric",
-      title: "Nueva métrica",
-      config: {
-        value: 0,
-        unit: "",
-        trend: "neutral",
-        trendValue: 0,
-      },
+      title: "",
+      config: {},
       isConfigured: false,
     });
 
@@ -218,7 +219,7 @@ export const EditToolbar: React.FC = () => {
 
     const dragData = {
       type: "metric",
-      title: "Nueva métrica",
+      title: "",
       w: 4,
       h: 4,
       config: {},
@@ -235,7 +236,7 @@ export const EditToolbar: React.FC = () => {
     // Crear widget de gráfico
     const newChartWidget = addWidget({
       type: "chart",
-      title: "Nuevo gráfico",
+      title: "",
       config: {
         chartType: "bar",
         data: [],
@@ -247,22 +248,92 @@ export const EditToolbar: React.FC = () => {
     addWidgetToBoard(newChartWidget, { w: 6, h: 4 });
   };
 
+  // Drag handler para gráficos
+  const handleChartDragStart = (e: React.DragEvent) => {
+    const { setDroppingItemSize } = useDashboardStore.getState();
+
+    // Establecer el tamaño del droppingItem para gráficos
+    setDroppingItemSize({ w: 6, h: 4 });
+
+    // Crear elemento DIV invisible para eliminar el ghost
+    const div = document.createElement("div");
+    div.style.width = "1px";
+    div.style.height = "1px";
+    div.style.backgroundColor = "transparent";
+    div.style.position = "absolute";
+    div.style.top = "-1000px";
+    div.style.left = "-1000px";
+    div.style.opacity = "0";
+    document.body.appendChild(div);
+    e.dataTransfer.setDragImage(div, 0, 0);
+    setTimeout(() => {
+      if (document.body.contains(div)) {
+        document.body.removeChild(div);
+      }
+    }, 100);
+
+    const dragData = {
+      type: "chart",
+      title: "",
+      w: 6,
+      h: 4,
+      config: {},
+      isConfigured: false,
+    };
+
+    e.dataTransfer.setData("application/json", JSON.stringify(dragData));
+    e.dataTransfer.effectAllowed = "copy";
+  };
+
   const handleAddText = () => {
     const { addWidget } = useWidgetStore.getState();
 
     // Crear widget de texto
     const newTextWidget = addWidget({
       type: "text",
-      title: "Texto",
-      config: {
-        content: "Haz doble click para editar este texto",
-        fontSize: 16,
-        textAlign: "left",
-      },
+      title: "",
+      config: {},
       isConfigured: true,
     });
 
     addWidgetToBoard(newTextWidget, { w: 4, h: 3 });
+  };
+
+  // Drag handler para texto
+  const handleTextDragStart = (e: React.DragEvent) => {
+    const { setDroppingItemSize } = useDashboardStore.getState();
+
+    // Establecer el tamaño del droppingItem para texto
+    setDroppingItemSize({ w: 4, h: 3 });
+
+    // Crear elemento DIV invisible para eliminar el ghost
+    const div = document.createElement("div");
+    div.style.width = "1px";
+    div.style.height = "1px";
+    div.style.backgroundColor = "transparent";
+    div.style.position = "absolute";
+    div.style.top = "-1000px";
+    div.style.left = "-1000px";
+    div.style.opacity = "0";
+    document.body.appendChild(div);
+    e.dataTransfer.setDragImage(div, 0, 0);
+    setTimeout(() => {
+      if (document.body.contains(div)) {
+        document.body.removeChild(div);
+      }
+    }, 100);
+
+    const dragData = {
+      type: "text",
+      title: "",
+      w: 4,
+      h: 3,
+      config: {},
+      isConfigured: true,
+    };
+
+    e.dataTransfer.setData("application/json", JSON.stringify(dragData));
+    e.dataTransfer.effectAllowed = "copy";
   };
 
   const handleAddTable = () => {
@@ -272,12 +343,7 @@ export const EditToolbar: React.FC = () => {
     const newTableWidget = addWidget({
       type: "table",
       title: "",
-      config: {
-        columns: [],
-        data: [],
-        breakdownLevels: [],
-        dataSource: undefined,
-      },
+      config: {},
       isConfigured: false,
     });
 
@@ -319,12 +385,7 @@ export const EditToolbar: React.FC = () => {
       title: "",
       w: 6,
       h: 6,
-      config: {
-        columns: [],
-        data: [],
-        breakdownLevels: [],
-        dataSource: undefined,
-      },
+      config: {},
       isConfigured: false,
     };
 
@@ -334,13 +395,17 @@ export const EditToolbar: React.FC = () => {
 
   const handleConfirmCopy = (newName: string) => {
     if (readonlyDashboard) {
-      // Crear nueva copia del dashboard
+      // Crear nueva copia del dashboard con todas las propiedades necesarias
       createDashboard({
         name: newName,
         description: readonlyDashboard.description,
         layout: readonlyDashboard.layout,
         widgets: readonlyDashboard.widgets,
+        variables: readonlyDashboard.variables,
+        visibility: readonlyDashboard.visibility || "private", // Por defecto privado
+        collaborators: readonlyDashboard.collaborators,
         isReadonly: false, // La copia siempre es editable
+        originalId: readonlyDashboard._id, // Referencia al dashboard original
       });
 
       // Cerrar modal y modo edición
@@ -367,7 +432,7 @@ export const EditToolbar: React.FC = () => {
               <button
                 className="edit-toolbar__button"
                 onClick={handleSave}
-                title="Guardar cambios"
+                data-tooltip-id="save-tooltip"
                 disabled={isSaving}
               >
                 <Icon name={isSaving ? "check" : "save"} size={20} />
@@ -377,7 +442,7 @@ export const EditToolbar: React.FC = () => {
               <button
                 className="edit-toolbar__button edit-toolbar__button--danger"
                 onClick={handleCloseEditing}
-                title="Cerrar modo edición"
+                data-tooltip-id="close-tooltip"
               >
                 <Icon name="close" size={20} />
                 <span>Cerrar</span>
@@ -396,7 +461,7 @@ export const EditToolbar: React.FC = () => {
                 onClick={handleAddMetric}
                 onDragStart={handleMetricDragStart}
                 draggable="true"
-                title="Haz clic para añadir o arrastra al grid"
+                data-tooltip-id="metric-tooltip"
               >
                 <Icon name="target" size={20} />
                 <span>Métrica</span>
@@ -407,7 +472,7 @@ export const EditToolbar: React.FC = () => {
                 onClick={handleAddTable}
                 onDragStart={handleDragStart}
                 draggable="true"
-                title="Haz clic para añadir o arrastra al grid"
+                data-tooltip-id="table-tooltip"
               >
                 <Icon name="table" size={20} />
                 <span>Tabla</span>
@@ -416,7 +481,9 @@ export const EditToolbar: React.FC = () => {
               <button
                 className="edit-toolbar__button"
                 onClick={handleAddChart}
-                title="Añadir widget de gráfico"
+                onDragStart={handleChartDragStart}
+                draggable="true"
+                data-tooltip-id="chart-tooltip"
               >
                 <Icon name="bar-chart" size={20} />
                 <span>Gráfico</span>
@@ -425,7 +492,9 @@ export const EditToolbar: React.FC = () => {
               <button
                 className="edit-toolbar__button"
                 onClick={handleAddText}
-                title="Añadir widget de texto"
+                onDragStart={handleTextDragStart}
+                draggable="true"
+                data-tooltip-id="text-tooltip"
               >
                 <Icon name="edit" size={20} />
                 <span>Texto</span>
@@ -446,6 +515,43 @@ export const EditToolbar: React.FC = () => {
           onCancel={handleCancelCopy}
         />
       )}
+
+      {/* Tooltips */}
+      <Tooltip
+        id="save-tooltip"
+        content={isSaving ? "Guardando..." : "Guardar cambios"}
+        place="bottom"
+      />
+      <Tooltip
+        id="close-tooltip"
+        content="Cerrar modo edición"
+        place="bottom"
+      />
+      <Tooltip
+        id="metric-tooltip"
+        content="Haz clic para añadir o arrastra al grid"
+        place="bottom"
+      />
+      <Tooltip
+        id="table-tooltip"
+        content="Haz clic para añadir o arrastra al grid"
+        place="bottom"
+      />
+      <Tooltip
+        id="chart-tooltip"
+        content="Haz clic para añadir o arrastra al grid"
+        place="bottom"
+      />
+      <Tooltip
+        id="text-tooltip"
+        content="Haz clic para añadir o arrastra al grid"
+        place="bottom"
+      />
+      <Tooltip
+        id="config-tooltip"
+        content="Configurar widget seleccionado"
+        place="bottom"
+      />
     </>
   );
 };

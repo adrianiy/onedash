@@ -56,7 +56,7 @@ export const WidgetFiltersConfig: React.FC<WidgetFiltersConfigProps> = ({
     newFilters: Partial<TableWidgetConfig["widgetFilters"]>
   ) => {
     if (widget.type === "table") {
-      useWidgetStore.getState().updateWidget(widget.id, {
+      useWidgetStore.getState().updateWidget(widget._id, {
         config: {
           ...widget.config,
           widgetFilters: {

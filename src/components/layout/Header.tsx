@@ -1,6 +1,8 @@
 import React from "react";
+import { Link, useLocation } from "react-router-dom";
 import { useDashboardStore } from "../../store/dashboardStore";
 import { useThemeStore } from "../../store/themeStore";
+import { useAuthStore } from "../../store/authStore";
 import { Icon } from "../common/Icon";
 import { UserAvatar } from "./UserAvatar";
 import { EditToolbar } from "./EditToolbar";
@@ -8,6 +10,12 @@ import { EditToolbar } from "./EditToolbar";
 export const Header: React.FC = () => {
   const { currentDashboard } = useDashboardStore();
   const { theme, toggleTheme } = useThemeStore();
+  const { user, isAuthenticated } = useAuthStore();
+  const location = useLocation();
+
+  // Verificar si estamos en una ruta de autenticación (login o registro)
+  const isAuthPage =
+    location.pathname === "/login" || location.pathname === "/register";
 
   return (
     <>
@@ -29,13 +37,29 @@ export const Header: React.FC = () => {
               >
                 <Icon name={theme === "light" ? "moon" : "sun"} size={16} />
               </button>
-            </div>
 
-            <UserAvatar name="Usuario" size={36} />
+              {isAuthenticated ? (
+                <UserAvatar
+                  name={user?.name || "Usuario"}
+                  email={user?.email}
+                  size={36}
+                  className="header-user-avatar"
+                />
+              ) : !isAuthPage ? (
+                <div className="auth-links">
+                  <Link to="/login" className="auth-link">
+                    Iniciar sesión
+                  </Link>
+                  <Link to="/register" className="auth-link">
+                    Registrarse
+                  </Link>
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
       </header>
-      <EditToolbar />
+      {isAuthenticated && !isAuthPage && <EditToolbar />}
     </>
   );
 };

@@ -91,7 +91,7 @@ export const WidgetConfigSidebar: React.FC = () => {
   // Función para guardar el título
   const saveTitle = () => {
     if (widget) {
-      updateWidget(widget.id, { title: editableTitle });
+      updateWidget(widget._id, { title: editableTitle });
       setIsEditingTitle(false);
     }
   };

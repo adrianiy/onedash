@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDashboardStore } from "../../store/dashboardStore";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "../common/Icon";
+import { DashboardFormModal } from "../dashboard/DashboardFormModal";
 import type { Dashboard } from "../../types/dashboard";
 
 interface DashboardSidebarProps {
@@ -17,39 +18,80 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     dashboards,
     currentDashboard,
     createDashboard,
+    updateDashboard,
     setCurrentDashboard,
     deleteDashboard,
+    isLoading,
   } = useDashboardStore();
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [dashboardToEdit, setDashboardToEdit] = useState<Dashboard | undefined>(
+    undefined
+  );
 
   const filteredDashboards = dashboards.filter((dashboard) =>
     dashboard.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleCreateDashboard = () => {
-    const newDashboard = createDashboard({
-      name: `Dashboard ${dashboards.length + 1}`,
-      description: "Nuevo dashboard",
-      layout: [],
-      widgets: [],
-    });
-    setCurrentDashboard(newDashboard);
+  const handleOpenCreateModal = () => {
+    setDashboardToEdit(undefined);
+    setIsFormModalOpen(true);
+  };
+
+  const handleOpenEditModal = (e: React.MouseEvent, dashboard: Dashboard) => {
+    e.stopPropagation();
+    setDashboardToEdit(dashboard);
+    setIsFormModalOpen(true);
+  };
+
+  const handleSaveDashboard = async (dashboardData: Partial<Dashboard>) => {
+    // Si estamos editando un dashboard existente
+    if (dashboardToEdit) {
+      const success = await updateDashboard(dashboardToEdit._id, dashboardData);
+      if (success) {
+        setIsFormModalOpen(false);
+        // La store ya actualiza los dashboards, no necesitamos hacer nada más
+      }
+    }
+    // Si estamos creando un nuevo dashboard
+    else {
+      const newDashboard = await createDashboard({
+        name: dashboardData.name || `Dashboard ${dashboards.length + 1}`,
+        description: dashboardData.description || "",
+        visibility: dashboardData.visibility || "private",
+        layout: [],
+        widgets: [],
+      });
+
+      if (newDashboard) {
+        setIsFormModalOpen(false);
+        setCurrentDashboard(newDashboard);
+        navigate(`/dashboard/${newDashboard._id}`);
+      }
+    }
   };
 
   const navigate = useNavigate();
 
   const handleSelectDashboard = (dashboard: Dashboard) => {
-    navigate(`/dashboard/${dashboard.id}`);
+    navigate(`/dashboard/${dashboard._id}`);
     onClose();
   };
 
-  const handleDeleteDashboard = (e: React.MouseEvent, dashboardId: string) => {
+  const handleDeleteDashboard = async (
+    e: React.MouseEvent,
+    dashboardId: string
+  ) => {
     e.stopPropagation();
     if (
       window.confirm("¿Estás seguro de que quieres eliminar este dashboard?")
     ) {
-      deleteDashboard(dashboardId);
+      const success = await deleteDashboard(dashboardId);
+      if (!success) {
+        // Mostrar error al usuario si la eliminación falla
+        alert("Error al eliminar el dashboard. Por favor, inténtalo de nuevo.");
+      }
     }
   };
 
@@ -85,7 +127,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
         <div className="sidebar-content">
           <button
             className="create-dashboard-btn"
-            onClick={handleCreateDashboard}
+            onClick={handleOpenCreateModal}
           >
             <Icon name="plus" size={16} />
             <span>Crear Nuevo Dashboard</span>
@@ -108,9 +150,9 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
             ) : (
               filteredDashboards.map((dashboard) => (
                 <div
-                  key={dashboard.id}
+                  key={dashboard._id}
                   className={`dashboard-item ${
-                    currentDashboard?.id === dashboard.id ? "active" : ""
+                    currentDashboard?._id === dashboard._id ? "active" : ""
                   }`}
                   onClick={() => handleSelectDashboard(dashboard)}
                 >
@@ -119,6 +161,19 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                     <p className="dashboard-description">
                       {dashboard.description || "Sin descripción"}
                     </p>
+                    <div className="dashboard-item__visibility">
+                      <Icon
+                        name={
+                          dashboard.visibility === "public" ? "globe" : "lock"
+                        }
+                        size={12}
+                      />
+                      <span>
+                        {dashboard.visibility === "public"
+                          ? "Público"
+                          : "Privado"}
+                      </span>
+                    </div>
                     <div className="dashboard-meta">
                       <span className="dashboard-widgets">
                         {dashboard.widgets.length} widgets
@@ -130,8 +185,15 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                   </div>
                   <div className="dashboard-actions">
                     <button
+                      className="dashboard-action-btn edit"
+                      onClick={(e) => handleOpenEditModal(e, dashboard)}
+                      title="Editar dashboard"
+                    >
+                      <Icon name="edit" size={14} />
+                    </button>
+                    <button
                       className="dashboard-action-btn delete"
-                      onClick={(e) => handleDeleteDashboard(e, dashboard.id)}
+                      onClick={(e) => handleDeleteDashboard(e, dashboard._id)}
                       title="Eliminar dashboard"
                     >
                       <Icon name="trash" size={14} />
@@ -143,6 +205,15 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Modal de creación/edición de dashboard */}
+      <DashboardFormModal
+        isOpen={isFormModalOpen}
+        onClose={() => setIsFormModalOpen(false)}
+        onSave={handleSaveDashboard}
+        dashboard={dashboardToEdit}
+        isLoading={isLoading}
+      />
     </>
   );
 };

@@ -11,12 +11,14 @@ export interface DashboardLayout {
 }
 
 export interface Dashboard {
-  id: string;
+  _id: string;
   name: string;
   description?: string;
   layout: DashboardLayout[];
   widgets: string[];
   variables?: string[]; // IDs de variables del dashboard
+  visibility?: "public" | "private"; // Visibilidad del dashboard
+  collaborators?: string[]; // IDs de usuarios con permisos de edición
   createdAt: Date;
   updatedAt: Date;
   isReadonly?: boolean;

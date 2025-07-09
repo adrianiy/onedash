@@ -57,7 +57,7 @@ export const WidgetFiltersConfig: React.FC<WidgetFiltersConfigProps> = ({
     newFilters: Partial<MetricWidgetConfig["widgetFilters"]>
   ) => {
     if (widget.type === "metric") {
-      useWidgetStore.getState().updateWidget(widget.id, {
+      useWidgetStore.getState().updateWidget(widget._id, {
         config: {
           ...widget.config,
           widgetFilters: {
