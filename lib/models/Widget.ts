@@ -90,7 +90,7 @@ export interface IWidget {
     | TableWidgetConfig
     | TextWidgetConfig;
   dashboardId?: string | IDashboard;
-  userId: string | IUser;
+  userId?: string | IUser;
   events?: WidgetEvent[];
   isConfigured?: boolean;
   persisted?: boolean; // Indica si el widget ya está guardado en la base de datos
@@ -126,7 +126,7 @@ const WidgetSchema = new Schema<IWidget>(
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: [true, "El widget debe estar asociado a un usuario"],
+      required: false,
     },
     events: {
       type: [

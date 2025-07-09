@@ -10,7 +10,6 @@ import { FilterBar } from "../../components/layout/FilterBar";
 import { FloatingActionBar } from "../../components/layout/FloatingActionBar";
 import { DashboardSidebar } from "../../components/layout/DashboardSidebar";
 import { ProtectedRoute } from "../../components/auth/ProtectedRoute";
-import { useAuthStore } from "../../store/authStore";
 import { useState } from "react";
 
 export default function Dashboard() {
@@ -23,7 +22,6 @@ export default function Dashboard() {
     initializeDashboardVariables,
   } = useVariableStore();
   const { fetchWidgetsByDashboardId } = useWidgetStore();
-  const { isAuthenticated } = useAuthStore();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -82,10 +80,6 @@ export default function Dashboard() {
       document.body.classList.remove("editing");
     };
   }, [isEditing]);
-
-  if (!isAuthenticated) {
-    return null; // El ProtectedRoute manejará la redirección
-  }
 
   return (
     <ProtectedRoute>

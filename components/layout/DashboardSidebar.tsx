@@ -197,13 +197,15 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                     </div>
                   </div>
                   <div className="dashboard-actions">
-                    <button
-                      className="dashboard-action-btn edit"
-                      onClick={(e) => handleOpenEditModal(e, dashboard)}
-                      title="Editar dashboard"
-                    >
-                      <Icon name="edit" size={14} />
-                    </button>
+                    {isOwner(dashboard) && (
+                      <button
+                        className="dashboard-action-btn edit"
+                        onClick={(e) => handleOpenEditModal(e, dashboard)}
+                        title="Editar dashboard"
+                      >
+                        <Icon name="edit" size={14} />
+                      </button>
+                    )}
                     {isOwner(dashboard) && (
                       <button
                         className="dashboard-action-btn delete"

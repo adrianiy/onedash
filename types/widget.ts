@@ -101,8 +101,12 @@ export interface TableWidgetConfig {
 
 export interface TextWidgetConfig {
   content: string;
+  blockNoteContent?: Record<string, unknown>[]; // BlockNote document format (array of blocks)
   fontSize?: number;
   textAlign?: "left" | "center" | "right";
+  editable?: boolean;
+  showToolbar?: boolean;
+  minHeight?: number;
 }
 
 export interface BaseWidget {

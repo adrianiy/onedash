@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { useAuthStore } from "../store/authStore";
 import { useDashboardStore } from "../store/dashboardStore";
@@ -7,41 +7,56 @@ import { Icon } from "../components/common/Icon";
 export default function Loading() {
   const router = useRouter();
   const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
-  const { fetchDashboards, dashboards } = useDashboardStore();
+  const { fetchDashboards } = useDashboardStore();
+  const [hasInitialized, setHasInitialized] = useState(false);
+  const isProcessing = useRef(false);
 
+  // Efecto para verificar autenticación (solo se ejecuta una vez)
   useEffect(() => {
-    const verifyAuthAndRedirect = async () => {
-      // Verificar autenticación
-      await checkAuth();
+    if (!hasInitialized && !isProcessing.current) {
+      isProcessing.current = true;
+      checkAuth().finally(() => {
+        setHasInitialized(true);
+        isProcessing.current = false;
+      });
+    }
+  }, [hasInitialized, checkAuth]);
 
-      // Esperar a que se actualice el estado de autenticación
-      if (isAuthenticated) {
-        // Cargar dashboards
+  // Efecto para manejar redirección después de verificar autenticación
+  useEffect(() => {
+    if (!hasInitialized || isProcessing.current) return;
+
+    const handleRedirect = async () => {
+      if (isLoading) return;
+
+      if (!isAuthenticated) {
+        router.push("/login");
+        return;
+      }
+
+      // Si está autenticado, cargar dashboards y redirigir
+      try {
         await fetchDashboards();
 
-        // Redirigir al primer dashboard o al dashboard "default" si existe
-        if (dashboards && dashboards.length > 0) {
+        // Obtener dashboards actualizados del store
+        const { dashboards: currentDashboards } = useDashboardStore.getState();
+
+        if (currentDashboards && currentDashboards.length > 0) {
           const defaultDashboard =
-            dashboards.find((d) => d.name === "default") || dashboards[0];
+            currentDashboards.find((d) => d.name === "default") ||
+            currentDashboards[0];
           router.push(`/dashboard/${defaultDashboard._id}`);
         } else {
           router.push("/dashboard");
         }
-      } else if (!isLoading) {
-        // Si no está autenticado y no está cargando, redirigir a login
-        router.push("/login");
+      } catch (error) {
+        console.error("Error loading dashboards:", error);
+        router.push("/dashboard");
       }
     };
 
-    verifyAuthAndRedirect();
-  }, [
-    isAuthenticated,
-    isLoading,
-    checkAuth,
-    fetchDashboards,
-    dashboards,
-    router,
-  ]);
+    handleRedirect();
+  }, [hasInitialized, isAuthenticated, isLoading, router, fetchDashboards]);
 
   return (
     <div className="auth-page">
