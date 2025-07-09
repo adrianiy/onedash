@@ -17,8 +17,10 @@ export const useThemeStore = create<ThemeState>()(
 
         setTheme: (theme) => {
           set({ theme });
-          // Update HTML data attribute for CSS theming
-          document.documentElement.setAttribute("data-theme", theme);
+          // Update HTML data attribute for CSS theming (only on client)
+          if (typeof window !== "undefined") {
+            document.documentElement.setAttribute("data-theme", theme);
+          }
         },
 
         toggleTheme: () => {
@@ -37,5 +39,7 @@ export const useThemeStore = create<ThemeState>()(
   )
 );
 
-// Initialize theme on store creation
-useThemeStore.getState().setTheme(useThemeStore.getState().theme);
+// Initialize theme on store creation (only on client)
+if (typeof window !== "undefined") {
+  useThemeStore.getState().setTheme(useThemeStore.getState().theme);
+}

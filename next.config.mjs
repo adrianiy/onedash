@@ -5,16 +5,6 @@
 const nextConfig = {
   reactStrictMode: true,
 
-  // Configuración de API y rutas
-  async rewrites() {
-    return [
-      {
-        source: "/api/:path*",
-        destination: "/api/:path*",
-      },
-    ];
-  },
-
   // Permitir que Next.js sirva archivos estáticos desde la carpeta public
   images: {
     domains: ["localhost"],
@@ -27,18 +17,15 @@ const nextConfig = {
     JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || "30d",
   },
 
-  // Configuración para Vercel
-  output: "standalone",
+  // Configuración para transpilación de módulos
+  transpilePackages: ["echarts", "echarts-for-react", "zrender"],
 
-  // Configuración de webpack para excluir la carpeta src
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      // Excluir la carpeta src del bundle del servidor
-      config.externals = config.externals || [];
-      config.externals.push({
-        "./src": "commonjs ./src",
-      });
-    }
+  // Configuración para webpack
+  webpack: (config) => {
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+    };
     return config;
   },
 };

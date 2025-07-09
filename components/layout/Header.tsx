@@ -1,5 +1,6 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import { useDashboardStore } from "../../store/dashboardStore";
 import { useThemeStore } from "../../store/themeStore";
 import { useAuthStore } from "../../store/authStore";
@@ -11,11 +12,11 @@ export const Header: React.FC = () => {
   const { currentDashboard } = useDashboardStore();
   const { theme, toggleTheme } = useThemeStore();
   const { user, isAuthenticated } = useAuthStore();
-  const location = useLocation();
+  const router = useRouter();
 
   // Verificar si estamos en una ruta de autenticación (login o registro)
   const isAuthPage =
-    location.pathname === "/login" || location.pathname === "/register";
+    router.pathname === "/login" || router.pathname === "/register";
 
   return (
     <>
@@ -47,10 +48,10 @@ export const Header: React.FC = () => {
                 />
               ) : !isAuthPage ? (
                 <div className="auth-links">
-                  <Link to="/login" className="auth-link">
+                  <Link href="/login" className="auth-link">
                     Iniciar sesión
                   </Link>
-                  <Link to="/register" className="auth-link">
+                  <Link href="/register" className="auth-link">
                     Registrarse
                   </Link>
                 </div>

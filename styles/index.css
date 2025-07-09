@@ -1,30 +1,30 @@
 /* Import CSS variables and component styles */
-@import "./styles/variables.css";
-@import "./styles/globals.css";
-@import "./styles/header.css";
-@import "./styles/edit-toolbar.css";
-@import "./styles/widget-config-sidebar.css";
-@import "./styles/grid.css";
-@import "./styles/widgets.css";
-@import "./styles/floating-bar.css";
-@import "./styles/modal.css";
-@import "./styles/dashboard-form.css";
-@import "./styles/config-panel.css";
-@import "./styles/breakdown-levels.css";
-@import "./styles/columns-config.css";
-@import "./styles/column-item.css";
-@import "./styles/visualization-config.css";
-@import "./styles/conditional-formatting.css";
-@import "./styles/custom-color-picker.css";
-@import "./styles/table-widget.css";
-@import "./styles/metric-widget.css";
-@import "./styles/metric-config.css";
-@import "./styles/events-config.css";
-@import "./styles/filter-bar.css";
-@import "./styles/text-interpolation-input.css";
-@import "./styles/widget-filters.css";
-@import "./styles/auth.css";
-@import "./styles/user-avatar.css";
+@import "./variables.css";
+@import "./globals.css";
+@import "./header.css";
+@import "./edit-toolbar.css";
+@import "./widget-config-sidebar.css";
+@import "./grid.css";
+@import "./widgets.css";
+@import "./floating-bar.css";
+@import "./modal.css";
+@import "./dashboard-form.css";
+@import "./config-panel.css";
+@import "./breakdown-levels.css";
+@import "./columns-config.css";
+@import "./column-item.css";
+@import "./visualization-config.css";
+@import "./conditional-formatting.css";
+@import "./custom-color-picker.css";
+@import "./table-widget.css";
+@import "./metric-widget.css";
+@import "./metric-config.css";
+@import "./events-config.css";
+@import "./filter-bar.css";
+@import "./text-interpolation-input.css";
+@import "./widget-filters.css";
+@import "./auth.css";
+@import "./user-avatar.css";
 
 /* Global Styles */
 *,
@@ -67,7 +67,7 @@ body.editing {
   background-color: var(--color-background-editing) !important;
 }
 
-#root {
+#__next {
   min-height: 100vh;
   display: flex;
   flex-direction: column;

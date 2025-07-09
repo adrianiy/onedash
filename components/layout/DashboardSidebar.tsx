@@ -1,6 +1,6 @@
 import React, { useState } from "react";
+import { useRouter } from "next/router";
 import { useDashboardStore } from "../../store/dashboardStore";
-import { useNavigate } from "react-router-dom";
 import { Icon } from "../common/Icon";
 import { DashboardFormModal } from "../dashboard/DashboardFormModal";
 import type { Dashboard } from "../../types/dashboard";
@@ -45,6 +45,8 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     setIsFormModalOpen(true);
   };
 
+  const router = useRouter();
+
   const handleSaveDashboard = async (dashboardData: Partial<Dashboard>) => {
     // Si estamos editando un dashboard existente
     if (dashboardToEdit) {
@@ -67,15 +69,13 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
       if (newDashboard) {
         setIsFormModalOpen(false);
         setCurrentDashboard(newDashboard);
-        navigate(`/dashboard/${newDashboard._id}`);
+        router.push(`/dashboard/${newDashboard._id}`);
       }
     }
   };
 
-  const navigate = useNavigate();
-
   const handleSelectDashboard = (dashboard: Dashboard) => {
-    navigate(`/dashboard/${dashboard._id}`);
+    router.push(`/dashboard/${dashboard._id}`);
     onClose();
   };
 

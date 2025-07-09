@@ -1,24 +1,29 @@
 import numeral from "numeral";
 
 // Configurar numeral.js para usar formato español (punto para separador de miles, coma para decimales)
-numeral.register("locale", "es", {
-  delimiters: {
-    thousands: ".",
-    decimal: ",",
-  },
-  abbreviations: {
-    thousand: "k",
-    million: "m",
-    billion: "b",
-    trillion: "t",
-  },
-  currency: {
-    symbol: "€",
-  },
-  ordinal: () => {
-    return "º";
-  },
-});
+// Solo registrar si no está ya registrado
+try {
+  numeral.register("locale", "es", {
+    delimiters: {
+      thousands: ".",
+      decimal: ",",
+    },
+    abbreviations: {
+      thousand: "k",
+      million: "m",
+      billion: "b",
+      trillion: "t",
+    },
+    currency: {
+      symbol: "€",
+    },
+    ordinal: () => {
+      return "º";
+    },
+  });
+} catch {
+  // Locale ya está registrado, continuar
+}
 
 // Cambiar a formato español
 numeral.locale("es");
