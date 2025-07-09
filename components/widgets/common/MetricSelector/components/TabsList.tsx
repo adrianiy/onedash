@@ -47,7 +47,7 @@ export const TabsList: React.FC<TabsListProps> = ({
           }`}
           onClick={() => setActiveTab("calculations")}
         >
-          <span className="metric-selector__tab-label">Cálculos</span>
+          <span className="metric-selector__tab-label">Valores</span>
           <span className="metric-selector__tab-counter">
             {calculationsCount}
           </span>

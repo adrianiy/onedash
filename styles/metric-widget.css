@@ -257,7 +257,8 @@
 .metric-widget__footer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: var(--spacing-sm);
   position: relative;
 }
 
@@ -276,14 +277,12 @@
   text-transform: uppercase;
   color: var(--color-text-primary);
   text-align: left;
-  flex: 1;
 }
 
 .metric-widget__secondary-value {
   font-size: 1.2em;
   font-weight: 600;
   color: var(--color-text-secondary);
-  padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: var(--radius-sm);
   transition: all var(--transition-fast);
 }

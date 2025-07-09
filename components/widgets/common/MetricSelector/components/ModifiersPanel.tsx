@@ -178,8 +178,8 @@ export const ModifiersPanel: React.FC<MetricModifiersPanelProps> = ({
         </>
       )}
 
-      {/* Panel de modificadores para temporalidades */}
-      {activeTab === "timerange" && (
+      {/* Panel de modificadores para valores (calculations) */}
+      {activeTab === "calculations" && (
         <div className="metric-selector__modifiers-section">
           <h4>{ModifiersMetadata.comparison.name}</h4>
           <div className="metric-selector__checkbox-group">

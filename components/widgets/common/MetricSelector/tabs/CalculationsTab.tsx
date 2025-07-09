@@ -11,8 +11,8 @@ export const CalculationsTab: React.FC<MetricTabProps> = ({
   willApplyDefaultValue,
   getDefaultValue,
 }) => {
-  // Filtrar las opciones de modificadores basadas en la búsqueda
-  const getFilteredModifierOptions = React.useCallback(() => {
+  // Filtrar las opciones de modificadores basadas en la búsqueda para cálculos
+  const getFilteredCalculationOptions = React.useCallback(() => {
     if (!searchQuery) return ModifiersMetadata.calculation.options;
 
     return ModifiersMetadata.calculation.options.filter((option) =>
@@ -20,8 +20,8 @@ export const CalculationsTab: React.FC<MetricTabProps> = ({
     );
   }, [searchQuery]);
 
-  // Handler para el CheckboxItem
-  const handleChange = (
+  // Handler para el CheckboxItem de cálculos
+  const handleCalculationChange = (
     value: string | { type: "variable"; key: string },
     isChecked: boolean
   ) => {
@@ -32,8 +32,9 @@ export const CalculationsTab: React.FC<MetricTabProps> = ({
 
   return (
     <div className="metric-selector__tab-content">
+      {/* Solo la sección de Cálculos - las comparaciones van en el panel lateral */}
       <div className="metric-selector__checkbox-group">
-        {getFilteredModifierOptions().map((option) => (
+        {getFilteredCalculationOptions().map((option) => (
           <CheckboxItem
             key={option.value}
             label={option.label}
@@ -41,7 +42,7 @@ export const CalculationsTab: React.FC<MetricTabProps> = ({
             checked={
               selectedModifiers.calculation?.includes(option.value) || false
             }
-            onChange={handleChange}
+            onChange={handleCalculationChange}
             mode={mode}
             radioGroupName="metric-selector-calculation"
             hasDefaultTip={

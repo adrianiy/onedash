@@ -70,9 +70,22 @@ export const useMetricSelector = (
         const value = initialMetric.modifiers[modKey];
 
         if (value) {
-          if (typeof value === "object") {
+          if (Array.isArray(value)) {
+            // Si es un array, procesar cada elemento
+            newModifiers[modKey] = value.map((item) => {
+              if (
+                typeof item === "object" &&
+                "type" in item &&
+                item.type === "variable"
+              ) {
+                return { type: "variable", key: item.key };
+              }
+              return item;
+            });
+          } else if (typeof value === "object") {
             if ("type" in value && value.type === "variable") {
-              newModifiers[modKey] = [`var:${value.key}`];
+              // Mantener el formato VariableBinding original
+              newModifiers[modKey] = [{ type: "variable", key: value.key }];
             } else if ("type" in value && value.type === "a-n") {
               // Caso especial para comparison a-n
               newModifiers[modKey] = ["a-n"];
@@ -113,8 +126,10 @@ export const useMetricSelector = (
   );
 
   const calculationsCount = useMemo(
-    () => selectedModifiers.calculation?.length || 0,
-    [selectedModifiers.calculation]
+    () =>
+      (selectedModifiers.calculation?.length || 0) +
+      (selectedModifiers.comparison?.length || 0),
+    [selectedModifiers.calculation, selectedModifiers.comparison]
   );
 
   // Verificar si un modificador tiene un valor por defecto
@@ -529,24 +544,26 @@ export const useMetricSelector = (
     [selectedIndicators]
   );
 
-  // Determinar si el panel debe ser visible (para indicadores o temporalidades)
+  // Determinar si el panel debe ser visible
   const isPanelVisible = useMemo(() => {
     if (activeTab === "indicators" && selectedIndicators.length > 0) {
       const compatibleModifierTypes = ["saleType", "scope"];
       return compatibleModifierTypes.some(isCompatibleModifier);
     }
 
-    if (activeTab === "timeframe" && selectedModifiers.timeframe?.length > 0) {
-      // Para timeframe, solo mostrar si hay modificadores de comparación disponibles
-      const comparisonModifiers = ModifiersMetadata.comparison?.options || [];
-      return comparisonModifiers.length > 0;
+    if (activeTab === "calculations") {
+      // Para la pestaña valores, mostrar el panel si hay selecciones de calculation
+      // El panel mostrará las opciones de comparación disponibles
+      const hasCalculationSelected = selectedModifiers.calculation?.length > 0;
+      return hasCalculationSelected;
     }
 
     return false;
   }, [
     activeTab,
     selectedIndicators,
-    selectedModifiers.timeframe,
+    selectedModifiers.calculation,
+    selectedModifiers.comparison,
     isCompatibleModifier,
   ]);
 

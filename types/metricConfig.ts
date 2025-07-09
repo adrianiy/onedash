@@ -70,8 +70,8 @@ export const IndicatorMetadata: Record<
       "saleType",
       "scope",
       "timeframe",
-      "comparison",
       "calculation",
+      "comparison",
     ],
     requiredModifiers: ["saleType", "calculation"],
   },
@@ -81,14 +81,14 @@ export const IndicatorMetadata: Record<
       "saleType",
       "scope",
       "timeframe",
-      "comparison",
       "calculation",
+      "comparison",
     ],
     requiredModifiers: ["saleType", "calculation"],
   },
   pedidos: {
     name: "Pedidos",
-    compatibleModifiers: ["timeframe", "comparison", "calculation"], // No incluye 'saleType'
+    compatibleModifiers: ["timeframe", "calculation", "comparison"], // No incluye 'saleType'
     requiredModifiers: ["calculation"],
   },
 };
