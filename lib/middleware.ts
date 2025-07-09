@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getTokenFromRequest, verifyToken, TokenPayload } from "./auth";
+import { verifyNextAuthSession } from "./nextAuthAdapter";
 import User from "./models/User";
 import { connectToDatabase } from "./mongodb";
 
@@ -8,38 +9,40 @@ export interface AuthenticatedRequest extends NextApiRequest {
   user?: TokenPayload;
 }
 
-// Middleware para verificar autenticación
+// Middleware para verificar autenticación (compatible con ambos sistemas)
 export const withAuth = (
   handler: (req: AuthenticatedRequest, res: NextApiResponse) => Promise<void>
 ) => {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     try {
-      // Obtener el token de la solicitud
-      const token = getTokenFromRequest(req);
+      let user: TokenPayload | null = null;
 
-      if (!token) {
-        return res.status(401).json({
-          success: false,
-          error: "No autenticado. Se requiere token.",
-        });
+      // Método 1: Intentar autenticación con sistema JWT actual
+      const token = getTokenFromRequest(req);
+      if (token) {
+        user = verifyToken(token);
       }
 
-      // Verificar el token
-      const decoded = verifyToken(token);
+      // Método 2: Si falla, intentar autenticación con NextAuth
+      if (!user) {
+        user = await verifyNextAuthSession(req, res);
+      }
 
-      if (!decoded) {
+      // Si ningún método funciona, denegar acceso
+      if (!user) {
         return res.status(401).json({
           success: false,
-          error: "Token inválido o expirado.",
+          error: "No autenticado. Se requiere autenticación válida.",
         });
       }
 
       // Añadir el usuario decodificado a la solicitud
-      (req as AuthenticatedRequest).user = decoded;
+      (req as AuthenticatedRequest).user = user;
 
       // Continuar con el handler
       return handler(req as AuthenticatedRequest, res);
-    } catch {
+    } catch (error) {
+      console.error("Error in withAuth middleware:", error);
       return res.status(500).json({
         success: false,
         error: "Error de autenticación.",

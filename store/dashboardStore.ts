@@ -9,6 +9,7 @@ import { useVariableStore } from "./variableStore";
 import { useWidgetStore } from "./widgetStore";
 import { apiService } from "../services/apiService";
 import type { Widget } from "../types/widget";
+import { useAuthStore } from "./authStore";
 
 interface DashboardState {
   dashboards: Dashboard[];
@@ -85,11 +86,16 @@ export const useDashboardStore = create<DashboardState>()(
         set({ isLoading: true });
 
         try {
+          // Obtener el ID del usuario actual
+          const currentUser = useAuthStore.getState().user;
+          console.log(currentUser, dashboardData);
+
           // Crear dashboard en MongoDB
           const response = await apiService.post("/dashboards", {
             name: dashboardData.name,
             description: dashboardData.description || "",
             visibility: dashboardData.visibility || "private",
+            userId: dashboardData?.userId || currentUser?._id,
             layout: dashboardData.layout || [],
             widgets: dashboardData.widgets || [],
           });
@@ -117,6 +123,9 @@ export const useDashboardStore = create<DashboardState>()(
               useVariableStore.getState();
             initializeDashboardVariables(newDashboard._id);
             setCurrentDashboard(newDashboard._id);
+
+            // Activar automáticamente el modo edición para el nuevo dashboard
+            get().startEditing();
 
             console.log("✅ Dashboard creado exitosamente:", newDashboard.name);
             return newDashboard;
@@ -307,9 +316,23 @@ export const useDashboardStore = create<DashboardState>()(
           return { needsConfirmation: false };
         }
 
-        // Comprobar si el dashboard original es de solo lectura
-        if (originalDashboard.isReadonly) {
-          // Devolver que se necesita confirmación para crear copia
+        // Comprobar si el usuario tiene permisos para editar este dashboard
+        const currentUser = useAuthStore.getState().user;
+
+        // El userId puede ser un string o un objeto con _id
+        const dashboardOwnerId = originalDashboard.userId;
+
+        const isOwner = currentUser && dashboardOwnerId === currentUser._id;
+        console.log(dashboardOwnerId, currentUser?._id);
+
+        const isCollaborator =
+          currentUser &&
+          originalDashboard.collaborators?.some(
+            (id) => id.toString() === currentUser._id
+          );
+
+        if (!isOwner && !isCollaborator) {
+          // El usuario no es ni propietario ni colaborador, mostrar confirmación para crear copia
           return {
             needsConfirmation: true,
             dashboard: tempDashboard,

@@ -38,7 +38,7 @@ export const ReadonlyConfirmModal: React.FC<ReadonlyConfirmModalProps> = ({
           <div className="modal-header__icon">
             <Icon name="alert-circle" size={24} />
           </div>
-          <h2 className="modal-header__title">Dashboard de solo lectura</h2>
+          <h2 className="modal-header__title">Sin permisos de edición</h2>
           <button
             className="modal-header__close"
             onClick={onCancel}
@@ -50,9 +50,9 @@ export const ReadonlyConfirmModal: React.FC<ReadonlyConfirmModalProps> = ({
 
         <div className="modal-body">
           <p className="modal-body__message">
-            Este dashboard es de solo lectura y no se puede modificar
-            directamente. Para guardar tus cambios, se creará una nueva copia
-            que podrás editar libremente.
+            No tienes permisos para editar este dashboard, ya que no eres el
+            propietario ni colaborador del mismo. Para guardar tus cambios, se
+            creará una nueva copia que podrás editar libremente.
           </p>
 
           <div className="modal-body__input-group">

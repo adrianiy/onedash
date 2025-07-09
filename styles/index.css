@@ -19,6 +19,7 @@
 @import "./table-widget.css";
 @import "./metric-widget.css";
 @import "./metric-config.css";
+@import "./metric-selector.css";
 @import "./events-config.css";
 @import "./filter-bar.css";
 @import "./text-interpolation-input.css";

@@ -84,6 +84,8 @@ import {
   IconBoxAlignBottom,
   IconTableRow,
   IconTag,
+  IconBrandGoogle,
+  IconBrandWindows,
 } from "@tabler/icons-react";
 
 const lucideIconMap = {
@@ -172,6 +174,8 @@ const tablerIconMap = {
   "box-align-bottom": IconBoxAlignBottom,
   "table-row": IconTableRow,
   label: IconTag,
+  "brand-google": IconBrandGoogle,
+  "brand-microsoft": IconBrandWindows,
 } as const;
 
 export type IconName = keyof typeof lucideIconMap | keyof typeof tablerIconMap;

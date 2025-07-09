@@ -1,3 +1,5 @@
+import { useAuthStore } from "../store/authStore";
+
 const BASE_URL = "/api";
 
 export interface ApiResponse<T = unknown> {
@@ -7,6 +9,33 @@ export interface ApiResponse<T = unknown> {
   count?: number;
   message?: string;
 }
+
+/**
+ * Maneja los errores de las respuestas de la API
+ * Si el error es 401 (Unauthorized), redirige automáticamente a la página de login
+ */
+const handleApiError = (response: Response) => {
+  if (response.status === 401) {
+    // Usuario no autorizado, limpiar estado de autenticación
+    const { user } = useAuthStore.getState();
+
+    // Solo realizar estas acciones si hay un usuario autenticado
+    if (user) {
+      // Limpiar el estado de autenticación
+      useAuthStore.setState({
+        user: null,
+        isAuthenticated: false,
+        error: "Sesión expirada o no válida",
+      });
+    }
+
+    // Redirigir a la página de login
+    window.location.href = "/login";
+    throw new Error("Sesión expirada o no válida");
+  }
+
+  throw new Error(`HTTP Error: ${response.status} - ${response.statusText}`);
+};
 
 export const apiService = {
   async get<T>(endpoint: string): Promise<ApiResponse<T>> {
@@ -18,9 +47,7 @@ export const apiService = {
     });
 
     if (!response.ok) {
-      throw new Error(
-        `HTTP Error: ${response.status} - ${response.statusText}`
-      );
+      handleApiError(response);
     }
 
     return response.json();
@@ -36,9 +63,7 @@ export const apiService = {
     });
 
     if (!response.ok) {
-      throw new Error(
-        `HTTP Error: ${response.status} - ${response.statusText}`
-      );
+      handleApiError(response);
     }
 
     return response.json();
@@ -54,9 +79,7 @@ export const apiService = {
     });
 
     if (!response.ok) {
-      throw new Error(
-        `HTTP Error: ${response.status} - ${response.statusText}`
-      );
+      handleApiError(response);
     }
 
     return response.json();
@@ -71,9 +94,7 @@ export const apiService = {
     });
 
     if (!response.ok) {
-      throw new Error(
-        `HTTP Error: ${response.status} - ${response.statusText}`
-      );
+      handleApiError(response);
     }
 
     return response.json();

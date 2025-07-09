@@ -214,7 +214,7 @@
   margin: 0 var(--spacing-xl) var(--spacing-lg);
   padding: var(--spacing-lg);
   border: 2px dashed var(--color-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-sm);
   background-color: transparent;
   color: var(--color-text-secondary);
   cursor: pointer;
@@ -239,7 +239,7 @@
   padding: var(--spacing-lg);
   margin-bottom: var(--spacing-md);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all var(--transition-fast);
   background-color: var(--color-background);

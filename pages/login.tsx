@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { signIn, getSession } from "next-auth/react";
@@ -8,80 +8,41 @@ import { useAuthStore } from "../store/authStore";
 
 export default function Login() {
   const router = useRouter();
-  const { login, isAuthenticated, isLoading, error, clearError } =
-    useAuthStore();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [validationErrors, setValidationErrors] = useState<{
-    email?: string;
-    password?: string;
-  }>({});
+  const { isAuthenticated, isLoading, error, clearError } = useAuthStore();
 
-  // Si ya está autenticado, redirigir al dashboard
+  // Si ya está autenticado, redirigir a la página de carga
   useEffect(() => {
     if (isAuthenticated) {
-      router.push("/dashboard/default");
+      router.push("/loading");
     }
   }, [isAuthenticated, router]);
-
-  const validateForm = () => {
-    const errors: { email?: string; password?: string } = {};
-    let isValid = true;
-
-    if (!email) {
-      errors.email = "El email es obligatorio";
-      isValid = false;
-    } else if (!/^[\w-]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-      errors.email = "El formato del email no es válido";
-      isValid = false;
-    }
-
-    if (!password) {
-      errors.password = "La contraseña es obligatoria";
-      isValid = false;
-    } else if (password.length < 6) {
-      errors.password = "La contraseña debe tener al menos 6 caracteres";
-      isValid = false;
-    }
-
-    setValidationErrors(errors);
-    return isValid;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    clearError();
-
-    if (!validateForm()) return;
-
-    await login(email, password);
-  };
 
   const handleOAuthLogin = async (provider: string) => {
     try {
       const result = await signIn(provider, {
-        callbackUrl: "/dashboard",
+        callbackUrl: "/loading",
         redirect: false,
       });
 
       if (result?.error) {
         console.error("OAuth login error:", result.error);
+        clearError();
       } else if (result?.ok) {
-        // Check session and redirect
+        // Check session and update store
         const session = await getSession();
         if (session) {
-          router.push("/dashboard");
+          // Redirigir a la página de carga
+          router.push("/loading");
         }
       }
     } catch (error) {
       console.error("OAuth login error:", error);
     }
   };
-
   return (
     <div className="auth-page">
       <Card className="auth-page__card" padding="lg" shadow="md">
-        <form className="auth-form" onSubmit={handleSubmit}>
+        <form className="auth-form">
           <div className="auth-form__icon-wrapper">
             <Icon name="log-in" size={36} className="auth-form__icon" />
           </div>
@@ -95,66 +56,6 @@ export default function Login() {
             </div>
           )}
 
-          {/* Campo de email */}
-          <div className="auth-form__input-group">
-            <label htmlFor="email" className="auth-form__label">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              className={`auth-form__input ${
-                validationErrors.email ? "error" : ""
-              }`}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="tu@email.com"
-              disabled={isLoading}
-            />
-            {validationErrors.email && (
-              <div className="auth-form__error">{validationErrors.email}</div>
-            )}
-          </div>
-
-          {/* Campo de contraseña */}
-          <div className="auth-form__input-group">
-            <label htmlFor="password" className="auth-form__label">
-              Contraseña
-            </label>
-            <input
-              id="password"
-              type="password"
-              className={`auth-form__input ${
-                validationErrors.password ? "error" : ""
-              }`}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              disabled={isLoading}
-            />
-            {validationErrors.password && (
-              <div className="auth-form__error">
-                {validationErrors.password}
-              </div>
-            )}
-          </div>
-
-          {/* Botón de login */}
-          <button
-            type="submit"
-            className="auth-form__button"
-            disabled={isLoading}
-          >
-            {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
-          </button>
-
-          {/* Separador OAuth */}
-          <div className="auth-form__separator">
-            <span className="auth-form__separator-line"></span>
-            <span className="auth-form__separator-text">O</span>
-            <span className="auth-form__separator-line"></span>
-          </div>
-
           {/* Botones OAuth */}
           <div className="auth-form__oauth">
             <button
@@ -163,7 +64,7 @@ export default function Login() {
               onClick={() => handleOAuthLogin("google")}
               disabled={isLoading}
             >
-              <Icon name="google" size={20} />
+              <Icon name="brand-google" size={20} />
               Continuar con Google
             </button>
 
@@ -183,7 +84,7 @@ export default function Login() {
               onClick={() => handleOAuthLogin("azure-ad")}
               disabled={isLoading}
             >
-              <Icon name="microsoft" size={20} />
+              <Icon name="brand-microsoft" size={20} />
               Continuar con Microsoft
             </button>
           </div>

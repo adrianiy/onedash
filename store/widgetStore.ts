@@ -61,7 +61,6 @@ export const useWidgetStore = create<WidgetState>()(
     updateWidget: (_id, updates) => {
       set((state: WidgetState) => ({
         widgets: state.widgets.map((widget) => {
-          console.log(widget._id, _id);
           if (widget._id !== _id) return widget;
 
           // Verificar que no se intente cambiar propiedades inmutables

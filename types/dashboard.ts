@@ -16,12 +16,13 @@ export interface Dashboard {
   description?: string;
   layout: DashboardLayout[];
   widgets: string[];
+  userId: string; // Puede ser solo el ID o el objeto usuario completo
   variables?: string[]; // IDs de variables del dashboard
   visibility?: "public" | "private"; // Visibilidad del dashboard
   collaborators?: string[]; // IDs de usuarios con permisos de edición
+  isReadonly?: boolean; // Mantenerlo por ahora para compatibilidad con código existente
   createdAt: Date;
   updatedAt: Date;
-  isReadonly?: boolean;
   originalId?: string;
 }
 

@@ -45,6 +45,35 @@ export const useAuthStore = create<AuthState>((set) => ({
         // Get session to update state
         const session = await getSession();
         if (session?.user) {
+          // Obtener datos completos del usuario desde /api/auth/me para usar el ID de MongoDB
+          try {
+            const response = await fetch("/api/auth/me");
+
+            if (response.ok) {
+              const data = await response.json();
+              if (data.success && data.user) {
+                set({
+                  user: data.user, // Esto incluye el _id de MongoDB
+                  isAuthenticated: true,
+                  isLoading: false,
+                  error: null,
+                });
+                console.log(
+                  "✅ Login exitoso con ID de MongoDB:",
+                  data.user._id
+                );
+                return true;
+              }
+            }
+          } catch (error) {
+            console.error(
+              "Error al obtener datos de usuario después de login:",
+              error
+            );
+            // Continuar con datos de sesión como fallback
+          }
+
+          // Fallback a ID de NextAuth si la llamada a /api/auth/me falla
           set({
             user: {
               _id: session.user.id,
@@ -56,6 +85,10 @@ export const useAuthStore = create<AuthState>((set) => ({
             isLoading: false,
             error: null,
           });
+          console.log(
+            "⚠️ Login exitoso usando ID de NextAuth como fallback:",
+            session.user.id
+          );
           return true;
         }
       }
@@ -120,7 +153,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ isLoading: true });
 
     try {
-      await signOut({ redirect: false });
+      await signOut({ callbackUrl: "/login" });
       set({
         user: null,
         isAuthenticated: false,
@@ -138,15 +171,46 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   /**
-   * Verificar si el usuario está autenticado usando NextAuth
+   * Verificar si el usuario está autenticado usando NextAuth o sistema existente
    */
   checkAuth: async () => {
     set({ isLoading: true });
 
     try {
+      // Primero intentar con NextAuth
       const session = await getSession();
 
       if (session?.user) {
+        // Si hay sesión de NextAuth, SIEMPRE obtener los datos completos del usuario
+        // desde la API para asegurar que usamos el ID de MongoDB
+        try {
+          const response = await fetch("/api/auth/me");
+
+          if (response.ok) {
+            const data = await response.json();
+            if (data.success && data.user) {
+              set({
+                user: data.user, // Esto incluye el _id de MongoDB
+                isAuthenticated: true,
+                isLoading: false,
+                error: null,
+              });
+              console.log(
+                "✅ Usuario autenticado con ID de MongoDB:",
+                data.user._id
+              );
+              return true;
+            }
+          }
+        } catch (error) {
+          console.error(
+            "Error al obtener datos de usuario desde /api/auth/me:",
+            error
+          );
+          // Continuar con datos de sesión como fallback
+        }
+
+        // Si falló la llamada a /api/auth/me, usar los datos de sesión como fallback
         set({
           user: {
             _id: session.user.id,
@@ -158,17 +222,40 @@ export const useAuthStore = create<AuthState>((set) => ({
           isLoading: false,
           error: null,
         });
+        console.log("⚠️ Usando ID de NextAuth como fallback:", session.user.id);
         return true;
-      } else {
-        set({
-          user: null,
-          isAuthenticated: false,
-          isLoading: false,
-          error: null,
-        });
-        return false;
       }
-    } catch {
+
+      // Si no hay sesión de NextAuth, intentar con el endpoint /api/auth/me
+      const response = await fetch("/api/auth/me");
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.user) {
+          set({
+            user: data.user,
+            isAuthenticated: true,
+            isLoading: false,
+            error: null,
+          });
+          console.log(
+            "✅ Usuario autenticado con ID de MongoDB (método tradicional):",
+            data.user._id
+          );
+          return true;
+        }
+      }
+
+      // No hay autenticación válida
+      set({
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        error: null,
+      });
+      return false;
+    } catch (error) {
+      console.error("Error en checkAuth:", error);
       set({
         user: null,
         isAuthenticated: false,

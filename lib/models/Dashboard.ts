@@ -24,7 +24,6 @@ export interface IDashboard {
   userId: string | Types.ObjectId | IUser; // Referencia al propietario
   collaborators?: Array<string | Types.ObjectId>; // IDs de usuarios con permisos de edición
   visibility: "public" | "private";
-  isReadonly?: boolean;
   originalId?: string | Types.ObjectId; // Referencia al dashboard original (para copias)
   createdAt: Date;
   updatedAt: Date;
@@ -77,10 +76,6 @@ const DashboardSchema = new Schema<IDashboard>(
       type: String,
       enum: ["public", "private"],
       default: "private",
-    },
-    isReadonly: {
-      type: Boolean,
-      default: false,
     },
     originalId: {
       type: Schema.Types.ObjectId,

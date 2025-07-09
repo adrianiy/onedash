@@ -2,12 +2,16 @@
 
 Esta guía te ayudará a configurar la autenticación OAuth con Google, GitHub y Microsoft para OneDash.
 
+⚠️ **IMPORTANTE**: La variable `NEXTAUTH_SECRET` es IMPRESCINDIBLE para que OAuth funcione correctamente. Sin ella, obtendrás errores de desencriptación de JWT.
+
 ## Variables de Entorno
 
 Copia el archivo `.env.example` a `.env.local` y completa las siguientes variables:
 
 ```bash
-# NextAuth
+# NextAuth (OBLIGATORIO)
+# Genera un secreto seguro con este comando:
+# node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 NEXTAUTH_SECRET=tu-secreto-nextauth-muy-seguro
 NEXTAUTH_URL=http://localhost:3000
 
@@ -87,6 +91,29 @@ Para producción, asegúrate de:
 ✅ **Estilos minimalistas**: Diseño coherente con el resto de la aplicación
 
 ## Solución de Problemas
+
+### Error: "JWT_SESSION_ERROR" o "decryption operation failed"
+
+Este error ocurre cuando NextAuth no puede descifrar los tokens JWT, generalmente porque:
+
+- **NEXTAUTH_SECRET no está configurado**: Esta variable de entorno es obligatoria
+- **NEXTAUTH_SECRET ha cambiado**: Si cambias este valor, todas las sesiones existentes dejarán de funcionar
+- **Cookies inválidas**: Borra las cookies de tu navegador y vuelve a iniciar sesión
+
+Para solucionar:
+
+1. Asegúrate de tener NEXTAUTH_SECRET en tu `.env.local`
+2. Genera un nuevo secreto si es necesario: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
+3. Reinicia el servidor
+4. Borra las cookies del navegador
+
+### Error: "CastError: Cast to ObjectId failed"
+
+Este error ocurre porque los IDs de proveedores OAuth (como Google o GitHub) no son compatibles con el formato ObjectId de MongoDB:
+
+- **Problema**: Cuando `findById` recibe un ID de OAuth (por ejemplo `103599097662588516166` de Google) en lugar de un ObjectId de MongoDB
+- **Solución**: El adaptador de NextAuth ahora busca usuarios por email en lugar de por ID
+- **Nota técnica**: MongoDB espera un ObjectId de 24 caracteres hexadecimales, mientras que los proveedores OAuth usan formatos de ID distintos
 
 ### Error: "Configuration missing"
 

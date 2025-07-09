@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { useDashboardStore } from "../../store/dashboardStore";
+import { useAuthStore } from "../../store/authStore";
 import { Icon } from "../common/Icon";
 import { DashboardFormModal } from "../dashboard/DashboardFormModal";
 import type { Dashboard } from "../../types/dashboard";
@@ -58,18 +59,24 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     }
     // Si estamos creando un nuevo dashboard
     else {
+      // Obtener el ID del usuario actual
+      const currentUser = useAuthStore.getState().user;
+      console.log(currentUser);
+
       const newDashboard = await createDashboard({
         name: dashboardData.name || `Dashboard ${dashboards.length + 1}`,
         description: dashboardData.description || "",
         visibility: dashboardData.visibility || "private",
         layout: [],
         widgets: [],
+        userId: currentUser?._id || "", // Usar el ID del usuario actual
       });
 
       if (newDashboard) {
         setIsFormModalOpen(false);
         setCurrentDashboard(newDashboard);
         router.push(`/dashboard/${newDashboard._id}`);
+        onClose(); // Cerrar sidebar automáticamente
       }
     }
   };
@@ -93,6 +100,12 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
         alert("Error al eliminar el dashboard. Por favor, inténtalo de nuevo.");
       }
     }
+  };
+
+  // Verificar si el usuario actual es propietario del dashboard
+  const isOwner = (dashboard: Dashboard) => {
+    const currentUser = useAuthStore.getState().user;
+    return currentUser && dashboard.userId === currentUser._id;
   };
 
   const formatDate = (date: Date) => {
@@ -191,13 +204,15 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                     >
                       <Icon name="edit" size={14} />
                     </button>
-                    <button
-                      className="dashboard-action-btn delete"
-                      onClick={(e) => handleDeleteDashboard(e, dashboard._id)}
-                      title="Eliminar dashboard"
-                    >
-                      <Icon name="trash" size={14} />
-                    </button>
+                    {isOwner(dashboard) && (
+                      <button
+                        className="dashboard-action-btn delete"
+                        onClick={(e) => handleDeleteDashboard(e, dashboard._id)}
+                        title="Eliminar dashboard"
+                      >
+                        <Icon name="trash" size={14} />
+                      </button>
+                    )}
                   </div>
                 </div>
               ))

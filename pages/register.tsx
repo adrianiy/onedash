@@ -21,10 +21,10 @@ export default function Register() {
     confirmPassword?: string;
   }>({});
 
-  // Si ya está autenticado, redirigir al dashboard
+  // Si ya está autenticado, redirigir a la página de carga
   useEffect(() => {
     if (isAuthenticated) {
-      router.push("/dashboard/default");
+      router.push("/loading");
     }
   }, [isAuthenticated, router]);
 
@@ -89,7 +89,7 @@ export default function Register() {
   const handleOAuthLogin = async (provider: string) => {
     try {
       const result = await signIn(provider, {
-        callbackUrl: "/dashboard",
+        callbackUrl: "/loading",
         redirect: false,
       });
 
@@ -99,7 +99,7 @@ export default function Register() {
         // Check session and redirect
         const session = await getSession();
         if (session) {
-          router.push("/dashboard");
+          router.push("/loading");
         }
       }
     } catch (error) {
@@ -236,7 +236,7 @@ export default function Register() {
               onClick={() => handleOAuthLogin("google")}
               disabled={isLoading}
             >
-              <Icon name="google" size={20} />
+              <Icon name="brand-google" size={20} />
               Continuar con Google
             </button>
 
@@ -256,7 +256,7 @@ export default function Register() {
               onClick={() => handleOAuthLogin("azure-ad")}
               disabled={isLoading}
             >
-              <Icon name="microsoft" size={20} />
+              <Icon name="brand-microsoft" size={20} />
               Continuar con Microsoft
             </button>
           </div>

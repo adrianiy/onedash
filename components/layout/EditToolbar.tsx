@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Tooltip } from "react-tooltip";
 import { useDashboardStore } from "../../store/dashboardStore";
 import { useWidgetStore } from "../../store/widgetStore";
+import { useAuthStore } from "../../store/authStore";
 import { Icon } from "../common/Icon";
 import { ReadonlyConfirmModal } from "../common/ReadonlyConfirmModal";
 import type { Dashboard } from "../../types/dashboard";
@@ -404,7 +405,7 @@ export const EditToolbar: React.FC = () => {
         variables: readonlyDashboard.variables,
         visibility: readonlyDashboard.visibility || "private", // Por defecto privado
         collaborators: readonlyDashboard.collaborators,
-        isReadonly: false, // La copia siempre es editable
+        userId: useAuthStore.getState().user?._id || "", // Usuario actual como propietario
         originalId: readonlyDashboard._id, // Referencia al dashboard original
       });
 

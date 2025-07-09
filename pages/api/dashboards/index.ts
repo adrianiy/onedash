@@ -53,6 +53,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
           error: "El nombre del dashboard es obligatorio",
         });
       }
+      console.log(req.user);
 
       // Crear dashboard
       const dashboard = await Dashboard.create({
