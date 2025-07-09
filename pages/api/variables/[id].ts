@@ -26,7 +26,6 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
 
   try {
     // Obtener la variable por ID
-    // @ts-expect-error: No se puede inferir el tipo de Mongoose
     const variable = await Variable.findById(id);
 
     // Verificar si existe la variable

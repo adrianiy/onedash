@@ -28,7 +28,6 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       }
 
       // Obtener widgets
-      // @ts-expect-error: No se puede inferir el tipo de widgetData
       const widgets = await Widget.find(query);
 
       return res.status(200).json({
@@ -85,7 +84,6 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         widgetData._id = _id;
       }
 
-      // @ts-expect-error: No se puede inferir el tipo de widgetData
       const widget = await Widget.create(widgetData);
 
       return res.status(201).json({

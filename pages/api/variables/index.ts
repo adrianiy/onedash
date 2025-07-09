@@ -28,7 +28,6 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       }
 
       // Obtener variables
-      // @ts-expect-error: No se puede inferir el tipo de Mongoose
       const variables = await Variable.find(query);
 
       return res.status(200).json({
@@ -59,7 +58,6 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       }
 
       // Verificar si ya existe una variable con la misma key en el dashboard
-      // @ts-expect-error: No se puede inferir el tipo de Dashboard
       const existingVariable = await Variable.findOne({
         dashboardId,
         userId: req.user.id,
@@ -79,7 +77,6 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       }
 
       // Crear variable
-      // @ts-expect-error: No se puede inferir el tipo de Dashboard
       const variable = await Variable.create({
         dashboardId,
         userId: req.user.id,

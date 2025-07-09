@@ -52,9 +52,11 @@ export type {
 };
 
 // Exportación por defecto para importación conveniente
-export default {
+const Models = {
   User,
   Dashboard,
   Widget,
   Variable,
 };
+
+export default Models;

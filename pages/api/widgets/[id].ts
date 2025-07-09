@@ -26,7 +26,6 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
 
   try {
     // Obtener el widget por ID
-    // @ts-expect-error: No se puede inferir el tipo de Dashboard
     const widget = await Widget.findById(id);
 
     // Verificar si existe el widget

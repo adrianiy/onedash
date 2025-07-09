@@ -89,7 +89,6 @@ export const withUserData = (
       }
 
       // Obtener el usuario completo desde la BD
-      // @ts-expect-error: No se puede inferir el tipo de Dashboard
       const user = await User.findById(req.user.id, "-password").exec();
 
       if (!user) {

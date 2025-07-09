@@ -25,7 +25,6 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   }
 
   try {
-    // @ts-expect-error: Problemas de tipado con Mongoose
     const dashboard = (await Dashboard.findOne({
       _id: id,
     }).lean()) as IDashboard | null;
@@ -43,7 +42,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       ? dashboard.userId.toString() === req.user.id
       : dashboard.userId === req.user.id;
     const isCollaborator = dashboard.collaborators?.some(
-      (collaboratorId) => collaboratorId.toString() === req.user.id
+      (collaboratorId) => collaboratorId.toString() === req.user?.id
     );
     const isPublic = dashboard.visibility === "public";
     const canEdit = isOwner || isCollaborator;
@@ -90,7 +89,6 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         if (collaborators) dashboard.collaborators = collaborators;
       }
 
-      // @ts-expect-error: Problemas de tipado con Mongoose
       await Dashboard.updateOne(
         { _id: dashboard._id },
         {
@@ -183,7 +181,6 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         });
       }
 
-      // @ts-expect-error: Problemas de tipado con Mongoose
       await Dashboard.updateOne(
         { _id: dashboard._id },
         { $set: { collaborators: dashboard.collaborators } }

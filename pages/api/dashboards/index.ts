@@ -17,11 +17,9 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   if (req.method === "GET") {
     try {
       // Obtener dashboards propios del usuario
-      // @ts-expect-error: No se puede inferir el tipo de Dashboard
       const ownDashboards = await Dashboard.find({ userId: req.user.id });
 
       // Obtener dashboards públicos de otros usuarios
-      // @ts-expect-error: No se puede inferir el tipo de Dashboard
       const publicDashboards = await Dashboard.find({
         userId: { $ne: req.user.id },
         visibility: "public",
@@ -57,7 +55,6 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       }
 
       // Crear dashboard
-      // @ts-expect-error: No se puede inferir el tipo de Dashboard
       const dashboard = await Dashboard.create({
         name,
         description,

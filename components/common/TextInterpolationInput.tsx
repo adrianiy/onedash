@@ -272,8 +272,8 @@ export const TextInterpolationInput: React.FC<TextInterpolationInputProps> = ({
                 ))
               ) : (
                 <div className="text-interpolation-input__autocomplete-empty">
-                  No se encontraron variables que coincidan con "
-                  {autocompleteSearch}"
+                  No se encontraron variables que coincidan con &quot;
+                  {autocompleteSearch}&quot;
                 </div>
               )}
             </div>

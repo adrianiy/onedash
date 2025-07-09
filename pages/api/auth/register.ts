@@ -39,7 +39,6 @@ export default async function handler(
     }
 
     // Verificar si el correo ya existe
-    // @ts-expect-error: No se puede inferir el tipo de Dashboard
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
@@ -53,7 +52,6 @@ export default async function handler(
     const hashedPassword = await hashPassword(password);
 
     // Crear el usuario
-    // @ts-expect-error: No se puede inferir el tipo de Dashboard
     const user = await User.create({
       name,
       email,

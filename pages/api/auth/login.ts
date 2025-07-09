@@ -32,7 +32,6 @@ export default async function handler(
     }
 
     // Buscar el usuario por email y seleccionar también la contraseña
-    // @ts-expect-error: No se puede inferir el tipo de Mongoose
     const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
