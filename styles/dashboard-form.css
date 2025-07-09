@@ -1,0 +1,131 @@
+.dashboard-form__modal {
+  max-width: 550px;
+}
+
+.dashboard-form__field {
+  margin-bottom: var(--spacing-xl);
+}
+
+.dashboard-form__input {
+  width: 100%;
+  transition: border-color var(--transition-fast);
+}
+
+.dashboard-form__input--error {
+  border-color: var(--color-danger);
+}
+
+.dashboard-form__error {
+  color: var(--color-danger);
+  font-size: 0.75rem;
+  margin-top: var(--spacing-xs);
+  margin-bottom: 0;
+}
+
+.dashboard-form__textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 100px;
+}
+
+.dashboard-form__visibility-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.dashboard-form__section-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.dashboard-form__visibility-controls {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.dashboard-form__visibility-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-weight: 400;
+  font-size: 0.875rem;
+}
+
+.dashboard-form__visibility-btn:hover {
+  background-color: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+.dashboard-form__visibility-btn--active {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.dashboard-form__visibility-btn--active:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.15);
+}
+
+/* Añadir indicador de visibilidad en la lista de dashboards */
+.dashboard-item__visibility {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  margin-top: var(--spacing-xs);
+}
+
+.dashboard-item__visibility--public {
+  color: var(--color-info);
+}
+
+.dashboard-item__visibility--private {
+  color: var(--color-secondary);
+}
+
+/* Botones de acción en la lista de dashboards */
+.dashboard-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.dashboard-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md);
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dashboard-action-btn:hover {
+  background-color: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+.dashboard-action-btn.edit:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary-light);
+}
+
+.dashboard-action-btn.delete:hover {
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
