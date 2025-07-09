@@ -29,6 +29,18 @@ const nextConfig = {
 
   // Configuración para Vercel
   output: "standalone",
+
+  // Configuración de webpack para excluir la carpeta src
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      // Excluir la carpeta src del bundle del servidor
+      config.externals = config.externals || [];
+      config.externals.push({
+        "./src": "commonjs ./src",
+      });
+    }
+    return config;
+  },
 };
 
 export default nextConfig;
