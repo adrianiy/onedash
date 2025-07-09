@@ -13,22 +13,44 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
 
   await connectToDatabase();
 
-  // GET - Obtener todos los widgets del usuario
+  // GET - Obtener widgets por dashboard
   if (req.method === "GET") {
     try {
-      // Opcionalmente filtrar por dashboard
       const { dashboardId } = req.query;
 
-      // Construir la consulta
-      const query: Record<string, unknown> = { userId: req.user.id };
-
-      // Si se especifica un dashboardId, filtrar por él
-      if (dashboardId) {
-        query.dashboardId = dashboardId;
+      // El dashboardId es requerido
+      if (!dashboardId) {
+        return res.status(400).json({
+          success: false,
+          error: "Se requiere el ID del dashboard",
+        });
       }
 
-      // Obtener widgets
-      const widgets = await Widget.find(query);
+      // Verificar que el usuario tenga acceso al dashboard
+      const Dashboard = (await import("../../../lib/models/Dashboard")).default;
+      const dashboard = await Dashboard.findById(dashboardId);
+
+      if (!dashboard) {
+        return res.status(404).json({
+          success: false,
+          error: "Dashboard no encontrado",
+        });
+      }
+
+      // Verificar permisos: propietario o publico
+      const hasAccess =
+        dashboard.userId.toString() === req.user!.id ||
+        dashboard.visibility === "public";
+
+      if (!hasAccess) {
+        return res.status(403).json({
+          success: false,
+          error: "No tienes permisos para acceder a este dashboard",
+        });
+      }
+
+      // Obtener widgets del dashboard
+      const widgets = await Widget.find({ dashboardId });
 
       return res.status(200).json({
         success: true,
@@ -50,10 +72,35 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       const { type, title, config, dashboardId, _id } = req.body;
 
       // Validar datos requeridos
-      if (!type) {
+      if (!type || !dashboardId) {
         return res.status(400).json({
           success: false,
-          error: "Se requieren type",
+          error: "Se requieren type y dashboardId",
+        });
+      }
+
+      // Verificar que el usuario tenga acceso al dashboard
+      const Dashboard = (await import("../../../lib/models/Dashboard")).default;
+      const dashboard = await Dashboard.findById(dashboardId);
+
+      if (!dashboard) {
+        return res.status(404).json({
+          success: false,
+          error: "Dashboard no encontrado",
+        });
+      }
+
+      // Verificar permisos: propietario o colaborador
+      const hasAccess =
+        dashboard.userId.toString() === req.user!.id ||
+        dashboard.collaborators?.some(
+          (collaboratorId: string) => collaboratorId.toString() === req.user!.id
+        );
+
+      if (!hasAccess) {
+        return res.status(403).json({
+          success: false,
+          error: "No tienes permisos para crear widgets en este dashboard",
         });
       }
 
@@ -74,7 +121,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         title,
         config,
         dashboardId,
-        userId: req.user.id,
+        userId: req.user!.id,
         isConfigured: false,
         events: [],
       };

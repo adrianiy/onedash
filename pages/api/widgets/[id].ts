@@ -36,12 +36,31 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       });
     }
 
-    // Verificar si el usuario es el propietario del widget
-    if (widget.userId.toString() !== req.user.id) {
-      return res.status(403).json({
-        success: false,
-        error: "No tienes permiso para acceder a este widget",
-      });
+    // Verificar si el usuario tiene acceso al dashboard que contiene el widget
+    if (widget.dashboardId) {
+      const Dashboard = (await import("../../../lib/models/Dashboard")).default;
+      const dashboard = await Dashboard.findById(widget.dashboardId);
+
+      if (!dashboard) {
+        return res.status(404).json({
+          success: false,
+          error: "Dashboard asociado no encontrado",
+        });
+      }
+
+      // Verificar permisos: propietario o colaborador del dashboard
+      const hasAccess =
+        dashboard.userId.toString() === req.user!.id ||
+        dashboard.collaborators?.some(
+          (collaboratorId: string) => collaboratorId.toString() === req.user!.id
+        );
+
+      if (!hasAccess) {
+        return res.status(403).json({
+          success: false,
+          error: "No tienes permiso para acceder a este widget",
+        });
+      }
     }
 
     // GET - Obtener widget por ID

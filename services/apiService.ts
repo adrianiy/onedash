@@ -14,23 +14,35 @@ export interface ApiResponse<T = unknown> {
  * Maneja los errores de las respuestas de la API
  * Si el error es 401 (Unauthorized), redirige automáticamente a la página de login
  */
-const handleApiError = (response: Response) => {
+const handleApiError = (response: Response, endpoint?: string) => {
   if (response.status === 401) {
     // Usuario no autorizado, limpiar estado de autenticación
-    const { user } = useAuthStore.getState();
+    const { user, isAuthenticated } = useAuthStore.getState();
+
+    console.warn(`❌ Error 401 en ${endpoint || "API"}: Usuario no autorizado`);
 
     // Solo realizar estas acciones si hay un usuario autenticado
-    if (user) {
+    if (user || isAuthenticated) {
       // Limpiar el estado de autenticación
       useAuthStore.setState({
         user: null,
         isAuthenticated: false,
+        isLoading: false,
         error: "Sesión expirada o no válida",
       });
+
+      console.info("🔄 Estado de autenticación limpiado");
     }
 
-    // Redirigir a la página de login
-    window.location.href = "/login";
+    // Evitar redirección múltiple
+    if (
+      !window.location.pathname.includes("/login") &&
+      !window.location.pathname.includes("/register")
+    ) {
+      console.info("🔄 Redirigiendo a login...");
+      window.location.href = "/login";
+    }
+
     throw new Error("Sesión expirada o no válida");
   }
 
@@ -47,7 +59,7 @@ export const apiService = {
     });
 
     if (!response.ok) {
-      handleApiError(response);
+      handleApiError(response, endpoint);
     }
 
     return response.json();
@@ -63,7 +75,7 @@ export const apiService = {
     });
 
     if (!response.ok) {
-      handleApiError(response);
+      handleApiError(response, endpoint);
     }
 
     return response.json();
@@ -79,7 +91,7 @@ export const apiService = {
     });
 
     if (!response.ok) {
-      handleApiError(response);
+      handleApiError(response, endpoint);
     }
 
     return response.json();
@@ -94,7 +106,7 @@ export const apiService = {
     });
 
     if (!response.ok) {
-      handleApiError(response);
+      handleApiError(response, endpoint);
     }
 
     return response.json();

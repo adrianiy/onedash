@@ -1,14 +1,6 @@
-export interface DashboardLayout {
-  i: string;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  minW?: number;
-  minH?: number;
-  maxW?: number;
-  maxH?: number;
-}
+import { Layout } from "react-grid-layout";
+
+export type DashboardLayout = Layout;
 
 export interface Dashboard {
   _id: string;

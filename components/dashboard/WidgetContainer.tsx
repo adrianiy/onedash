@@ -83,6 +83,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
   const [showFloatingHeader, setShowFloatingHeader] = useState(false);
   const [isHiding, setIsHiding] = useState(false);
   const [isPinned, setIsPinned] = useState(true); // Pinned por defecto
+  const [isTextEditing, setIsTextEditing] = useState(false); // Estado para edición de texto
   const hideTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const handleDelete = () => {
@@ -236,6 +237,13 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
     setIsPinned(!isPinned);
   };
 
+  // Handle text editing mode toggle
+  const handleToggleTextEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setIsTextEditing(!isTextEditing);
+  };
+
   // Limpiar el timeout cuando se desmonta el componente
   useEffect(() => {
     return () => {
@@ -376,7 +384,13 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
       case "table":
         return <TableWidget widget={widget} />;
       case "text":
-        return <TextWidget widget={widget} />;
+        return (
+          <TextWidget
+            widget={widget}
+            isTextEditing={isTextEditing}
+            isSelected={isSelected}
+          />
+        );
       default:
         return <ErrorWidget />;
     }
@@ -431,15 +445,32 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
             >
               <Icon name="copy" size={14} />
             </button>
-            <button
-              className="floating-action-btn edit"
-              onClick={handleEdit}
-              onMouseDown={handleButtonMouseDown}
-              data-tooltip-id="edit-widget-tooltip"
-              data-tooltip-content="Editar widget"
-            >
-              <Icon name="edit" size={14} />
-            </button>
+            {/* Para widgets de texto, mostrar botón de edición de texto en lugar del botón de edición normal */}
+            {widget.type === "text" ? (
+              <button
+                className={`floating-action-btn text-edit ${
+                  isTextEditing ? "active" : ""
+                }`}
+                onClick={handleToggleTextEdit}
+                onMouseDown={handleButtonMouseDown}
+                data-tooltip-id="text-edit-tooltip"
+                data-tooltip-content={
+                  isTextEditing ? "Salir de edición de texto" : "Editar texto"
+                }
+              >
+                <Icon name="pen" size={14} />
+              </button>
+            ) : (
+              <button
+                className="floating-action-btn edit"
+                onClick={handleEdit}
+                onMouseDown={handleButtonMouseDown}
+                data-tooltip-id="edit-widget-tooltip"
+                data-tooltip-content="Editar widget"
+              >
+                <Icon name="edit" size={14} />
+              </button>
+            )}
             <button
               className="floating-action-btn delete"
               onClick={handleDelete}
@@ -453,6 +484,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
 
           {/* Tooltips */}
           <Tooltip id="pin-tooltip" place="bottom" />
+          <Tooltip id="text-edit-tooltip" place="bottom" />
           <Tooltip id="copy-tooltip" place="bottom" />
           <Tooltip id="edit-widget-tooltip" place="bottom" />
           <Tooltip id="delete-tooltip" place="bottom" />

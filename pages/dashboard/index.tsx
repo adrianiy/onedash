@@ -1,52 +1,41 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { useDashboardStore } from "../../store/dashboardStore";
-import { useAuthStore } from "../../store/authStore";
+import { ProtectedRoute } from "../../components/auth/ProtectedRoute";
+import { Icon } from "../../components/common/Icon";
 
 export default function DashboardIndex() {
   const router = useRouter();
   const { dashboards, fetchDashboards } = useDashboardStore();
-  const { isAuthenticated, checkAuth } = useAuthStore();
-
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
 
   useEffect(() => {
     const init = async () => {
-      if (isAuthenticated) {
-        await fetchDashboards();
-      }
+      await fetchDashboards();
     };
 
     init();
-  }, [fetchDashboards, isAuthenticated]);
+  }, [fetchDashboards]);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/login");
-      return;
-    }
-
     if (dashboards.length > 0) {
       // Redirigir al primer dashboard o al dashboard "default" si existe
       const defaultDashboard =
         dashboards.find((d) => d.name === "default") || dashboards[0];
       router.push(`/dashboard/${defaultDashboard._id}`);
     }
-  }, [isAuthenticated, dashboards, router]);
+  }, [dashboards, router]);
 
   // Mostrar loading mientras se carga
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-      }}
-    >
-      <p>Cargando dashboard...</p>
-    </div>
+    <ProtectedRoute>
+      <div className="auth-page">
+        <div className="auth-page__loader-container">
+          <div className="auth-page__loader-content">
+            <Icon name="loader" className="auth-page__loader-icon" size={48} />
+            <p className="auth-page__loader-text">Cargando dashboard...</p>
+          </div>
+        </div>
+      </div>
+    </ProtectedRoute>
   );
 }

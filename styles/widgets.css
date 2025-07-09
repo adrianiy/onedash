@@ -96,6 +96,15 @@
   color: var(--color-primary);
 }
 
+.floating-action-btn.text-edit.active {
+  color: var(--color-primary);
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+}
+
+.floating-action-btn.text-edit:hover {
+  color: var(--color-primary);
+}
+
 /* Editing Mode Styles */
 .editing .react-grid-item {
   border: 1px dashed var(--color-border);

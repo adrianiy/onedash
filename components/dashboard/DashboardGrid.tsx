@@ -4,6 +4,7 @@ import { useDashboardStore } from "../../store/dashboardStore";
 import { useWidgetStore } from "../../store/widgetStore";
 import { useGridLayout } from "../../hooks/useGridLayout";
 import { WidgetContainer } from "./WidgetContainer";
+import { validateAndSanitizeLayout } from "../../utils/layoutUtils";
 import type { WidgetType } from "../../types/widget";
 import type { Layout } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
@@ -69,6 +70,34 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
 
   const widgets = getWidgetsByIds(activeDashboard.widgets);
   const gridProps = getGridProps();
+
+  if (widgets.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-64 text-muted">
+        <p>Cargando widgets...</p>
+      </div>
+    );
+  }
+
+  // Sanitize layout to ensure React Grid Layout compatibility
+  const sanitizedLayout = validateAndSanitizeLayout(activeDashboard.layout);
+
+  // Debug logging to help identify layout issues
+  if (process.env.NODE_ENV === "development") {
+    console.log(
+      "🔍 Dashboard Layout Debug:",
+      JSON.parse(
+        JSON.stringify({
+          dashboardId: activeDashboard._id,
+          originalLayout: activeDashboard.layout,
+          sanitizedLayout: sanitizedLayout,
+          layoutCount: activeDashboard.layout.length,
+          sanitizedCount: sanitizedLayout.length,
+          widgets: widgets,
+        })
+      )
+    );
+  }
 
   const handleGridClick = (e: React.MouseEvent) => {
     // Si el click NO es en un widget (no tiene clase widget-container como ancestro), limpiar selección
@@ -155,7 +184,7 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
     >
       <ResponsiveGridLayout
         {...gridProps}
-        layouts={{ lg: activeDashboard.layout }}
+        layouts={{ lg: sanitizedLayout }}
         breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
         cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
         isDroppable={isEditing}

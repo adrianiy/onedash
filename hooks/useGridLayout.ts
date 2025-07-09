@@ -8,6 +8,10 @@ export const useGridLayout = () => {
   const handleLayoutChange = useCallback(
     (layout: Layout[]) => {
       if (isEditing) {
+        // Log layout changes for debugging
+        if (process.env.NODE_ENV === "development") {
+          console.log("📐 Layout changed:", layout);
+        }
         updateLayout(layout);
       }
     },

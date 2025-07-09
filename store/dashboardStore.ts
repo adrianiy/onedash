@@ -262,6 +262,16 @@ export const useDashboardStore = create<DashboardState>()(
       updateLayout: (layout) => {
         const { currentDashboard, isEditing, tempDashboard } = get();
 
+        // Debug logging
+        if (process.env.NODE_ENV === "development") {
+          console.log("📋 Store updateLayout called:", {
+            isEditing,
+            hasTempDashboard: !!tempDashboard,
+            hasCurrentDashboard: !!currentDashboard,
+            layoutCount: layout.length,
+          });
+        }
+
         if (isEditing && tempDashboard) {
           // En modo edición, actualizar la copia temporal
           get().updateTempDashboard({ layout });
@@ -323,7 +333,6 @@ export const useDashboardStore = create<DashboardState>()(
         const dashboardOwnerId = originalDashboard.userId;
 
         const isOwner = currentUser && dashboardOwnerId === currentUser._id;
-        console.log(dashboardOwnerId, currentUser?._id);
 
         const isCollaborator =
           currentUser &&

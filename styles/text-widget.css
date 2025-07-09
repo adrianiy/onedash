@@ -1,0 +1,518 @@
+/* Text Widget Styles - BEM Notation */
+
+.text-widget {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  font-weight: 400;
+}
+
+/* Container for the editor */
+.text-widget__container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 120px;
+  position: relative;
+}
+
+/* Read-only mode */
+.text-widget__content {
+  flex: 1;
+  padding: var(--spacing-md);
+  line-height: 1.6;
+  color: var(--color-text);
+  font-weight: 400;
+  overflow-y: auto;
+}
+
+.text-widget__content--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  font-style: italic;
+  font-size: 0.875rem;
+}
+
+/* Editor mode */
+.text-widget__editor {
+  flex: 1;
+  position: relative;
+}
+
+/* BlockNote editor customization */
+.text-widget .mantine-BlockNoteView-root {
+  background: transparent !important;
+  border: none !important;
+  font-family: inherit !important;
+  font-weight: 400 !important;
+}
+
+.text-widget .ProseMirror {
+  padding: var(--spacing-md) !important;
+  color: var(--color-text) !important;
+  font-weight: 400 !important;
+  min-height: 120px !important;
+  outline: none !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+.text-widget .ProseMirror:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove any additional focus outlines from BlockNote elements */
+.text-widget .mantine-BlockNoteView-root *:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.text-widget .bn-editor:focus,
+.text-widget .bn-editor *:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.text-widget .ProseMirror p {
+  margin: 0 0 var(--spacing-sm) 0 !important;
+  font-weight: 400 !important;
+}
+
+.text-widget .ProseMirror p:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* BlockNote formatting menu */
+.text-widget [data-side-menu] {
+  background: var(--color-surface) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+.text-widget [data-formatting-toolbar] {
+  background: var(--color-surface) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+/* Slash menu styling */
+.text-widget [data-slash-menu] {
+  background: var(--color-surface) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-lg) !important;
+  font-family: inherit !important;
+}
+
+/* Custom toolbar positioning */
+.text-widget__toolbar {
+  position: absolute;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  display: flex;
+  gap: var(--spacing-xs);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+  z-index: 20;
+}
+
+.text-widget:hover .text-widget__toolbar,
+.text-widget--editing .text-widget__toolbar {
+  opacity: 1;
+}
+
+.text-widget__toolbar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: 0.875rem;
+}
+
+.text-widget__toolbar-btn:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text);
+  transform: scale(1.05);
+}
+
+.text-widget__toolbar-btn--active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+/* Placeholder styles */
+.text-widget__placeholder {
+  position: absolute;
+  top: var(--spacing-md);
+  left: var(--spacing-md);
+  color: var(--color-text-muted);
+  font-style: italic;
+  font-size: 0.875rem;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Focus styles - removed outline and border for cleaner look */
+.text-widget--editing {
+  border-radius: var(--radius-md);
+}
+
+/* Special padding when editing and selected to avoid header overlap */
+.text-widget--editing-selected {
+  padding-top: var(--header-height);
+  transition: padding-top var(--transition-normal);
+}
+
+/* Textarea styles for simple text editing mode */
+.text-widget__textarea {
+  font-family: inherit;
+  font-weight: 400;
+  line-height: 1.6;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  background: var(--color-background);
+  color: var(--color-text);
+  outline: none;
+  resize: none;
+  transition: border-color var(--transition-fast);
+}
+
+.text-widget__textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.1);
+}
+
+/* Enhanced placeholder for text editing mode */
+.text-widget__placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xl);
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* Size variants */
+.text-widget--small .text-widget__content,
+.text-widget--small .text-widget__editor .bn-editor {
+  padding: var(--spacing-sm);
+  font-size: 0.875rem;
+}
+
+.text-widget--large .text-widget__content,
+.text-widget--large .text-widget__editor .bn-editor {
+  padding: var(--spacing-lg);
+  font-size: 1.125rem;
+}
+
+/* Text alignment */
+.text-widget--align-left .text-widget__content,
+.text-widget--align-left .text-widget__editor .bn-editor {
+  text-align: left;
+}
+
+.text-widget--align-center .text-widget__content,
+.text-widget--align-center .text-widget__editor .bn-editor {
+  text-align: center;
+}
+
+.text-widget--align-right .text-widget__content,
+.text-widget--align-right .text-widget__editor .bn-editor {
+  text-align: right;
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .text-widget .bn-container {
+  background: transparent;
+}
+
+[data-theme="dark"] .text-widget .bn-editor {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .text-widget .bn-toolbar {
+  background: var(--color-surface-secondary);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .text-widget__toolbar-btn {
+  background: var(--color-surface-secondary);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .text-widget__toolbar-btn:hover {
+  background: var(--color-surface-hover);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .text-widget__toolbar {
+    position: static;
+    opacity: 1;
+    margin-bottom: var(--spacing-sm);
+    justify-content: flex-end;
+  }
+
+  .text-widget__content,
+  .text-widget__editor .bn-editor {
+    padding: var(--spacing-sm);
+  }
+}
+
+/* Animation for edit mode transition */
+.text-widget__container {
+  transition: all var(--transition-normal);
+}
+
+.text-widget--editing .text-widget__container {
+  transform: scale(1.01);
+}
+
+/* Block elements styling within editor */
+.text-widget .bn-editor p {
+  margin: 0 0 var(--spacing-sm) 0;
+  font-weight: 400;
+}
+
+.text-widget .bn-editor p:last-child {
+  margin-bottom: 0;
+}
+
+.text-widget .bn-editor h1,
+.text-widget .bn-editor h2,
+.text-widget .bn-editor h3,
+.text-widget .bn-editor h4,
+.text-widget .bn-editor h5,
+.text-widget .bn-editor h6 {
+  font-weight: 500;
+  margin: var(--spacing-md) 0 var(--spacing-sm) 0;
+  color: var(--color-text);
+}
+
+.text-widget .bn-editor ul,
+.text-widget .bn-editor ol {
+  margin: var(--spacing-sm) 0;
+  padding-left: var(--spacing-lg);
+}
+
+.text-widget .bn-editor li {
+  margin: var(--spacing-xs) 0;
+  font-weight: 400;
+}
+
+/* Markdown Renderer Styles */
+.text-widget__markdown {
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+}
+
+/* Markdown Headers */
+.text-widget__markdown-h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin: var(--spacing-lg) 0 var(--spacing-md) 0;
+  color: var(--color-text-primary);
+  border-bottom: 2px solid var(--color-border);
+  padding-bottom: var(--spacing-sm);
+}
+
+.text-widget__markdown-h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: var(--spacing-lg) 0 var(--spacing-sm) 0;
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--spacing-xs);
+}
+
+.text-widget__markdown-h3 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin: var(--spacing-md) 0 var(--spacing-sm) 0;
+  color: var(--color-text-primary);
+}
+
+.text-widget__markdown-h4 {
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin: var(--spacing-md) 0 var(--spacing-xs) 0;
+  color: var(--color-text-primary);
+}
+
+.text-widget__markdown-h5 {
+  font-size: 1rem;
+  font-weight: 500;
+  margin: var(--spacing-sm) 0 var(--spacing-xs) 0;
+  color: var(--color-text-secondary);
+}
+
+.text-widget__markdown-h6 {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin: var(--spacing-sm) 0 var(--spacing-xs) 0;
+  color: var(--color-text-secondary);
+}
+
+/* Markdown Paragraphs */
+.text-widget__markdown-p {
+  margin: 0 0 var(--spacing-md) 0;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+}
+
+.text-widget__markdown-p:last-child {
+  margin-bottom: 0;
+}
+
+/* Markdown Lists */
+.text-widget__markdown-ul,
+.text-widget__markdown-ol {
+  margin: var(--spacing-sm) 0 var(--spacing-md) 0;
+  padding-left: var(--spacing-xl);
+}
+
+.text-widget__markdown-ul {
+  list-style-type: disc;
+}
+
+.text-widget__markdown-ol {
+  list-style-type: decimal;
+}
+
+.text-widget__markdown-li {
+  margin: var(--spacing-xs) 0;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+}
+
+/* Markdown Blockquotes */
+.text-widget__markdown-blockquote {
+  margin: var(--spacing-md) 0;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-left: 4px solid var(--color-primary);
+  background: var(--color-surface-secondary);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-style: italic;
+  color: var(--color-text-secondary);
+}
+
+.text-widget__markdown-blockquote p {
+  margin: 0;
+}
+
+/* Markdown Code */
+.text-widget__markdown-code-inline {
+  background: var(--color-surface-secondary);
+  color: var(--color-primary);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  font-size: 0.875em;
+  font-weight: 500;
+}
+
+.text-widget__markdown-pre {
+  background: var(--color-surface-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  margin: var(--spacing-md) 0;
+  overflow-x: auto;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.text-widget__markdown-code-block {
+  color: var(--color-text-primary);
+  font-family: inherit;
+  font-size: inherit;
+  background: transparent;
+  padding: 0;
+}
+
+/* Markdown Links */
+.text-widget__markdown-link {
+  color: var(--color-primary);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: all var(--transition-fast);
+  font-weight: 500;
+}
+
+.text-widget__markdown-link:hover {
+  color: var(--color-primary-hover);
+  border-bottom-color: var(--color-primary-hover);
+}
+
+/* Markdown Text Formatting */
+.text-widget__markdown-strong {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.text-widget__markdown-em {
+  font-style: italic;
+  color: var(--color-text-secondary);
+}
+
+/* Dark theme adjustments for markdown */
+[data-theme="dark"] .text-widget__markdown-blockquote {
+  background: var(--color-surface-tertiary);
+  border-left-color: var(--color-primary);
+}
+
+[data-theme="dark"] .text-widget__markdown-code-inline {
+  background: var(--color-surface-tertiary);
+  color: var(--color-primary);
+}
+
+[data-theme="dark"] .text-widget__markdown-pre {
+  background: var(--color-surface-tertiary);
+  border-color: var(--color-border);
+}
+
+/* Responsive adjustments for markdown */
+@media (max-width: 768px) {
+  .text-widget__markdown-h1 {
+    font-size: 1.75rem;
+  }
+
+  .text-widget__markdown-h2 {
+    font-size: 1.375rem;
+  }
+
+  .text-widget__markdown-ul,
+  .text-widget__markdown-ol {
+    padding-left: var(--spacing-lg);
+  }
+
+  .text-widget__markdown-pre {
+    padding: var(--spacing-sm);
+    font-size: 0.8rem;
+  }
+}
