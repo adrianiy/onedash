@@ -107,14 +107,6 @@ select {
   scrollbar-color: var(--color-border) transparent;
 }
 
-/* Hacer que los elementos con scroll no reserven espacio para scrollbar */
-.widget-config-sidebar__content,
-.table-container,
-.text-widget,
-div[style*="overflow"] {
-  overflow-y: auto;
-}
-
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;

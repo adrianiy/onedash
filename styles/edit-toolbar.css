@@ -85,6 +85,40 @@
   background-color: transparent;
 }
 
+/* Save button states */
+.edit-toolbar__button--saving {
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
+.edit-toolbar__button--saving svg {
+  animation: spin 1s linear infinite;
+}
+
+.edit-toolbar__button--success {
+  color: var(--color-success);
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+.edit-toolbar__button--error {
+  color: var(--color-danger);
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.edit-toolbar__button--error:hover {
+  background-color: rgba(239, 68, 68, 0.2);
+}
+
+/* Loading animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .edit-toolbar__button span {
   font-size: 0.75rem;
   line-height: 1;

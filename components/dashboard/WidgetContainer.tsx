@@ -78,6 +78,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
     updateTempDashboard,
     currentDashboard,
     updateDashboard,
+    clearSelection,
   } = useDashboardStore();
   const { deleteWidget, addWidget } = useWidgetStore();
   const [showFloatingHeader, setShowFloatingHeader] = useState(false);
@@ -117,6 +118,9 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
       // También eliminar del store de widgets
       deleteWidget(widget._id);
     }
+
+    // Limpiar la selección si el widget eliminado está seleccionado
+    clearSelection();
   };
 
   const handleCopy = () => {
@@ -242,6 +246,11 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
     e.stopPropagation();
     e.preventDefault();
     setIsTextEditing(!isTextEditing);
+  };
+
+  // Handle exit text editing mode
+  const handleExitTextEditing = () => {
+    setIsTextEditing(false);
   };
 
   // Limpiar el timeout cuando se desmonta el componente
@@ -384,13 +393,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
       case "table":
         return <TableWidget widget={widget} />;
       case "text":
-        return (
-          <TextWidget
-            widget={widget}
-            isTextEditing={isTextEditing}
-            isSelected={isSelected}
-          />
-        );
+        return <TextWidget widget={widget} isTextEditing={isTextEditing} />;
       default:
         return <ErrorWidget />;
     }
@@ -403,7 +406,17 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
       onMouseEnter={isEditing ? handleMouseEnter : undefined}
       onMouseLeave={isEditing ? handleMouseLeave : undefined}
     >
-      {isEditing && (
+      {isTextEditing && (
+        <button
+          className="text-widget__floating-button"
+          onClick={handleExitTextEditing}
+          aria-label="Exit editing mode"
+          title="Salir del modo edición"
+        >
+          <Icon name="check" size={16} />
+        </button>
+      )}
+      {isEditing && !isTextEditing && (
         <div
           className={`floating-widget-header draggable-handle ${
             showFloatingHeader
@@ -537,7 +550,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
         ) : null;
       })()}
 
-      <div className="widget-content">{renderWidgetContent()}</div>
+      {renderWidgetContent()}
     </div>
   );
 };

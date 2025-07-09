@@ -216,7 +216,7 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
         <h3>Métrica sin configurar</h3>
         <div className="placeholder-tip">
           <Icon name="info" size={16} />
-          <p>Configura una métrica primaria para mostrar datos</p>
+          <p>Configura una métrica para mostrar datos</p>
         </div>
       </div>
     );

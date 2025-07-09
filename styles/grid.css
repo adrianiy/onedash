@@ -14,6 +14,10 @@
   overflow: hidden;
 }
 
+.react-grid-item-selected {
+  z-index: 2;
+}
+
 .react-grid-item:hover {
   /* No hover effects in normal mode */
 }
@@ -149,7 +153,6 @@
   padding: var(--spacing-sm);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   position: relative;
 }
 
@@ -202,13 +205,6 @@
   transform: scale(1.05);
 }
 
-.widget-content {
-  flex: 1;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
 /* Dashboard Grid Container */
 .dashboard-container {
   width: 100%;
@@ -234,6 +230,57 @@
   width: 100%;
   flex: 1;
   min-height: 0; /* Permite que se expanda según contenido */
+  position: relative; /* Para que el placeholder absoluto se posicione correctamente */
+}
+
+/* Dashboard Empty Placeholder - Positioned absolutely in center */
+.dashboard-empty-placeholder {
+  position: absolute;
+  top: calc(50% - var(--header-height) + var(--spacing-3xl));
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  pointer-events: none; /* No interfiere con drag & drop */
+  text-align: center;
+  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-lg);
+  transition: var(--transition-normal);
+}
+.dashboard-empty-placeholder--editing {
+  top: calc(50% - var(--header-height) - var(--edit-toolbar-height));
+}
+
+.dashboard-empty-placeholder__icon {
+  color: var(--color-text-muted);
+  opacity: 0.6;
+}
+
+.dashboard-empty-placeholder__icon--editing {
+  color: var(--color-primary);
+  opacity: 0.8;
+}
+
+.dashboard-empty-placeholder__icon--viewing {
+  color: var(--color-text-secondary);
+  opacity: 0.5;
+}
+
+.dashboard-empty-placeholder h3 {
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.dashboard-empty-placeholder p {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin: 0;
+  max-width: 300px;
+  line-height: 1.5;
 }
 
 /* Responsive */

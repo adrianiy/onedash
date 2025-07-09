@@ -4,6 +4,7 @@ import { useDashboardStore } from "../../store/dashboardStore";
 import { useWidgetStore } from "../../store/widgetStore";
 import { useGridLayout } from "../../hooks/useGridLayout";
 import { WidgetContainer } from "./WidgetContainer";
+import { DashboardEmptyPlaceholder } from "./DashboardEmptyPlaceholder";
 import { validateAndSanitizeLayout } from "../../utils/layoutUtils";
 import type { WidgetType } from "../../types/widget";
 import type { Layout } from "react-grid-layout";
@@ -71,12 +72,8 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
   const widgets = getWidgetsByIds(activeDashboard.widgets);
   const gridProps = getGridProps();
 
-  if (widgets.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-64 text-muted">
-        <p>Cargando widgets...</p>
-      </div>
-    );
+  if (widgets.length === 0 && !isEditing) {
+    return <DashboardEmptyPlaceholder isEditing={isEditing} />;
   }
 
   // Sanitize layout to ensure React Grid Layout compatibility
@@ -161,6 +158,9 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
         const { selectWidget, openConfigSidebar } =
           useDashboardStore.getState();
         selectWidget(newWidget._id);
+
+        if (newWidget.type === "text") return;
+
         openConfigSidebar();
       }
 
@@ -182,34 +182,46 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
       onClick={handleGridClick}
       onDragLeave={handleDragEnd}
     >
-      <ResponsiveGridLayout
-        {...gridProps}
-        layouts={{ lg: sanitizedLayout }}
-        breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-        cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
-        isDroppable={isEditing}
-        onDrop={(layout, item, e) =>
-          handleWidgetDrop(
-            layout,
-            item,
-            e as unknown as React.DragEvent<HTMLElement>
-          )
-        }
-        droppingItem={{
-          i: "__dropping-elem__",
-          w: droppingItemSize.w,
-          h: droppingItemSize.h,
-        }}
-      >
-        {widgets.map((widget) => (
-          <div key={widget._id} className="react-grid-item">
-            <WidgetContainer
-              widget={widget}
-              isSelected={selectedWidgetId === widget._id}
-            />
-          </div>
-        ))}
-      </ResponsiveGridLayout>
+      {activeDashboard.widgets.length === 0 && (
+        <DashboardEmptyPlaceholder isEditing={isEditing} />
+      )}
+      {(activeDashboard.widgets.length > 0 || isEditing) && (
+        <ResponsiveGridLayout
+          {...gridProps}
+          layouts={{ lg: sanitizedLayout }}
+          breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+          cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+          isDroppable={isEditing}
+          onDrop={(layout, item, e) =>
+            handleWidgetDrop(
+              layout,
+              item,
+              e as unknown as React.DragEvent<HTMLElement>
+            )
+          }
+          droppingItem={{
+            i: "__dropping-elem__",
+            w: droppingItemSize.w,
+            h: droppingItemSize.h,
+          }}
+        >
+          {widgets.map((widget) => (
+            <div
+              key={widget._id}
+              className={`react-grid-item ${
+                selectedWidgetId === widget._id
+                  ? "react-grid-item-selected"
+                  : ""
+              }`}
+            >
+              <WidgetContainer
+                widget={widget}
+                isSelected={selectedWidgetId === widget._id}
+              />
+            </div>
+          ))}
+        </ResponsiveGridLayout>
+      )}
     </div>
   );
 };

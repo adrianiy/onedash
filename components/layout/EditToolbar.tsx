@@ -8,6 +8,8 @@ import { ReadonlyConfirmModal } from "../common/ReadonlyConfirmModal";
 import type { Dashboard } from "../../types/dashboard";
 import type { Widget } from "../../types/widget";
 
+type SaveState = "idle" | "saving" | "success" | "error";
+
 const ConfigButton: React.FC = () => {
   const { selectedWidgetId, openConfigSidebar } = useDashboardStore();
   const { getWidget } = useWidgetStore();
@@ -77,7 +79,7 @@ export const EditToolbar: React.FC = () => {
     discardChanges,
     createDashboard,
   } = useDashboardStore();
-  const [isSaving, setIsSaving] = useState(false);
+  const [saveState, setSaveState] = useState<SaveState>("idle");
   const [showReadonlyModal, setShowReadonlyModal] = useState(false);
   const [readonlyDashboard, setReadonlyDashboard] = useState<Dashboard | null>(
     null
@@ -86,35 +88,76 @@ export const EditToolbar: React.FC = () => {
   if (!isEditing) return null;
 
   const handleSave = async () => {
-    if (!isSaving) {
-      setIsSaving(true);
+    if (saveState === "saving") return;
 
-      try {
-        const result = await saveChanges();
+    setSaveState("saving");
 
-        if (result.needsConfirmation && result.dashboard) {
-          // Mostrar modal de confirmación para dashboard readonly
-          setReadonlyDashboard(result.dashboard);
-          setShowReadonlyModal(true);
-          setIsSaving(false);
-          return;
-        }
+    try {
+      const result = await saveChanges();
 
-        if (result.error) {
-          console.error("Error al guardar:", result.error);
-          // Aquí podrías mostrar una notificación de error al usuario
-        }
-
-        // Mostrar estado de guardado brevemente
-        setTimeout(() => {
-          setIsSaving(false);
-        }, 800);
-      } catch (error) {
-        console.error("Error saving dashboard:", error);
-        setIsSaving(false);
+      if (result.needsConfirmation && result.dashboard) {
+        // Mostrar modal de confirmación para dashboard readonly
+        setReadonlyDashboard(result.dashboard);
+        setShowReadonlyModal(true);
+        setSaveState("idle");
+        return;
       }
+
+      if (result.error) {
+        console.error("Error al guardar:", result.error);
+        setSaveState("error");
+        // Volver al estado idle después de 3 segundos
+        setTimeout(() => {
+          setSaveState("idle");
+        }, 3000);
+        return;
+      }
+
+      // Mostrar estado de éxito
+      setSaveState("success");
+      setTimeout(() => {
+        setSaveState("idle");
+      }, 2000);
+    } catch (error) {
+      console.error("Error saving dashboard:", error);
+      setSaveState("error");
+      // Volver al estado idle después de 3 segundos
+      setTimeout(() => {
+        setSaveState("idle");
+      }, 3000);
     }
   };
+
+  const getSaveButtonContent = () => {
+    switch (saveState) {
+      case "saving":
+        return {
+          icon: "loader" as const,
+          text: "Guardando...",
+          className: "edit-toolbar__button--saving",
+        };
+      case "success":
+        return {
+          icon: "check" as const,
+          text: "Guardado",
+          className: "edit-toolbar__button--success",
+        };
+      case "error":
+        return {
+          icon: "alert-circle" as const,
+          text: "Error",
+          className: "edit-toolbar__button--error",
+        };
+      default:
+        return {
+          icon: "save" as const,
+          text: "Guardar",
+          className: "",
+        };
+    }
+  };
+
+  const saveButtonContent = getSaveButtonContent();
 
   const handleCloseEditing = () => {
     if (hasUnsavedChanges) {
@@ -175,6 +218,8 @@ export const EditToolbar: React.FC = () => {
 
       // Seleccionar el widget recién creado
       selectWidget(widget._id);
+
+      if (widget.type === "text") return;
 
       // Abrir automáticamente el sidebar de configuración
       openConfigSidebar();
@@ -431,13 +476,13 @@ export const EditToolbar: React.FC = () => {
           <div className="edit-toolbar__section">
             <div className="edit-toolbar__section-buttons">
               <button
-                className="edit-toolbar__button"
+                className={`edit-toolbar__button ${saveButtonContent.className}`}
                 onClick={handleSave}
                 data-tooltip-id="save-tooltip"
-                disabled={isSaving}
+                disabled={saveState === "saving"}
               >
-                <Icon name={isSaving ? "check" : "save"} size={20} />
-                <span>{isSaving ? "Guardado" : "Guardar"}</span>
+                <Icon name={saveButtonContent.icon} size={20} />
+                <span>{saveButtonContent.text}</span>
               </button>
 
               <button
@@ -520,7 +565,15 @@ export const EditToolbar: React.FC = () => {
       {/* Tooltips */}
       <Tooltip
         id="save-tooltip"
-        content={isSaving ? "Guardando..." : "Guardar cambios"}
+        content={
+          saveState === "saving"
+            ? "Guardando..."
+            : saveState === "success"
+            ? "Dashboard guardado"
+            : saveState === "error"
+            ? "Error al guardar - Click para reintentar"
+            : "Guardar cambios"
+        }
         place="bottom"
       />
       <Tooltip
