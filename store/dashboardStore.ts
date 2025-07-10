@@ -491,65 +491,33 @@ export const useDashboardStore = create<DashboardState>()(
       },
 
       discardChanges: async () => {
-        const { originalSnapshot, currentDashboard } = get();
+        const { currentDashboard } = get();
 
         set({ isDiscarding: true });
 
         try {
-          if (originalSnapshot) {
-            // Restaurar desde snapshot - SIN MongoDB calls!
-            console.log("🔄 Restaurando desde snapshot:", {
-              dashboardId: originalSnapshot.dashboard?._id,
-              widgetsCount: originalSnapshot.widgets.length,
-            });
-
-            const { setWidgets } = useWidgetStore.getState();
-
-            set({
-              currentDashboard: originalSnapshot.dashboard,
-              isEditing: false,
-              hasUnsavedChanges: false,
-              selectedWidgetId: null,
-              originalSnapshot: null, // Limpiar snapshot
-              isDiscarding: false,
-            });
-
-            // Restaurar widgets desde snapshot
-            setWidgets([
-              ...useWidgetStore
-                .getState()
-                .widgets.filter(
-                  (w) => !originalSnapshot.dashboard?.widgets.includes(w._id)
-                ),
-              ...originalSnapshot.widgets,
-            ]);
-
-            console.log("✅ Cambios descartados desde snapshot");
-          } else {
-            // Fallback a MongoDB si no hay snapshot (caso edge - no debería pasar)
-            console.warn(
-              "⚠️ No hay snapshot disponible, recargando desde MongoDB"
+          // Siempre cargar la última versión desde MongoDB
+          if (currentDashboard && /^[0-9a-f]{24}$/.test(currentDashboard._id)) {
+            console.log(
+              `🔄 Cargando la última versión del dashboard desde MongoDB: ${currentDashboard._id}`
             );
 
-            if (
-              currentDashboard &&
-              /^[0-9a-f]{24}$/.test(currentDashboard._id)
-            ) {
-              // Recargar dashboard desde MongoDB
-              await get().fetchDashboardById(currentDashboard._id);
-
-              // Recargar widgets desde MongoDB
-              const { fetchWidgetsByDashboardId } = useWidgetStore.getState();
-              await fetchWidgetsByDashboardId(currentDashboard._id);
-            }
-
-            set({
-              isEditing: false,
-              hasUnsavedChanges: false,
-              selectedWidgetId: null,
-              isDiscarding: false,
-            });
+            // Recargar dashboard desde MongoDB
+            await get().fetchDashboardById(currentDashboard._id);
           }
+
+          // Restablecer estados de edición
+          set({
+            isEditing: false,
+            hasUnsavedChanges: false,
+            selectedWidgetId: null,
+            originalSnapshot: null, // Limpiar snapshot si existe
+            isDiscarding: false,
+          });
+
+          console.log(
+            "✅ Cambios descartados, dashboard cargado desde MongoDB"
+          );
         } catch (error) {
           console.error("❌ Error al descartar cambios:", error);
           set({ isDiscarding: false });

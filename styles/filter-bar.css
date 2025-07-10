@@ -527,16 +527,6 @@
   border-color: var(--color-border);
 }
 
-[data-theme="dark"] .date-range-picker__control {
-  background: var(--color-surface);
-  border-color: var(--color-border);
-  color: var(--color-text-primary);
-}
-
-[data-theme="dark"] .date-range-picker__control:focus {
-  border-color: var(--color-primary);
-}
-
 [data-theme="dark"] .date-range-picker__dropdown {
   background: var(--color-surface);
   border-color: var(--color-border);

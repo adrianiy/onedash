@@ -5,7 +5,6 @@ import { useWidgetStore } from "../../store/widgetStore";
 import { useGridLayout } from "../../hooks/useGridLayout";
 import { WidgetContainer } from "./WidgetContainer";
 import { DashboardEmptyPlaceholder } from "./DashboardEmptyPlaceholder";
-import { validateAndSanitizeLayout } from "../../utils/layoutUtils";
 import type { WidgetType } from "../../types/widget";
 import type { Layout } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
@@ -81,23 +80,6 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
     return dashboardWidgets;
   }, [activeDashboard?.widgets, activeDashboard?._id, allWidgets]);
 
-  // Memorize sanitized layout to avoid recalculation on every render
-  const sanitizedLayout = useMemo(() => {
-    if (!activeDashboard) return [];
-
-    const layout = validateAndSanitizeLayout(activeDashboard.layout);
-
-    if (process.env.NODE_ENV === "development") {
-      console.log("🔄 DashboardGrid: Recalculating layout", {
-        dashboardId: activeDashboard._id,
-        originalLayoutCount: activeDashboard.layout.length,
-        sanitizedLayoutCount: layout.length,
-      });
-    }
-
-    return layout;
-  }, [activeDashboard?.layout, activeDashboard?._id]);
-
   if (!activeDashboard) {
     return (
       <div className="flex items-center justify-center h-64 text-muted">
@@ -120,9 +102,7 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
         JSON.stringify({
           dashboardId: activeDashboard._id,
           originalLayout: activeDashboard.layout,
-          sanitizedLayout: sanitizedLayout,
           layoutCount: activeDashboard.layout.length,
-          sanitizedCount: sanitizedLayout.length,
           widgets: widgets,
         })
       )
@@ -220,7 +200,7 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
       {(activeDashboard.widgets.length > 0 || isEditing) && (
         <ResponsiveGridLayout
           {...gridProps}
-          layouts={{ lg: sanitizedLayout }}
+          layouts={{ lg: activeDashboard.layout }}
           breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
           cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
           isDroppable={isEditing}

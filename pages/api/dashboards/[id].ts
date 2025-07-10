@@ -27,9 +27,11 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   }
 
   try {
+    console.log("📊 Buscando dashboard con ID:", id);
     const dashboard = (await Dashboard.findOne({
       _id: id,
     }).lean()) as IDashboard | null;
+    console.log("📊 Dashboard encontrado:", dashboard);
 
     // Verificar si existe el dashboard
     if (!dashboard) {
