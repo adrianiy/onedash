@@ -448,7 +448,7 @@ export const EditToolbar: React.FC = () => {
         layout: readonlyDashboard.layout,
         widgets: readonlyDashboard.widgets,
         variables: readonlyDashboard.variables,
-        visibility: readonlyDashboard.visibility || "private", // Por defecto privado
+        visibility: "private", // Por defecto privado
         collaborators: readonlyDashboard.collaborators,
         userId: useAuthStore.getState().user?._id || "", // Usuario actual como propietario
         originalId: readonlyDashboard._id, // Referencia al dashboard original

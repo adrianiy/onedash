@@ -45,7 +45,12 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   // POST - Crear un nuevo dashboard
   if (req.method === "POST") {
     try {
-      const { name, description, visibility = "private" } = req.body;
+      const {
+        name,
+        description,
+        visibility = "private",
+        defaultVariables,
+      } = req.body;
 
       if (!name) {
         return res.status(400).json({
@@ -53,7 +58,11 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
           error: "El nombre del dashboard es obligatorio",
         });
       }
-      console.log(req.user);
+
+      console.log(
+        "🔄 Creando dashboard con defaultVariables:",
+        defaultVariables
+      );
 
       // Crear dashboard
       const dashboard = await Dashboard.create({
@@ -63,8 +72,13 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         visibility,
         layout: [],
         widgets: [],
-        isReadonly: false,
+        defaultVariables: defaultVariables || {},
       });
+
+      console.log(
+        "✅ Dashboard creado con defaultVariables:",
+        dashboard.defaultVariables
+      );
 
       return res.status(201).json({
         success: true,

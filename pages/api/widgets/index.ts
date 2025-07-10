@@ -69,7 +69,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   // POST - Crear un nuevo widget
   if (req.method === "POST") {
     try {
-      const { type, title, config, dashboardId, _id } = req.body;
+      const { type, title, config, events, dashboardId, _id } = req.body;
 
       // Validar datos requeridos
       if (!type || !dashboardId) {
@@ -120,10 +120,10 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         type,
         title,
         config,
+        events,
         dashboardId,
         userId: req.user!.id,
         isConfigured: false,
-        events: [],
       };
 
       // Si se proporciona un _id válido, usarlo

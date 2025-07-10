@@ -2,6 +2,8 @@ import { NextApiResponse } from "next";
 import { AuthenticatedRequest, withUserData } from "../../../lib/middleware";
 import { connectToDatabase } from "../../../lib/mongodb";
 import Dashboard, { IDashboard } from "../../../lib/models/Dashboard";
+import Widget from "../../../lib/models/Widget";
+import Variable from "../../../lib/models/Variable";
 import mongoose from "mongoose";
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
@@ -74,38 +76,63 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       }
 
       // Campos permitidos para actualizar
-      const { name, description, layout, widgets, visibility, collaborators } =
-        req.body;
+      const {
+        name,
+        description,
+        layout,
+        widgets,
+        visibility,
+        collaborators,
+        defaultVariables,
+      } = req.body;
 
-      // Actualizar solo los campos permitidos
-      if (name) dashboard.name = name;
-      if (description !== undefined) dashboard.description = description;
-      if (layout) dashboard.layout = layout;
-      if (widgets) dashboard.widgets = widgets;
+      console.log(
+        "🔄 Actualizando dashboard con defaultVariables:",
+        defaultVariables
+      );
+
+      // Construir objeto de actualización dinámicamente
+      const updateFields: Partial<IDashboard> = {};
+
+      if (name) updateFields.name = name;
+      if (description !== undefined) updateFields.description = description;
+      if (layout) updateFields.layout = layout;
+      if (widgets) updateFields.widgets = widgets;
+      if (defaultVariables !== undefined) {
+        updateFields.defaultVariables = defaultVariables;
+        console.log(
+          "📝 Incluyendo defaultVariables en update:",
+          defaultVariables
+        );
+      }
 
       // Solo el propietario puede cambiar la visibilidad y colaboradores
       if (isOwner) {
-        if (visibility) dashboard.visibility = visibility;
-        if (collaborators) dashboard.collaborators = collaborators;
+        if (visibility) updateFields.visibility = visibility;
+        if (collaborators) updateFields.collaborators = collaborators;
       }
 
-      await Dashboard.updateOne(
+      // Actualizar en MongoDB con los campos dinámicos
+      const result = await Dashboard.updateOne(
         { _id: dashboard._id },
-        {
-          $set: {
-            name: dashboard.name,
-            description: dashboard.description,
-            layout: dashboard.layout,
-            widgets: dashboard.widgets,
-            visibility: dashboard.visibility,
-            collaborators: dashboard.collaborators,
-          },
-        }
+        { $set: updateFields }
+      );
+
+      console.log("✅ Resultado de actualización MongoDB:", result);
+
+      // Obtener el dashboard actualizado para devolverlo
+      const updatedDashboard = (await Dashboard.findById(
+        dashboard._id
+      ).lean()) as IDashboard | null;
+
+      console.log(
+        "📊 Dashboard actualizado desde DB:",
+        updatedDashboard?.defaultVariables
       );
 
       return res.status(200).json({
         success: true,
-        data: dashboard,
+        data: updatedDashboard,
       });
     }
 
@@ -119,6 +146,13 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         });
       }
 
+      // Eliminar todos los widgets asociados al dashboard
+      await Widget.deleteMany({ dashboardId: dashboard._id });
+
+      // Eliminar todas las variables asociadas al dashboard
+      await Variable.deleteMany({ dashboardId: dashboard._id });
+
+      // Eliminar el dashboard
       await Dashboard.deleteOne({ _id: dashboard._id });
 
       return res.status(200).json({
@@ -211,7 +245,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         userId: req.user.id,
         visibility: "private", // Las copias son privadas por defecto
         originalId: dashboard._id,
-        isReadonly: false,
+        defaultVariables: dashboard.defaultVariables || {},
       });
 
       // Guardar nueva copia

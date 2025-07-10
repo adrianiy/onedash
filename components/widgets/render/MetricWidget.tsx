@@ -3,6 +3,8 @@ import { Icon } from "../../common/Icon";
 import type { MetricWidget as MetricWidgetType } from "../../../types/widget";
 import { formatValue } from "../../../utils/format";
 import { useVariableStore } from "../../../store/variableStore";
+import { useVariablePersistence } from "../../../hooks/useVariablePersistence";
+import { useDashboardStore } from "../../../store/dashboardStore";
 import { useResolvedMetric } from "../../../hooks/useResolvedMetric";
 import { Tooltip } from "react-tooltip";
 
@@ -11,7 +13,10 @@ interface MetricWidgetProps {
 }
 
 export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
-  const setMultiple = useVariableStore((state) => state.setMultiple);
+  const { currentDashboard } = useDashboardStore();
+  const { persistMultiple } = useVariablePersistence(
+    currentDashboard?._id || null
+  );
   const [isClicked, setIsClicked] = useState(false);
 
   const size = widget.config.size || "medium";
@@ -60,8 +65,8 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
     setIsClicked(true);
     setTimeout(() => setIsClicked(false), 200);
 
-    // Actualizar variables
-    setMultiple(clickEvent.setVariables);
+    // Actualizar y persistir variables
+    persistMultiple(clickEvent.setVariables);
   };
 
   // Resolver las métricas usando el hook

@@ -22,6 +22,9 @@ export default function DashboardIndex() {
       const defaultDashboard =
         dashboards.find((d) => d.name === "default") || dashboards[0];
       router.push(`/dashboard/${defaultDashboard._id}`);
+    } else {
+      // Si no hay dashboards, redirigir a la página de creación
+      router.push("/dashboard/create");
     }
   }, [dashboards, router]);
 

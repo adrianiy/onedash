@@ -4,6 +4,7 @@ import { useDashboardStore } from "../../store/dashboardStore";
 import { useAuthStore } from "../../store/authStore";
 import { Icon } from "../common/Icon";
 import { DashboardFormModal } from "../dashboard/DashboardFormModal";
+import { DeleteConfirmModal } from "../common/DeleteConfirmModal";
 import type { Dashboard } from "../../types/dashboard";
 
 interface DashboardSidebarProps {
@@ -23,12 +24,17 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     setCurrentDashboard,
     deleteDashboard,
     isLoading,
+    deletingDashboardId,
   } = useDashboardStore();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [dashboardToEdit, setDashboardToEdit] = useState<Dashboard | undefined>(
     undefined
+  );
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [dashboardToDelete, setDashboardToDelete] = useState<Dashboard | null>(
+    null
   );
 
   const filteredDashboards = dashboards.filter((dashboard) =>
@@ -86,20 +92,28 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     onClose();
   };
 
-  const handleDeleteDashboard = async (
-    e: React.MouseEvent,
-    dashboardId: string
-  ) => {
+  const handleOpenDeleteModal = (e: React.MouseEvent, dashboard: Dashboard) => {
     e.stopPropagation();
-    if (
-      window.confirm("¿Estás seguro de que quieres eliminar este dashboard?")
-    ) {
-      const success = await deleteDashboard(dashboardId);
-      if (!success) {
-        // Mostrar error al usuario si la eliminación falla
-        alert("Error al eliminar el dashboard. Por favor, inténtalo de nuevo.");
-      }
+    setDashboardToDelete(dashboard);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!dashboardToDelete) return;
+
+    const success = await deleteDashboard(dashboardToDelete._id);
+    if (success) {
+      setIsDeleteModalOpen(false);
+      setDashboardToDelete(null);
     }
+    // Si falla, el modal se cerrará cuando termine el loading
+    // pero se podría manejar el error aquí si es necesario
+  };
+
+  const handleCloseDeleteModal = () => {
+    if (deletingDashboardId) return; // No cerrar si está eliminando
+    setIsDeleteModalOpen(false);
+    setDashboardToDelete(null);
   };
 
   // Verificar si el usuario actual es propietario del dashboard
@@ -166,7 +180,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                   key={dashboard._id}
                   className={`dashboard-item ${
                     currentDashboard?._id === dashboard._id ? "active" : ""
-                  }`}
+                  } ${deletingDashboardId === dashboard._id ? "deleting" : ""}`}
                   onClick={() => handleSelectDashboard(dashboard)}
                 >
                   <div className="dashboard-info">
@@ -209,10 +223,19 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                     {isOwner(dashboard) && (
                       <button
                         className="dashboard-action-btn delete"
-                        onClick={(e) => handleDeleteDashboard(e, dashboard._id)}
+                        onClick={(e) => handleOpenDeleteModal(e, dashboard)}
                         title="Eliminar dashboard"
+                        disabled={deletingDashboardId === dashboard._id}
                       >
-                        <Icon name="trash" size={14} />
+                        {deletingDashboardId === dashboard._id ? (
+                          <Icon
+                            name="loader"
+                            size={14}
+                            className="animate-spin"
+                          />
+                        ) : (
+                          <Icon name="trash" size={14} />
+                        )}
                       </button>
                     )}
                   </div>
@@ -230,6 +253,16 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
         onSave={handleSaveDashboard}
         dashboard={dashboardToEdit}
         isLoading={isLoading}
+      />
+
+      {/* Modal de confirmación de eliminación */}
+      <DeleteConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleCloseDeleteModal}
+        onConfirm={handleConfirmDelete}
+        title="Eliminar Dashboard"
+        message={`¿Estás seguro de que quieres eliminar "${dashboardToDelete?.name}"? Se eliminarán todos los widgets y configuraciones asociados.`}
+        isLoading={!!deletingDashboardId}
       />
     </>
   );

@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import { IUser } from "./User";
 import { Types } from "mongoose";
+import { VariableValue } from "./Variable";
 
 // Interfaces de tipos
 export interface DashboardLayout {
@@ -25,6 +26,7 @@ export interface IDashboard {
   collaborators?: Array<string | Types.ObjectId>; // IDs de usuarios con permisos de edición
   visibility: "public" | "private";
   originalId?: string | Types.ObjectId; // Referencia al dashboard original (para copias)
+  defaultVariables?: Record<string, VariableValue>; // Valores por defecto de variables
   createdAt: Date;
   updatedAt: Date;
 }
@@ -80,6 +82,10 @@ const DashboardSchema = new Schema<IDashboard>(
     originalId: {
       type: Schema.Types.ObjectId,
       ref: "Dashboard",
+    },
+    defaultVariables: {
+      type: Schema.Types.Mixed,
+      default: {},
     },
   },
   {

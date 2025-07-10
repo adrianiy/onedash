@@ -22,6 +22,11 @@ interface DashboardState {
   droppingItemSize: { w: number; h: number };
   isLoading: boolean;
   isDiscarding: boolean;
+  deletingDashboardId: string | null;
+  originalSnapshot: {
+    dashboard: Dashboard | null;
+    widgets: Widget[];
+  } | null;
 
   // Actions
   createDashboard: (
@@ -56,6 +61,7 @@ interface DashboardState {
   setDroppingItemSize: (size: { w: number; h: number }) => void;
   resetDroppingItemSize: () => void;
   initializeIfNeeded: () => void;
+  setDefaultVariable: (key: string, value: unknown) => void;
 }
 
 const defaultSettings: DashboardSettings = {
@@ -79,6 +85,8 @@ export const useDashboardStore = create<DashboardState>()(
       droppingItemSize: { w: 6, h: 6 },
       isLoading: false,
       isDiscarding: false,
+      deletingDashboardId: null,
+      originalSnapshot: null,
 
       // Crear un nuevo dashboard con persistencia en MongoDB
       createDashboard: async (dashboardData) => {
@@ -195,7 +203,7 @@ export const useDashboardStore = create<DashboardState>()(
       },
 
       deleteDashboard: async (id) => {
-        set({ isLoading: true });
+        set({ deletingDashboardId: id });
 
         try {
           // Si el ID es un ID de MongoDB, eliminarlo en la API
@@ -215,7 +223,7 @@ export const useDashboardStore = create<DashboardState>()(
                   state.currentDashboard && state.currentDashboard._id === id
                     ? null
                     : state.currentDashboard,
-                isLoading: false,
+                deletingDashboardId: null,
               }));
 
               console.log("✅ Dashboard eliminado exitosamente");
@@ -235,13 +243,13 @@ export const useDashboardStore = create<DashboardState>()(
                 state.currentDashboard && state.currentDashboard._id === id
                   ? null
                   : state.currentDashboard,
-              isLoading: false,
+              deletingDashboardId: null,
             }));
             return true;
           }
         } catch (error) {
           console.error("❌ Error al eliminar dashboard:", error);
-          set({ isLoading: false });
+          set({ deletingDashboardId: null });
           return false;
         }
       },
@@ -302,9 +310,27 @@ export const useDashboardStore = create<DashboardState>()(
 
         // Solo iniciar edición si hay un dashboard actual
         if (currentDashboard) {
+          const { widgets } = useWidgetStore.getState();
+
+          // Crear snapshot del estado actual ANTES de empezar edición
+          const dashboardWidgets = widgets.filter((w) =>
+            currentDashboard.widgets.includes(w._id)
+          );
+
+          console.log("📸 Creando snapshot para edición:", {
+            dashboardId: currentDashboard._id,
+            widgetsCount: dashboardWidgets.length,
+          });
+
           set({
             isEditing: true,
             hasUnsavedChanges: false,
+            originalSnapshot: {
+              dashboard: JSON.parse(JSON.stringify(currentDashboard)), // Deep copy
+              widgets: dashboardWidgets.map((w) =>
+                JSON.parse(JSON.stringify(w))
+              ), // Deep copy widgets
+            },
           });
         }
       },
@@ -403,6 +429,7 @@ export const useDashboardStore = create<DashboardState>()(
             }),
             widgets: updatedWidgetIds,
             visibility: currentDashboard.visibility,
+            defaultVariables: currentDashboard.defaultVariables,
           };
 
           // 3. Actualizar o crear el dashboard
@@ -412,14 +439,11 @@ export const useDashboardStore = create<DashboardState>()(
           );
 
           if (success) {
-            // 4. Recargar widgets desde la API para obtener datos actualizados
-            const { fetchWidgetsByDashboardId } = useWidgetStore.getState();
-            await fetchWidgetsByDashboardId(currentDashboard._id);
-
             set({
               isEditing: false,
               hasUnsavedChanges: false,
               selectedWidgetId: null,
+              originalSnapshot: null, // Limpiar snapshot después de guardar
             });
 
             console.log("✅ Dashboard guardado exitosamente");
@@ -433,26 +457,65 @@ export const useDashboardStore = create<DashboardState>()(
       },
 
       discardChanges: async () => {
-        const { currentDashboard } = get();
+        const { originalSnapshot, currentDashboard } = get();
 
         set({ isDiscarding: true });
 
         try {
-          if (currentDashboard && /^[0-9a-f]{24}$/.test(currentDashboard._id)) {
-            // Recargar dashboard desde MongoDB
-            await get().fetchDashboardById(currentDashboard._id);
+          if (originalSnapshot) {
+            // Restaurar desde snapshot - SIN MongoDB calls!
+            console.log("🔄 Restaurando desde snapshot:", {
+              dashboardId: originalSnapshot.dashboard?._id,
+              widgetsCount: originalSnapshot.widgets.length,
+            });
 
-            // Recargar widgets desde MongoDB
-            const { fetchWidgetsByDashboardId } = useWidgetStore.getState();
-            await fetchWidgetsByDashboardId(currentDashboard._id);
+            const { setWidgets } = useWidgetStore.getState();
+
+            set({
+              currentDashboard: originalSnapshot.dashboard,
+              isEditing: false,
+              hasUnsavedChanges: false,
+              selectedWidgetId: null,
+              originalSnapshot: null, // Limpiar snapshot
+              isDiscarding: false,
+            });
+
+            // Restaurar widgets desde snapshot
+            setWidgets([
+              ...useWidgetStore
+                .getState()
+                .widgets.filter(
+                  (w) => !originalSnapshot.dashboard?.widgets.includes(w._id)
+                ),
+              ...originalSnapshot.widgets,
+            ]);
+
+            console.log("✅ Cambios descartados desde snapshot");
+          } else {
+            // Fallback a MongoDB si no hay snapshot (caso edge - no debería pasar)
+            console.warn(
+              "⚠️ No hay snapshot disponible, recargando desde MongoDB"
+            );
+
+            if (
+              currentDashboard &&
+              /^[0-9a-f]{24}$/.test(currentDashboard._id)
+            ) {
+              // Recargar dashboard desde MongoDB
+              await get().fetchDashboardById(currentDashboard._id);
+
+              // Recargar widgets desde MongoDB
+              const { fetchWidgetsByDashboardId } = useWidgetStore.getState();
+              await fetchWidgetsByDashboardId(currentDashboard._id);
+            }
+
+            set({
+              isEditing: false,
+              hasUnsavedChanges: false,
+              selectedWidgetId: null,
+              isDiscarding: false,
+            });
           }
-
-          set({
-            isEditing: false,
-            hasUnsavedChanges: false,
-            selectedWidgetId: null,
-            isDiscarding: false,
-          });
         } catch (error) {
           console.error("❌ Error al descartar cambios:", error);
           set({ isDiscarding: false });
@@ -595,6 +658,48 @@ export const useDashboardStore = create<DashboardState>()(
           // Establecer el primer dashboard como actual
           get().setCurrentDashboard(state.dashboards[0]);
         }
+      },
+
+      // Establecer valor por defecto de variable (solo en estado local)
+      setDefaultVariable: (key: string, value: unknown) => {
+        const { currentDashboard } = get();
+
+        if (!currentDashboard) {
+          console.warn("No current dashboard set, default variable ignored");
+          return;
+        }
+
+        console.log(
+          `🔄 Dashboard Store - Setting default variable ${key}:`,
+          value,
+          `for dashboard: ${currentDashboard._id}`
+        );
+
+        // Actualizar defaultVariables en el estado local
+        const currentDefaults = currentDashboard.defaultVariables || {};
+        const updatedDefaults = {
+          ...currentDefaults,
+          [key]: value,
+        };
+
+        // Actualizar dashboard con las nuevas defaultVariables
+        get().updateCurrentDashboard({
+          defaultVariables: updatedDefaults,
+        });
+
+        // NUEVA LÓGICA: Sincronizar con variable store si no hay valor actual
+        const { setVariable, getVariable } = useVariableStore.getState();
+        const currentValue = getVariable(key);
+
+        if (currentValue === null || currentValue === undefined) {
+          console.log(
+            `🔄 Sincronizando variable ${key} con variable store:`,
+            value
+          );
+          setVariable(key, value);
+        }
+
+        console.log(`✅ Default variable ${key} set in dashboard state`);
       },
     }),
     {

@@ -21,6 +21,7 @@ interface WidgetState {
   deleteWidget: (_id: string) => void;
   getWidget: (_id: string) => Widget | undefined;
   getWidgetsByIds: (ids: string[]) => Widget[];
+  setWidgets: (widgets: Widget[]) => void;
   fetchWidgetsByDashboardId: (dashboardId: string) => Promise<void>;
 }
 
@@ -102,6 +103,11 @@ export const useWidgetStore = create<WidgetState>()(
     getWidgetsByIds: (ids) => {
       const { widgets } = get();
       return widgets.filter((widget) => ids.includes(widget._id));
+    },
+
+    // Establecer widgets directamente (para restaurar desde snapshot)
+    setWidgets: (widgets) => {
+      set({ widgets });
     },
 
     // Cargar widgets de un dashboard específico desde MongoDB

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Icon } from "../../../common/Icon";
 import { useWidgetStore } from "../../../../store/widgetStore";
+import { useVariableStore } from "../../../../store/variableStore";
+import { useDashboardStore } from "../../../../store/dashboardStore";
 import type { MetricWidget, WidgetEvent } from "../../../../types/widget";
 import type { MetricDefinition } from "../../../../types/metricConfig";
 import { ModifiersMetadata } from "../../../../types/metricConfig";
@@ -123,11 +125,28 @@ export const EventsConfig: React.FC<EventsConfigProps> = ({ widget }) => {
 
   const handleToggleVariable = (mappingId: string) => {
     setVariableMappings((prev) =>
-      prev.map((mapping) =>
-        mapping.id === mappingId
-          ? { ...mapping, isSelected: !mapping.isSelected }
-          : mapping
-      )
+      prev.map((mapping) => {
+        if (mapping.id === mappingId) {
+          const newMapping = { ...mapping, isSelected: !mapping.isSelected };
+
+          console.log("newMapping", newMapping);
+
+          // **NUEVA LÓGICA: Establecer defaults cuando se selecciona una variable**
+          if (newMapping.isSelected) {
+            const { getVariable } = useVariableStore.getState();
+            const { setDefaultVariable } = useDashboardStore.getState();
+            const currentValue = getVariable(mapping.variableId);
+
+            // Si no hay valor actual en el store, establecer como default del dashboard
+            if (currentValue === null || currentValue === undefined) {
+              setDefaultVariable(mapping.variableId, mapping.value);
+            }
+          }
+
+          return newMapping;
+        }
+        return mapping;
+      })
     );
   };
 
@@ -183,7 +202,10 @@ export const EventsConfig: React.FC<EventsConfigProps> = ({ widget }) => {
   return (
     <div className="viz-config">
       {/* Sección de eventos con toggle principal */}
-      <div className="viz-section-header">
+      <div
+        className="viz-section-header"
+        onClick={() => setIsClickEventEnabled(!isClickEventEnabled)}
+      >
         <div className="viz-control-with-label">
           <Icon name="zap" size={16} />
           <span className="viz-control-label">Filtrar al hacer clic</span>

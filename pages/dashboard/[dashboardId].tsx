@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/router";
 import { useDashboardStore } from "../../store/dashboardStore";
-import { useVariableStore } from "../../store/variableStore";
 import { useWidgetStore } from "../../store/widgetStore";
+import { useVariableLoader } from "../../hooks/useVariableLoader";
 import { DashboardGrid } from "../../components/dashboard/DashboardGrid";
 import { WidgetConfigSidebar } from "../../components/layout/WidgetConfigSidebar";
 import { Header } from "../../components/layout/Header";
@@ -17,12 +17,11 @@ export default function Dashboard() {
   const { dashboardId } = router.query;
   const { isEditing, dashboards, setCurrentDashboard, currentDashboard } =
     useDashboardStore();
-  const {
-    setCurrentDashboard: setVariableDashboard,
-    initializeDashboardVariables,
-  } = useVariableStore();
   const { fetchWidgetsByDashboardId } = useWidgetStore();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Usar el hook para cargar variables automáticamente
+  useVariableLoader(typeof dashboardId === "string" ? dashboardId : null);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -38,35 +37,20 @@ export default function Dashboard() {
       const found = dashboards.find((d) => d._id === dashboardId);
       if (found) {
         setCurrentDashboard(found);
-        setVariableDashboard(found._id);
       } else {
         // Si el dashboardId no es válido, redirigir al primero
         router.push(`/dashboard/${dashboards[0]._id}`);
       }
     }
-  }, [
-    dashboardId,
-    dashboards,
-    setCurrentDashboard,
-    setVariableDashboard,
-    router,
-  ]);
+  }, [dashboardId, dashboards, setCurrentDashboard, router]);
 
-  // Sincronizar variables con el dashboard actual
-  useEffect(() => {
-    if (currentDashboard) {
-      // Inicializar variables para este dashboard
-      initializeDashboardVariables(currentDashboard._id);
-    }
-  }, [currentDashboard, initializeDashboardVariables]);
-
-  // Cargar widgets cuando cambia el dashboard actual
+  // Cargar widgets cuando cambia el dashboard actual (solo ID específico)
   useEffect(() => {
     if (currentDashboard && /^[0-9a-f]{24}$/.test(currentDashboard._id)) {
       // Solo cargar widgets si es un dashboard de MongoDB
       fetchWidgetsByDashboardId(currentDashboard._id);
     }
-  }, [currentDashboard, fetchWidgetsByDashboardId]);
+  }, [currentDashboard?._id, fetchWidgetsByDashboardId]);
 
   useEffect(() => {
     if (isEditing) {

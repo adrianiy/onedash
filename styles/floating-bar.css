@@ -334,7 +334,31 @@
 
 .dashboard-action-btn.delete:hover {
   background-color: rgba(239, 68, 68, 0.1);
-  color: var(--color-danger);
+  color: rgba(239, 68, 68, 1);
+}
+
+/* Estado de eliminación */
+.dashboard-item.deleting {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.dashboard-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .empty-state {
