@@ -66,13 +66,22 @@ export const useVariableLoader = (dashboardId: string | null) => {
             }
           );
 
-          // Obtener defaults del dashboard
+          // Obtener defaults del dashboard - asegurar que esté disponible
           let dashboardDefaults = {};
-          if (currentDashboard && currentDashboard._id === id) {
-            dashboardDefaults = currentDashboard.defaultVariables || {};
+          if (
+            currentDashboard &&
+            currentDashboard._id === id &&
+            currentDashboard.defaultVariables
+          ) {
+            dashboardDefaults = currentDashboard.defaultVariables;
+            console.log(
+              `🔄 Applying dashboard defaults for ${id}:`,
+              dashboardDefaults
+            );
           }
 
-          // Combinar defaults con variables de DB (DB tiene prioridad)
+          // Combinar defaults con variables de DB
+          // Prioridad: Base defaults < Dashboard defaults < Persisted variables
           const combinedVariables = {
             ...getDefaultVariables(), // Base defaults
             ...dashboardDefaults, // Dashboard defaults
@@ -87,15 +96,44 @@ export const useVariableLoader = (dashboardId: string | null) => {
             combinedVariables
           );
         } else {
-          // Si no hay variables o hay error, usar defaults
-          const defaultVars = getDefaultVariables();
+          // Si no hay variables de DB, usar defaults (base + dashboard)
+          let dashboardDefaults = {};
+          if (
+            currentDashboard &&
+            currentDashboard._id === id &&
+            currentDashboard.defaultVariables
+          ) {
+            dashboardDefaults = currentDashboard.defaultVariables;
+          }
+
+          const defaultVars = {
+            ...getDefaultVariables(),
+            ...dashboardDefaults,
+          };
           setDashboardVariables(id, defaultVars);
+
+          console.log(
+            `✅ No DB variables found, using defaults for ${id}:`,
+            defaultVars
+          );
         }
       } catch (error) {
         console.error("❌ Failed to load dashboard variables:", error);
 
-        // En caso de error, usar solo defaults
-        const defaultVars = getDefaultVariables();
+        // En caso de error, usar defaults (base + dashboard si está disponible)
+        let dashboardDefaults = {};
+        if (
+          currentDashboard &&
+          currentDashboard._id === id &&
+          currentDashboard.defaultVariables
+        ) {
+          dashboardDefaults = currentDashboard.defaultVariables;
+        }
+
+        const defaultVars = {
+          ...getDefaultVariables(),
+          ...dashboardDefaults,
+        };
         setDashboardVariables(id, defaultVars);
       } finally {
         setLoading(false);
@@ -179,6 +217,30 @@ export const useVariableLoader = (dashboardId: string | null) => {
       }
     };
   }, [dashboardId]); // Solo dashboardId como dependencia crítica
+
+  // Recargar variables cuando el dashboard cambia (para aplicar defaultVariables)
+  useEffect(() => {
+    if (
+      dashboardId &&
+      currentDashboard &&
+      currentDashboard._id === dashboardId
+    ) {
+      // Si el dashboard ya está cargado y tiene defaultVariables, recargar variables
+      if (
+        currentDashboard.defaultVariables &&
+        Object.keys(currentDashboard.defaultVariables).length > 0
+      ) {
+        console.log(
+          `🔄 Dashboard loaded with defaults, reloading variables for ${dashboardId}`
+        );
+
+        // Usar un pequeño delay para asegurar que el dashboard esté completamente establecido
+        setTimeout(() => {
+          loadDashboardVariables(dashboardId);
+        }, 50);
+      }
+    }
+  }, [currentDashboard?.defaultVariables, dashboardId, currentDashboard?._id]);
 
   return {
     isLoading,

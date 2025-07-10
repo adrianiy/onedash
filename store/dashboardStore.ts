@@ -258,10 +258,40 @@ export const useDashboardStore = create<DashboardState>()(
         set({ currentDashboard: dashboard });
 
         // Sincronizar variables del dashboard actual
-        const { setCurrentDashboard: setVariableDashboard } =
+        const { setCurrentDashboard: setVariableDashboard, setMultiple } =
           useVariableStore.getState();
 
         setVariableDashboard(dashboard?._id || null);
+
+        // Aplicar variables default inmediatamente si están disponibles
+        if (
+          dashboard?.defaultVariables &&
+          Object.keys(dashboard.defaultVariables).length > 0
+        ) {
+          console.log(
+            `🔄 Dashboard Store - Applying default variables immediately for ${dashboard._id}:`,
+            dashboard.defaultVariables
+          );
+
+          // Solo aplicar defaults que no tengan valor actual en el variableStore
+          const { getVariable } = useVariableStore.getState();
+          const defaultsToApply: Record<string, unknown> = {};
+
+          Object.entries(dashboard.defaultVariables).forEach(([key, value]) => {
+            const currentValue = getVariable(key);
+            if (currentValue === null || currentValue === undefined) {
+              defaultsToApply[key] = value;
+            }
+          });
+
+          if (Object.keys(defaultsToApply).length > 0) {
+            console.log(
+              `🔄 Applying missing default variables:`,
+              defaultsToApply
+            );
+            setMultiple(defaultsToApply);
+          }
+        }
       },
 
       updateLayout: (layout) => {

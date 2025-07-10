@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import { useDashboardStore } from "../../store/dashboardStore";
 import { useWidgetStore } from "../../store/widgetStore";
@@ -53,11 +53,50 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
     droppingItemSize,
     resetDroppingItemSize,
   } = useDashboardStore();
-  const { getWidgetsByIds } = useWidgetStore();
+  const allWidgets = useWidgetStore((state) => state.widgets);
   const { getGridProps } = useGridLayout();
 
   // Usar siempre currentDashboard
   const activeDashboard = currentDashboard;
+
+  // Memorize widgets to avoid recalculation on every render
+  // Now includes allWidgets to detect dynamic updates from store
+  const widgets = useMemo(() => {
+    if (!activeDashboard) return [];
+
+    // Filter widgets that belong to this dashboard from the store
+    const dashboardWidgets = allWidgets.filter((widget) =>
+      activeDashboard.widgets.includes(widget._id)
+    );
+
+    if (process.env.NODE_ENV === "development") {
+      console.log("🔄 DashboardGrid: Recalculating widgets", {
+        dashboardId: activeDashboard._id,
+        widgetIds: activeDashboard.widgets,
+        foundWidgets: dashboardWidgets.length,
+        allWidgetsCount: allWidgets.length,
+      });
+    }
+
+    return dashboardWidgets;
+  }, [activeDashboard?.widgets, activeDashboard?._id, allWidgets]);
+
+  // Memorize sanitized layout to avoid recalculation on every render
+  const sanitizedLayout = useMemo(() => {
+    if (!activeDashboard) return [];
+
+    const layout = validateAndSanitizeLayout(activeDashboard.layout);
+
+    if (process.env.NODE_ENV === "development") {
+      console.log("🔄 DashboardGrid: Recalculating layout", {
+        dashboardId: activeDashboard._id,
+        originalLayoutCount: activeDashboard.layout.length,
+        sanitizedLayoutCount: layout.length,
+      });
+    }
+
+    return layout;
+  }, [activeDashboard?.layout, activeDashboard?._id]);
 
   if (!activeDashboard) {
     return (
@@ -67,15 +106,11 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
     );
   }
 
-  const widgets = getWidgetsByIds(activeDashboard.widgets);
   const gridProps = getGridProps();
 
   if (widgets.length === 0 && !isEditing) {
     return <DashboardEmptyPlaceholder isEditing={isEditing} />;
   }
-
-  // Sanitize layout to ensure React Grid Layout compatibility
-  const sanitizedLayout = validateAndSanitizeLayout(activeDashboard.layout);
 
   // Debug logging to help identify layout issues
   if (process.env.NODE_ENV === "development") {
