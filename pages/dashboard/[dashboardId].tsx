@@ -62,11 +62,17 @@ export default function Dashboard() {
         // Actualizar la referencia al dashboardId actual
         previousDashboardIdRef.current = dashIdStr;
 
+        console.log(
+          currentDashboard?._id,
+          previousDashboardIdRef.current,
+          found._id
+        );
         // Cargar widgets solo si realmente cambiamos de dashboard
         if (
-          (isDashboardChanging || !previousDashboardIdRef.current) &&
-          found &&
-          /^[0-9a-f]{24}$/.test(found._id)
+          !currentDashboard ||
+          (currentDashboard?._id !== previousDashboardIdRef.current &&
+            found &&
+            /^[0-9a-f]{24}$/.test(found._id))
         ) {
           fetchWidgetsByDashboardId(found._id);
         }
@@ -78,6 +84,7 @@ export default function Dashboard() {
   }, [
     dashboardId,
     dashboards,
+    currentDashboard?._id,
     setCurrentDashboard,
     router,
     isEditing,
