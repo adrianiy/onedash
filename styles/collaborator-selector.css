@@ -1,0 +1,249 @@
+/* Collaborator Selector Component */
+.collaborator-selector {
+  width: 100%;
+}
+
+.collaborator-selector__input-container {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.collaborator-selector__input-wrapper {
+  position: relative;
+}
+
+.collaborator-selector__input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  padding-right: 2.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 400;
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.collaborator-selector__input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.2);
+}
+
+.collaborator-selector__input:disabled {
+  background-color: var(--color-surface-secondary);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.collaborator-selector__loading {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+}
+
+.collaborator-selector__dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.collaborator-selector__results {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.collaborator-selector__result-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color 0.2s ease;
+}
+
+.collaborator-selector__result-item:hover {
+  background-color: var(--color-surface-hover);
+}
+
+.collaborator-selector__result-item:last-child {
+  border-bottom: none;
+}
+
+.collaborator-selector__user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.collaborator-selector__user-name {
+  font-weight: 500;
+  color: var(--color-text-primary);
+  font-size: 14px;
+}
+
+.collaborator-selector__user-email {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.collaborator-selector__no-results {
+  padding: 0.75rem 1rem;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+/* Chips de colaboradores */
+.collaborator-selector__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  margin-bottom: 0.5rem;
+}
+
+.collaborator-selector__chip {
+  display: flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.2);
+  border-radius: var(--radius-full);
+  gap: 0.25rem;
+}
+
+.collaborator-selector__chip-name {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-text-primary);
+}
+
+.collaborator-selector__chip-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 6px;
+  margin-left: 0.25rem;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  border-radius: 50%;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.collaborator-selector__chip-remove:hover {
+  color: var(--color-danger);
+  background-color: rgba(var(--color-danger-rgb), 0.1);
+}
+
+.collaborator-selector__chip-remove:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.2);
+}
+
+/* Estilos para React Select */
+.collaborator-selector .react-select__control {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  min-height: 40px;
+  background-color: var(--color-surface);
+}
+
+.collaborator-selector .react-select__control:hover {
+  border-color: var(--color-border-hover);
+}
+
+.collaborator-selector .react-select__control--is-focused {
+  box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.2);
+  border-color: var(--color-primary);
+}
+
+.collaborator-selector .react-select__value-container {
+  padding: 0.5rem;
+}
+
+.collaborator-selector .react-select__placeholder {
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.collaborator-selector .react-select__input {
+  color: var(--color-text-primary);
+  font-size: 14px;
+}
+
+.collaborator-selector .react-select__menu {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  margin-top: 0.25rem;
+  z-index: 10;
+}
+
+.collaborator-selector .react-select__option {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.collaborator-selector .react-select__option--is-focused {
+  background-color: var(--color-surface-hover);
+}
+
+.collaborator-selector .react-select__option--is-selected {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+}
+
+/* Animation for spinner */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .collaborator-selector__result-item {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .collaborator-selector__user-name {
+    font-size: 13px;
+  }
+
+  .collaborator-selector__user-email {
+    font-size: 11px;
+  }
+
+  .collaborator-selector__chip {
+    padding: 0.2rem 0.4rem;
+  }
+
+  .collaborator-selector__chip-name {
+    font-size: 12px;
+  }
+}

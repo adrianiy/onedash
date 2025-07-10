@@ -28,6 +28,7 @@
 @import "./text-widget.css";
 @import "./auth.css";
 @import "./user-avatar.css";
+@import "./collaborator-selector.css";
 
 /* Global Styles */
 *,

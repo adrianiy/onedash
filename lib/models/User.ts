@@ -7,6 +7,7 @@ export interface IUser {
   password?: string; // Optional for OAuth users
   image?: string; // Avatar from OAuth provider
   role: "user" | "admin";
+  permissions: string[]; // Array of permissions like "publisher"
   providerAccounts?: {
     provider: string;
     providerAccountId: string;
@@ -56,6 +57,10 @@ const UserSchema = new Schema<IUser>(
       type: String,
       enum: ["user", "admin"],
       default: "user",
+    },
+    permissions: {
+      type: [String],
+      default: [],
     },
   },
   {

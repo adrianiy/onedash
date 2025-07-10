@@ -6,6 +6,7 @@ export interface User {
   name: string;
   email: string;
   role: "user" | "admin";
+  permissions: string[];
 }
 
 interface AuthState {
@@ -80,6 +81,7 @@ export const useAuthStore = create<AuthState>((set) => ({
               name: session.user.name || "",
               email: session.user.email || "",
               role: session.user.role as "user" | "admin",
+              permissions: [], // Default empty permissions for fallback
             },
             isAuthenticated: true,
             isLoading: false,
@@ -217,6 +219,7 @@ export const useAuthStore = create<AuthState>((set) => ({
             name: session.user.name || "",
             email: session.user.email || "",
             role: session.user.role as "user" | "admin",
+            permissions: [], // Default empty permissions for fallback
           },
           isAuthenticated: true,
           isLoading: false,

@@ -31,7 +31,10 @@ interface DashboardState {
   // Actions
   createDashboard: (
     dashboard: Omit<
-      Dashboard & { visibility: "public" | "private" },
+      Dashboard & {
+        visibility: "public" | "private";
+        collaborators?: string[];
+      },
       "id" | "_id" | "createdAt" | "updatedAt"
     >
   ) => Promise<Dashboard | null>;
@@ -105,6 +108,7 @@ export const useDashboardStore = create<DashboardState>()(
             userId: dashboardData?.userId || currentUser?._id,
             layout: dashboardData.layout || [],
             widgets: dashboardData.widgets || [],
+            collaborators: dashboardData.collaborators || [],
           });
 
           if (response.success && response.data) {

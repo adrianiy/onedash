@@ -1,5 +1,5 @@
 .dashboard-form__modal {
-  max-width: 550px;
+  max-width: 600px;
 }
 
 .dashboard-form__field {
@@ -128,4 +128,44 @@
 .dashboard-action-btn.delete:hover {
   color: var(--color-danger);
   border-color: var(--color-danger);
+}
+
+/* Estilos para botón público deshabilitado y tooltip */
+.dashboard-form__public-btn-wrapper {
+  position: relative;
+}
+
+.dashboard-form__visibility-btn--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dashboard-form__visibility-btn--disabled:hover {
+  background-color: var(--color-surface);
+  color: var(--color-text-secondary);
+}
+
+/* Estilos para la sección de colaboradores */
+.dashboard-form__collaborators-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.dashboard-form__section-description {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dashboard-form__visibility-controls {
+    flex-direction: column;
+  }
+
+  .dashboard-form__visibility-btn {
+    justify-content: center;
+  }
 }
