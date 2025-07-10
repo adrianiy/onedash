@@ -16,8 +16,8 @@ interface ConditionalFormatFormProps {
 }
 
 const conditionOptions: SelectOption[] = [
-  { value: "greater_than", label: "Mayor que" },
   { value: "less_than", label: "Menor que" },
+  { value: "greater_than", label: "Mayor que" },
   { value: "equals", label: "Igual a" },
   { value: "contains", label: "Contiene" },
 ];
