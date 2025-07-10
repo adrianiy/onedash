@@ -374,7 +374,7 @@
 
 [data-theme="dark"] .viz-control-btn--active {
   background-color: rgba(var(--color-primary-rgb), 0.2);
-  color: var(--color-primary-light);
+  color: var(--color-primary);
 }
 
 [data-theme="dark"] .viz-control-btn--active:hover {

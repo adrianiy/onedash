@@ -1107,7 +1107,7 @@
 /* Tema oscuro para el chip del indicador */
 [data-theme="dark"] .metric-selector__chip-tag--indicator {
   background-color: rgba(var(--color-primary-rgb), 0.1);
-  color: var(--color-primary-light);
+  color: var(--color-primary);
 }
 
 /* Tema oscuro para el chip del indicador dinámico */

@@ -232,7 +232,7 @@ export const EditToolbar: React.FC = () => {
     // Crear widget de métrica
     const newMetricWidget = addWidget({
       type: "metric",
-      title: "",
+      title: "Nueva métrica",
       config: {},
       isConfigured: false,
     });
@@ -265,7 +265,7 @@ export const EditToolbar: React.FC = () => {
 
     const dragData = {
       type: "metric",
-      title: "",
+      title: "Nueva métrica",
       w: 4,
       h: 4,
       config: {},
@@ -282,7 +282,7 @@ export const EditToolbar: React.FC = () => {
     // Crear widget de gráfico
     const newChartWidget = addWidget({
       type: "chart",
-      title: "",
+      title: "Nuevo gráfico",
       config: {
         chartType: "bar",
         data: [],
@@ -320,7 +320,7 @@ export const EditToolbar: React.FC = () => {
 
     const dragData = {
       type: "chart",
-      title: "",
+      title: "Nuevo gráfico",
       w: 6,
       h: 4,
       config: {},
@@ -388,7 +388,7 @@ export const EditToolbar: React.FC = () => {
     // Create new empty table widget
     const newTableWidget = addWidget({
       type: "table",
-      title: "",
+      title: "Nueva tabla",
       config: {},
       isConfigured: false,
     });
@@ -428,7 +428,7 @@ export const EditToolbar: React.FC = () => {
     // Set data for drag and drop
     const dragData = {
       type: "table",
-      title: "",
+      title: "Nueva tabla",
       w: 6,
       h: 6,
       config: {},
