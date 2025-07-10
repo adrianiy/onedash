@@ -23,7 +23,7 @@ export const MetricConfigTabs: React.FC<MetricConfigTabsProps> = ({
     },
     {
       id: "visualization",
-      label: "Visualización",
+      label: "Vista",
       component: VisualizationConfig as React.ComponentType<{ widget: Widget }>,
     },
     {
