@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Tooltip } from "react-tooltip";
 import { Icon } from "./Icon";
-import { ConfigDropdown } from "@/components/widgets/common/ConfigDropdown";
+import { ConfigDropdown } from "@/components/widgets/config/common/ui/ConfigDropdown";
 import type { MetricDefinition } from "@/types/metricConfig";
 import {
   interpolateText,

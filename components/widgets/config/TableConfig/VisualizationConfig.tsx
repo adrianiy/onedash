@@ -1,19 +1,21 @@
-import React from "react";
 import { Icon } from "@/common/Icon";
-import type { TableWidget, Widget } from "@/types/widget";
 import {
-  TitleToggleControl,
   FilterDisplayControl,
-  ConditionalFormatsControl,
-  TableControlsContainer,
-  TablePreviewContainer,
-  TableAlignmentSection,
-  TableDisplayModeSection,
-  TableTotalRowSection,
-  TableStyleControlsSection,
+  TitleToggleControl,
   VisualizationToggleButton,
-} from "@/components/widgets/common";
+} from "@/components/widgets/config/common";
+import { ConditionalFormatsControl } from "@/components/widgets/config/common/controls/ConditionalFormatsControl";
 import { useWidgetStore } from "@/store/widgetStore";
+import type { TableWidget, Widget } from "@/types/widget";
+import React from "react";
+import {
+  TableAlignmentSection,
+  TableControlsContainer,
+  TableDisplayModeSection,
+  TablePreviewContainer,
+  TableStyleControlsSection,
+  TableTotalRowSection,
+} from "./components";
 
 interface VisualizationConfigProps {
   widget: Widget;

@@ -1,6 +1,6 @@
 import React from "react";
 import type { MetricTabProps } from "../types";
-import { CheckboxItem } from "@/components/widgets/common/MetricSelector/components/CheckboxItem";
+import { CheckboxItem } from "@/components/widgets/config/common/MetricSelector/components/CheckboxItem";
 import { ModifiersMetadata } from "@/types/metricConfig";
 
 export const CalculationsTab: React.FC<MetricTabProps> = ({

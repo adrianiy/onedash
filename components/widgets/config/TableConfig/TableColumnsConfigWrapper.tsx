@@ -1,7 +1,7 @@
 import { useWidgetStore } from "@/store/widgetStore";
 import type { MetricDefinition } from "@/types/metricConfig";
 import type { TableWidgetConfig, Widget } from "@/types/widget";
-import { GenericMetricListConfig } from "@/widgets/common/GenericMetricListConfig";
+import { GenericMetricListConfig } from "@/components/widgets/config/common/controls/GenericMetricListConfig";
 import React from "react";
 import { ColumnItemAdapter } from "./components/ColumnItemAdapter";
 

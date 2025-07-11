@@ -1,19 +1,17 @@
-import React, { useState, useEffect, useMemo } from "react";
 import { Icon } from "@/common/Icon";
-import { WidgetPlaceholder, useConditionalFormatting } from "../common";
+import { useConditionalFormatting } from "@/hooks";
+import { useVariableStore } from "@/store/variableStore";
+import type { IndicatorType, MetricDefinition } from "@/types/metricConfig";
+import { getDisplayTitle } from "@/types/metricConfig";
 import type { TableWidget as TableWidgetType } from "@/types/widget";
-import type {
-  MetricDefinition,
-  IndicatorType,
-} from "@/types/metricConfig";
+import { formatValue } from "@/utils/format";
 import {
-  generateTableData,
   calculateTotals,
+  generateTableData,
   type TableDataFilters,
 } from "@/utils/generateTableData";
-import { formatValue } from "@/utils/format";
-import { getDisplayTitle } from "@/types/metricConfig";
-import { useVariableStore } from "@/store/variableStore";
+import React, { useEffect, useMemo, useState } from "react";
+import { WidgetPlaceholder } from "../config/common";
 
 // Tipo ampliado para incluir "desglose"
 type ExtendedIndicatorType = IndicatorType | "desglose";

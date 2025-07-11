@@ -6,8 +6,8 @@ import type {
 import { ModifiersMetadata } from "@/types/metricConfig";
 import { Icon } from "@/common/Icon";
 import { useSortable } from "@dnd-kit/sortable";
-import { ConfigDropdown } from "@/components/widgets/common/ConfigDropdown";
-import MetricSelector from "@/components/widgets/common/MetricSelector/MetricSelector";
+import { ConfigDropdown } from "@/components/widgets/config/common/ui/ConfigDropdown";
+import MetricSelector from "@/components/widgets/config/common/MetricSelector/MetricSelector";
 import { useVariableStore } from "@/store/variableStore";
 import { Tooltip } from "react-tooltip";
 

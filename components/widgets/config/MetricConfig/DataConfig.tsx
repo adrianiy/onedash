@@ -2,12 +2,12 @@ import React, { useRef, useState } from "react";
 import type { MetricWidget } from "@/types/widget";
 import type { MetricDefinition } from "@/types/metricConfig";
 import { useWidgetStore } from "@/store/widgetStore";
-import { ConfigDropdown } from "@/components/widgets/common/ConfigDropdown";
-import { EmptyPlaceholder } from "@/widgets/common/EmptyPlaceholder";
+import { ConfigDropdown } from "@/components/widgets/config/common/ui/ConfigDropdown";
+import { EmptyPlaceholder } from "@/components/widgets/config/common/ui/EmptyPlaceholder";
 import { Icon } from "@/common/Icon";
-import MetricSelector from "@/components/widgets/common/MetricSelector/MetricSelector";
+import MetricSelector from "@/components/widgets/config/common/MetricSelector/MetricSelector";
 import { MetricItem } from "./components/MetricItem";
-import { WidgetFiltersConfig } from "@/widgets/common/WidgetFiltersConfig";
+import { WidgetFiltersConfig } from "@/components/widgets/config/common/controls/WidgetFiltersConfig";
 import {
   DndContext,
   closestCenter,

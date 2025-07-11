@@ -3,7 +3,7 @@ import { Icon } from "@/common/Icon";
 import { Tooltip } from "react-tooltip";
 import type { ChartWidget } from "@/types/widget";
 import { useWidgetStore } from "@/store/widgetStore";
-import { VisualizationToggleButton } from "./VisualizationToggleButton";
+import { VisualizationToggleButton } from "../../common/controls/VisualizationToggleButton";
 import { SeriesColorChip } from "@/config/ChartConfig/components/SeriesColorChip";
 
 interface ColorModeSectionProps {

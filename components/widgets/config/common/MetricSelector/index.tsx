@@ -9,4 +9,4 @@ import MetricSelectorComponent from "./MetricSelector";
 export const MetricSelector = MetricSelectorComponent;
 
 // Exportar componente principal como default
-export default MetricSelectorComponent;
+export { MetricSelectorComponent as default };

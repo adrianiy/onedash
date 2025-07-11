@@ -17,9 +17,9 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { ConfigDropdown } from "./ConfigDropdown";
-import { EmptyPlaceholder } from "./EmptyPlaceholder";
-import { MetricSelector } from "./MetricSelector";
+import { ConfigDropdown } from "../ui/ConfigDropdown";
+import { EmptyPlaceholder } from "../ui/EmptyPlaceholder";
+import { MetricSelector } from "../MetricSelector";
 
 // Extendemos MetricDefinition para incluir propiedades de visualización
 interface ItemConfig extends MetricDefinition {

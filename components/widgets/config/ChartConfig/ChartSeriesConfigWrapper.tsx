@@ -2,7 +2,7 @@ import React from "react";
 import type { Widget, ChartWidgetConfig } from "@/types/widget";
 import type { MetricDefinition } from "@/types/metricConfig";
 import { useWidgetStore } from "@/store/widgetStore";
-import { GenericMetricListConfig } from "@/widgets/common/GenericMetricListConfig";
+import { GenericMetricListConfig } from "@/components/widgets/config/common/controls/GenericMetricListConfig";
 import { SeriesItemAdapter } from "./components/SeriesItemAdapter";
 
 interface ChartSeriesConfigWrapperProps {

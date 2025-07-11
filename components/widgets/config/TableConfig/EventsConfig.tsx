@@ -1,6 +1,6 @@
 import React from "react";
 import type { Widget } from "@/types/widget";
-import { BaseEventsConfig } from "@/widgets/common/BaseEventsConfig";
+import { BaseEventsConfig } from "@/components/widgets/config/common/BaseEventsConfig";
 
 interface EventsConfigProps {
   widget: Widget;

@@ -5,7 +5,7 @@ import { Icon } from "@/common/Icon";
 import { CustomSelect } from "@/common/CustomSelect";
 import type { SelectOption } from "@/common/CustomSelect";
 import { CustomColorPicker } from "@/common/CustomColorPicker";
-import { ConfigDropdown } from "@/components/widgets/common/ConfigDropdown";
+import { ConfigDropdown } from "@/components/widgets/config/common/ui/ConfigDropdown";
 import { Tooltip } from "react-tooltip";
 
 interface ConditionalFormatFormProps {

@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { BarChart } from "@/components/charts/BarChart";
 import { Icon } from "@/common/Icon";
-import { WidgetPlaceholder } from "../common";
+import { WidgetPlaceholder } from "../config/common";
 import type { ChartWidget as ChartWidgetType } from "@/types/widget";
 import {
   generateChartData,

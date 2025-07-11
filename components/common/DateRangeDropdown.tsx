@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import Calendar from "react-calendar";
-import { ConfigDropdown } from "@/components/widgets/common/ConfigDropdown";
+import { ConfigDropdown } from "@/components/widgets/config/common/ui/ConfigDropdown";
 import { CustomSelect } from "./CustomSelect";
 import { Icon } from "./Icon";
 import "react-calendar/dist/Calendar.css";

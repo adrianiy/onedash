@@ -6,7 +6,7 @@ import {
   ConditionalFormatsControl,
   VisualizationToggleButton,
   VisualizationControlGroup,
-} from "@/components/widgets/common";
+} from "@/components/widgets/config/common";
 import { useVisualizationLogic } from "@/config/hooks/useVisualizationLogic";
 
 interface VisualizationConfigProps {

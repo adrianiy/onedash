@@ -7,7 +7,7 @@ import type {
 } from "@/types/widget";
 import type { MetricDefinition } from "@/types/metricConfig";
 import { useWidgetStore } from "@/store/widgetStore";
-import { ConfigDropdown } from "./ConfigDropdown";
+import { ConfigDropdown } from "../ui/ConfigDropdown";
 import { ConditionalFormatForm } from "@/config/TableConfig/components/ConditionalFormatForm";
 import { Icon } from "@/common/Icon";
 

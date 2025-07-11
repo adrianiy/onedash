@@ -1,5 +1,5 @@
 import type { Widget } from "@/types/widget";
-import { WidgetFiltersConfig } from "@/widgets/common/WidgetFiltersConfig";
+import { WidgetFiltersConfig } from "@/components/widgets/config/common/controls/WidgetFiltersConfig";
 import React from "react";
 import { BreakdownLevelConfig } from "./BreakdownLevelConfig";
 import { TableColumnsConfig } from "./TableColumnsConfig";

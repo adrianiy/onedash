@@ -1,17 +1,19 @@
-import React from "react";
 import { Icon } from "@/common/Icon";
-import type { ChartWidget } from "@/types/widget";
-import { useWidgetStore } from "@/store/widgetStore";
 import {
   FilterDisplayControl,
   VisualizationToggleButton,
-  ChartPreviewContainer,
-  ChartControlsContainer,
-  LegendAccordionSection,
-  ColorModeSection,
-  ChartTypeSection,
-} from "@/components/widgets/common";
+} from "@/components/widgets/config/common";
 import { useVisualizationLogic } from "@/config/hooks/useVisualizationLogic";
+import { useWidgetStore } from "@/store/widgetStore";
+import type { ChartWidget } from "@/types/widget";
+import React from "react";
+import {
+  ChartControlsContainer,
+  ChartPreviewContainer,
+  ChartTypeSection,
+  ColorModeSection,
+  LegendAccordionSection,
+} from "./components";
 
 interface VisualizationConfigProps {
   widget: ChartWidget;

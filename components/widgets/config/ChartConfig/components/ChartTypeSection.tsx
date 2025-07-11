@@ -1,7 +1,7 @@
-import React from "react";
-import { VisualizationToggleButton } from "./VisualizationToggleButton";
-import type { ChartWidget } from "@/types/widget";
 import { useWidgetStore } from "@/store/widgetStore";
+import type { ChartWidget } from "@/types/widget";
+import { VisualizationToggleButton } from "@/widgets/config/common/controls/VisualizationToggleButton";
+import React from "react";
 
 interface ChartTypeSectionProps {
   widget: ChartWidget;

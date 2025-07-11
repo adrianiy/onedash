@@ -1,15 +1,12 @@
-import React, { useMemo, useState } from "react";
-import {
-  WidgetPlaceholder,
-  WidgetFiltersDisplay,
-  useConditionalFormatting,
-} from "../common";
-import type { MetricWidget as MetricWidgetType } from "@/types/widget";
-import { formatValue } from "@/utils/format";
-import { useVariableStore } from "@/store/variableStore";
+import { useConditionalFormatting } from "@/hooks";
+import { useResolvedMetric } from "@/hooks/useResolvedMetric";
 import { useVariableOperations } from "@/hooks/useVariableOperations";
 import { useDashboardStore } from "@/store/dashboardStore";
-import { useResolvedMetric } from "@/hooks/useResolvedMetric";
+import { useVariableStore } from "@/store/variableStore";
+import type { MetricWidget as MetricWidgetType } from "@/types/widget";
+import { formatValue } from "@/utils/format";
+import React, { useMemo, useState } from "react";
+import { WidgetFiltersDisplay, WidgetPlaceholder } from "../config/common";
 
 interface MetricWidgetProps {
   widget: MetricWidgetType;

@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Icon } from "@/common/Icon";
 import { Tooltip } from "react-tooltip";
-import { ConfigDropdown } from "./ConfigDropdown";
+import { ConfigDropdown } from "../ui/ConfigDropdown";
 import { CustomMultiSelect } from "@/common/CustomMultiSelect";
 import { DateRangeDropdown } from "@/common/DateRangeDropdown";
 import { useWidgetStore } from "@/store/widgetStore";

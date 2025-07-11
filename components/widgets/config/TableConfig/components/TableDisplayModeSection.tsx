@@ -1,5 +1,5 @@
 import React from "react";
-import { VisualizationToggleButton } from "./VisualizationToggleButton";
+import { VisualizationToggleButton } from "../../common/controls/VisualizationToggleButton";
 import type { TableWidget } from "@/types/widget";
 import { useWidgetStore } from "@/store/widgetStore";
 
