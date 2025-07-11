@@ -6,7 +6,7 @@ import { useMetricSelector } from "./hooks";
 // Importar componentes
 import { SearchBar } from "./components/SearchBar";
 import { TabsList } from "./components/TabsList";
-import { Icon } from "../../../common/Icon";
+import { Icon } from "@/common/Icon";
 import { MetricFooter } from "./components/MetricFooter";
 import { IndicatorsTab } from "./tabs/IndicatorsTab";
 import { TimerangeTab } from "./tabs/TimerangeTab";

@@ -1,6 +1,6 @@
 import React from "react";
-import type { Widget, TableWidget } from "../../../../types/widget";
-import { TableConfigTabs } from "./TableConfigTabs";
+import type { Widget, TableWidget } from "@/types/widget";
+import { BaseWidgetConfig } from "../base";
 
 interface TableConfigProps {
   widget: Widget;
@@ -17,7 +17,7 @@ export const TableConfig: React.FC<TableConfigProps> = ({ widget }) => {
 
   return (
     <div className="table-config">
-      <TableConfigTabs widget={tableWidget} />
+      <BaseWidgetConfig widget={tableWidget} className="table-config__base" />
     </div>
   );
 };

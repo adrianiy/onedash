@@ -1,9 +1,9 @@
 import React, { useMemo } from "react";
-import { CustomMultiSelect } from "../common/CustomMultiSelect";
-import { DateRangePicker } from "../common/DateRangePicker";
-import { Icon } from "../common/Icon";
-import { useVariableStore } from "../../store/variableStore";
-import { useDashboardStore } from "../../store/dashboardStore";
+import { CustomMultiSelect } from "@/common/CustomMultiSelect";
+import { DateRangePicker } from "@/common/DateRangePicker";
+import { Icon } from "@/common/Icon";
+import { useVariableStore } from "@/store/variableStore";
+import { useDashboardStore } from "@/store/dashboardStore";
 
 interface FilterBarProps {
   className?: string;

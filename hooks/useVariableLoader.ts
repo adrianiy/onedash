@@ -1,10 +1,7 @@
 import { useEffect, useCallback, useRef } from "react";
-import { useVariableStore } from "../store/variableStore";
-import { useDashboardStore } from "../store/dashboardStore";
-import { apiService } from "../services/apiService";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type VariableValue = any;
+import { useVariableStore } from "@/store/variableStore";
+import { useDashboardStore } from "@/store/dashboardStore";
+import { useVariableOperations } from "./useVariableOperations";
 
 /**
  * Hook para cargar automáticamente las variables de un dashboard
@@ -23,22 +20,16 @@ export const useVariableLoader = (dashboardId: string | null) => {
   const loadingRef = useRef<string | null>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Variables por defecto
-  const getDefaultVariables = useCallback((): Record<string, VariableValue> => {
-    const today = new Date().toISOString().split("T")[0];
-    return {
-      indicator: null,
-      saleType: null,
-      timeframe: null,
-      comparison: null,
-      scope: null,
-      // Filter variables
-      dateStart: today,
-      dateEnd: today,
-      selectedProducts: [],
-      selectedSections: [],
-    };
-  }, []);
+  // Usar hook base consolidado para operaciones con variables
+  const {
+    loadVariables,
+    getDefaultVariables,
+    persistVariable: persistVar,
+    persistMultiple: persistMulti,
+  } = useVariableOperations({
+    dashboardId,
+    enablePersistence: true,
+  });
 
   // Cargar variables del dashboard desde la DB
   const loadDashboardVariables = useCallback(
@@ -54,69 +45,38 @@ export const useVariableLoader = (dashboardId: string | null) => {
       try {
         console.log(`🔄 Loading variables for dashboard: ${id}`);
 
-        // Cargar variables de la base de datos
-        const response = await apiService.get(`/variables?dashboardId=${id}`);
+        // Usar el método consolidado del hook base
+        const variablesFromDB = await loadVariables();
 
-        if (response.success && response.data && Array.isArray(response.data)) {
-          // Convertir array de variables a objeto
-          const variablesFromDB: Record<string, VariableValue> = {};
-          response.data.forEach(
-            (variable: { key: string; value: VariableValue }) => {
-              variablesFromDB[variable.key] = variable.value;
-            }
-          );
-
-          // Obtener defaults del dashboard - asegurar que esté disponible
-          let dashboardDefaults = {};
-          if (
-            currentDashboard &&
-            currentDashboard._id === id &&
-            currentDashboard.defaultVariables
-          ) {
-            dashboardDefaults = currentDashboard.defaultVariables;
-            console.log(
-              `🔄 Applying dashboard defaults for ${id}:`,
-              dashboardDefaults
-            );
-          }
-
-          // Combinar defaults con variables de DB
-          // Prioridad: Base defaults < Dashboard defaults < Persisted variables
-          const combinedVariables = {
-            ...getDefaultVariables(), // Base defaults
-            ...dashboardDefaults, // Dashboard defaults
-            ...variablesFromDB, // Persisted variables (highest priority)
-          };
-
-          // Actualizar estado a través del store
-          setDashboardVariables(id, combinedVariables);
-
+        // Obtener defaults del dashboard - asegurar que esté disponible
+        let dashboardDefaults = {};
+        if (
+          currentDashboard &&
+          currentDashboard._id === id &&
+          currentDashboard.defaultVariables
+        ) {
+          dashboardDefaults = currentDashboard.defaultVariables;
           console.log(
-            `✅ Variables loaded for dashboard ${id}:`,
-            combinedVariables
-          );
-        } else {
-          // Si no hay variables de DB, usar defaults (base + dashboard)
-          let dashboardDefaults = {};
-          if (
-            currentDashboard &&
-            currentDashboard._id === id &&
-            currentDashboard.defaultVariables
-          ) {
-            dashboardDefaults = currentDashboard.defaultVariables;
-          }
-
-          const defaultVars = {
-            ...getDefaultVariables(),
-            ...dashboardDefaults,
-          };
-          setDashboardVariables(id, defaultVars);
-
-          console.log(
-            `✅ No DB variables found, using defaults for ${id}:`,
-            defaultVars
+            `🔄 Applying dashboard defaults for ${id}:`,
+            dashboardDefaults
           );
         }
+
+        // Combinar defaults con variables de DB
+        // Prioridad: Base defaults < Dashboard defaults < Persisted variables
+        const combinedVariables = {
+          ...getDefaultVariables(), // Base defaults
+          ...dashboardDefaults, // Dashboard defaults
+          ...variablesFromDB, // Persisted variables (highest priority)
+        };
+
+        // Actualizar estado a través del store
+        setDashboardVariables(id, combinedVariables);
+
+        console.log(
+          `✅ Variables loaded for dashboard ${id}:`,
+          combinedVariables
+        );
       } catch (error) {
         console.error("❌ Failed to load dashboard variables:", error);
 
@@ -140,50 +100,13 @@ export const useVariableLoader = (dashboardId: string | null) => {
         loadingRef.current = null;
       }
     },
-    [currentDashboard, getDefaultVariables, setDashboardVariables, setLoading]
-  );
-
-  // Persistir una variable en la base de datos
-  const persistVariable = useCallback(
-    async (key: string, value: VariableValue) => {
-      if (!dashboardId) return;
-
-      try {
-        await apiService.post("/variables", {
-          dashboardId,
-          key,
-          value,
-        });
-        console.log(`✅ Variable ${key} persisted successfully`);
-      } catch (error) {
-        console.error(`❌ Failed to persist variable ${key}:`, error);
-      }
-    },
-    [dashboardId]
-  );
-
-  // Persistir múltiples variables
-  const persistMultiple = useCallback(
-    async (updates: Record<string, VariableValue>) => {
-      if (!dashboardId) return;
-
-      try {
-        // Enviar cada variable individualmente (el API actual maneja upsert)
-        const promises = Object.entries(updates).map(([key, value]) =>
-          apiService.post("/variables", {
-            dashboardId,
-            key,
-            value,
-          })
-        );
-
-        await Promise.all(promises);
-        console.log("✅ Multiple variables persisted successfully");
-      } catch (error) {
-        console.error("❌ Failed to persist multiple variables:", error);
-      }
-    },
-    [dashboardId]
+    [
+      currentDashboard,
+      getDefaultVariables,
+      setDashboardVariables,
+      setLoading,
+      loadVariables,
+    ]
   );
 
   // Cargar variables con debouncing cuando cambia el dashboardId
@@ -216,7 +139,12 @@ export const useVariableLoader = (dashboardId: string | null) => {
         clearTimeout(debounceRef.current);
       }
     };
-  }, [dashboardId]); // Solo dashboardId como dependencia crítica
+  }, [
+    dashboardId,
+    setCurrentDashboard,
+    clearDashboardVariables,
+    loadDashboardVariables,
+  ]);
 
   // Recargar variables cuando el dashboard cambia (para aplicar defaultVariables)
   useEffect(() => {
@@ -240,12 +168,17 @@ export const useVariableLoader = (dashboardId: string | null) => {
         }, 50);
       }
     }
-  }, [currentDashboard?.defaultVariables, dashboardId, currentDashboard?._id]);
+  }, [
+    currentDashboard?.defaultVariables,
+    dashboardId,
+    currentDashboard?._id,
+    loadDashboardVariables,
+  ]);
 
   return {
     isLoading,
-    persistVariable,
-    persistMultiple,
+    persistVariable: persistVar,
+    persistMultiple: persistMulti,
     loadDashboardVariables: () =>
       dashboardId ? loadDashboardVariables(dashboardId) : Promise.resolve(),
   };

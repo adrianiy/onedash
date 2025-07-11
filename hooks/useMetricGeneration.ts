@@ -8,15 +8,15 @@ import type {
   TimeframeType,
   CalculationType,
   IndicatorType,
-} from "../types/metricConfig";
+} from "@/types/metricConfig";
 import {
   generateMetricId,
   generateMetricTitle,
   isModifierCompatible,
   IndicatorMetadata,
   ModifiersMetadata,
-} from "../types/metricConfig";
-import { useVariableStore } from "../store/variableStore";
+} from "@/types/metricConfig";
+import { useVariableStore } from "@/store/variableStore";
 
 export interface MetricGenerationOptions {
   mode: "single" | "multiple";

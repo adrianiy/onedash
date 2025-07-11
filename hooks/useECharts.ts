@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import * as echarts from "echarts";
 import type { EChartsOption, ECharts } from "echarts";
-import { useThemeStore } from "../store/themeStore";
+import { useThemeStore } from "@/store/themeStore";
 
 interface UseEChartsOptions {
   option: EChartsOption;

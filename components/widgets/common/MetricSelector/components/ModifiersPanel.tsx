@@ -4,7 +4,7 @@ import { CheckboxItem } from "./CheckboxItem";
 import {
   ModifiersMetadata,
   type VariableBinding,
-} from "../../../../../types/metricConfig";
+} from "@/types/metricConfig";
 
 /**
  * Panel lateral para la selección de modificadores en indicadores y temporalidad

@@ -3,9 +3,9 @@ import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import AzureADProvider from "next-auth/providers/azure-ad";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { connectToDatabase } from "../../../lib/mongodb";
-import User from "../../../lib/models/User";
-import { comparePassword } from "../../../lib/auth";
+import { connectToDatabase } from "@/lib/mongodb";
+import User from "@/lib/models/User";
+import { comparePassword } from "@/lib/auth";
 
 // Extend NextAuth User type
 declare module "next-auth" {

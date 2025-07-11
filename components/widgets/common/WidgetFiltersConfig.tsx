@@ -1,11 +1,16 @@
 import React, { useState, useRef } from "react";
-import { Icon } from "../../../common/Icon";
+import { Icon } from "@/common/Icon";
 import { Tooltip } from "react-tooltip";
-import { ConfigDropdown } from "../../common/ConfigDropdown";
-import { CustomMultiSelect } from "../../../common/CustomMultiSelect";
-import { DateRangeDropdown } from "../../../common/DateRangeDropdown";
-import { useWidgetStore } from "../../../../store/widgetStore";
-import type { Widget, TableWidgetConfig } from "../../../../types/widget";
+import { ConfigDropdown } from "./ConfigDropdown";
+import { CustomMultiSelect } from "@/common/CustomMultiSelect";
+import { DateRangeDropdown } from "@/common/DateRangeDropdown";
+import { useWidgetStore } from "@/store/widgetStore";
+import type {
+  Widget,
+  TableWidgetConfig,
+  MetricWidgetConfig,
+  ChartWidgetConfig,
+} from "@/types/widget";
 
 interface WidgetFiltersConfigProps {
   widget: Widget;
@@ -27,11 +32,48 @@ const SECTION_OPTIONS = [
 // Tipo de filtro
 type FilterType = "products" | "sections" | "dateRange";
 
+// Configuración por tipo de widget
+const WIDGET_FILTER_CONFIG = {
+  table: {
+    description:
+      "Estos filtros se aplicarán siempre a esta tabla, independientemente de los filtros globales",
+    componentName: "tabla",
+  },
+  metric: {
+    description:
+      "Estos filtros se aplicarán siempre a esta métrica, independientemente de los filtros globales",
+    componentName: "métrica",
+  },
+  chart: {
+    description:
+      "Estos filtros se aplicarán siempre a este gráfico, independientemente de los filtros globales",
+    componentName: "gráfico",
+  },
+} as const;
+
+// Helper para obtener widgetFilters según el tipo de widget
+const getWidgetFilters = (widget: Widget) => {
+  const config = widget.config || {};
+
+  switch (widget.type) {
+    case "table":
+      return (config as TableWidgetConfig).widgetFilters || {};
+    case "metric":
+      return (config as MetricWidgetConfig).widgetFilters || {};
+    case "chart":
+      return (config as ChartWidgetConfig).widgetFilters || {};
+    default:
+      return {};
+  }
+};
+
 export const WidgetFiltersConfig: React.FC<WidgetFiltersConfigProps> = ({
   widget,
 }) => {
-  const tableConfig = widget.config || {};
-  const widgetFilters = (tableConfig as TableWidgetConfig).widgetFilters || {};
+  const widgetFilters = getWidgetFilters(widget);
+  const config =
+    WIDGET_FILTER_CONFIG[widget.type as keyof typeof WIDGET_FILTER_CONFIG] ||
+    WIDGET_FILTER_CONFIG.table;
 
   // Referencia para controlar el estado del dropdown
   const setDropdownOpenRef = useRef<((isOpen: boolean) => void) | null>(null);
@@ -53,9 +95,12 @@ export const WidgetFiltersConfig: React.FC<WidgetFiltersConfigProps> = ({
 
   // Funciones para actualizar los filtros
   const updateWidgetFilters = (
-    newFilters: Partial<TableWidgetConfig["widgetFilters"]>
+    newFilters: Partial<
+      | TableWidgetConfig["widgetFilters"]
+      | MetricWidgetConfig["widgetFilters"]
+      | ChartWidgetConfig["widgetFilters"]
+    >
   ) => {
-    // Funciona para cualquier widget que tenga `widgetFilters` en su config
     useWidgetStore.getState().updateWidget(widget._id, {
       config: {
         ...widget.config,
@@ -157,7 +202,7 @@ export const WidgetFiltersConfig: React.FC<WidgetFiltersConfigProps> = ({
                 options={PRODUCT_OPTIONS}
                 value={products}
                 onChange={handleProductsChange}
-                placeholder="Seleccionar productos"
+                placeholder="Productos"
                 className="widget-filters__control"
               />
             </div>
@@ -183,7 +228,7 @@ export const WidgetFiltersConfig: React.FC<WidgetFiltersConfigProps> = ({
                 options={SECTION_OPTIONS}
                 value={sections}
                 onChange={handleSectionsChange}
-                placeholder="Seleccionar secciones"
+                placeholder="Secciones"
                 className="widget-filters__control"
               />
             </div>
@@ -266,8 +311,7 @@ export const WidgetFiltersConfig: React.FC<WidgetFiltersConfigProps> = ({
       >
         <div className="widget-filters__dropdown-content">
           <div className="widget-filters__dropdown-description">
-            Estos filtros se aplicarán siempre a esta tabla, independientemente
-            de los filtros globales
+            {config.description}
           </div>
 
           <div className="widget-filters-options">

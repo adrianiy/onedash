@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
-import { useDashboardStore } from "../../store/dashboardStore";
-import { useAuthStore } from "../../store/authStore";
-import { Icon } from "../common/Icon";
-import { DashboardFormModal } from "../dashboard/DashboardFormModal";
-import { DeleteConfirmModal } from "../common/DeleteConfirmModal";
-import type { Dashboard } from "../../types/dashboard";
+import { useDashboardStore } from "@/store/dashboardStore";
+import { useAuthStore } from "@/store/authStore";
+import { Icon } from "@/common/Icon";
+import { DashboardFormModal } from "@/components/dashboard/DashboardFormModal";
+import { DeleteConfirmModal } from "@/common/DeleteConfirmModal";
+import type { Dashboard } from "@/types/dashboard";
 
 interface DashboardSidebarProps {
   isOpen: boolean;

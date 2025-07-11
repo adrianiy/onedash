@@ -6,7 +6,7 @@ import Select, {
   MultiValueProps,
   MultiValueRemoveProps,
 } from "react-select";
-import { Icon } from "../common/Icon";
+import { Icon } from "@/common/Icon";
 
 interface User {
   _id: string;

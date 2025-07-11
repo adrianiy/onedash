@@ -4,11 +4,11 @@ import type {
   Dashboard,
   DashboardLayout,
   DashboardSettings,
-} from "../types/dashboard";
+} from "@/types/dashboard";
 import { useVariableStore } from "./variableStore";
 import { useWidgetStore } from "./widgetStore";
-import { apiService } from "../services/apiService";
-import type { Widget } from "../types/widget";
+import { apiService } from "@/services/apiService";
+import type { Widget } from "@/types/widget";
 import { useAuthStore } from "./authStore";
 
 interface DashboardState {

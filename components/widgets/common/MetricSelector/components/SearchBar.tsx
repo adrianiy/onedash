@@ -1,5 +1,5 @@
 import React from "react";
-import { Icon } from "../../../../common/Icon";
+import { Icon } from "@/common/Icon";
 import SearchResults from "./SearchResults";
 
 interface SearchBarProps {

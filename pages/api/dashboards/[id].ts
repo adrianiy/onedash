@@ -1,9 +1,9 @@
 import { NextApiResponse } from "next";
-import { AuthenticatedRequest, withUserData } from "../../../lib/middleware";
-import { connectToDatabase } from "../../../lib/mongodb";
-import Dashboard, { IDashboard } from "../../../lib/models/Dashboard";
-import Widget from "../../../lib/models/Widget";
-import Variable from "../../../lib/models/Variable";
+import { AuthenticatedRequest, withUserData } from "@/lib/middleware";
+import { connectToDatabase } from "@/lib/mongodb";
+import Dashboard, { IDashboard } from "@/lib/models/Dashboard";
+import Widget from "@/lib/models/Widget";
+import Variable from "@/lib/models/Variable";
 import mongoose from "mongoose";
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {

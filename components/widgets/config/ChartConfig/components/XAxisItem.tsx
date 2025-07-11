@@ -1,9 +1,9 @@
 import React from "react";
-import { Icon } from "../../../../common/Icon";
+import { Icon } from "@/common/Icon";
 import type {
   BreakdownOption,
   BreakdownCategory,
-} from "../../../../../types/breakdownLevels";
+} from "@/types/breakdownLevels";
 
 interface XAxisItemProps {
   option: BreakdownOption;

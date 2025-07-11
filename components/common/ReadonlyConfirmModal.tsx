@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Icon } from "./Icon";
-import type { Dashboard } from "../../types/dashboard";
+import type { Dashboard } from "@/types/dashboard";
 
 interface ReadonlyConfirmModalProps {
   isOpen: boolean;

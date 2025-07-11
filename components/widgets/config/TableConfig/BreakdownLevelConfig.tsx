@@ -1,10 +1,10 @@
 import React, { useState, useRef } from "react";
-import type { Widget, TableWidgetConfig } from "../../../../types/widget";
-import { ConfigDropdown } from "../../common/ConfigDropdown";
-import { EmptyPlaceholder } from "../../common/EmptyPlaceholder";
-import { Icon } from "../../../common/Icon";
-import { useWidgetStore } from "../../../../store/widgetStore";
-import { breakdownCategories } from "../../../../types/breakdownLevels";
+import type { Widget, TableWidgetConfig } from "@/types/widget";
+import { ConfigDropdown } from "@/components/widgets/common/ConfigDropdown";
+import { EmptyPlaceholder } from "@/widgets/common/EmptyPlaceholder";
+import { Icon } from "@/common/Icon";
+import { useWidgetStore } from "@/store/widgetStore";
+import { breakdownCategories } from "@/types/breakdownLevels";
 import { BreakdownItem } from "./components/BreakdownItem";
 import {
   DndContext,

@@ -1,7 +1,7 @@
 import React from "react";
-import { CustomColorPicker } from "../../../../common/CustomColorPicker";
-import { ConfigDropdown } from "../../../common/ConfigDropdown";
-import type { MetricDefinition } from "../../../../../types/metricConfig";
+import { CustomColorPicker } from "@/common/CustomColorPicker";
+import { ConfigDropdown } from "@/components/widgets/common/ConfigDropdown";
+import type { MetricDefinition } from "@/types/metricConfig";
 
 interface SeriesColorChipProps {
   series: MetricDefinition & { visible?: boolean };

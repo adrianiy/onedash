@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
-import { useAuthStore } from "../store/authStore";
-import { useDashboardStore } from "../store/dashboardStore";
-import { Icon } from "../components/common/Icon";
+import { useAuthStore } from "@/store/authStore";
+import { useDashboardStore } from "@/store/dashboardStore";
+import { Icon } from "@/common/Icon";
 
 export default function Loading() {
   const router = useRouter();

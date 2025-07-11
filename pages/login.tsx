@@ -2,9 +2,9 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { signIn, getSession } from "next-auth/react";
-import { Card } from "../components/common/Card";
-import { Icon } from "../components/common/Icon";
-import { useAuthStore } from "../store/authStore";
+import { Card } from "@/common/Card";
+import { Icon } from "@/common/Icon";
+import { useAuthStore } from "@/store/authStore";
 
 export default function Login() {
   const router = useRouter();

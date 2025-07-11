@@ -2,13 +2,13 @@ import React, { useRef, useState } from "react";
 import type {
   MetricDefinition,
   MetricModifiers,
-} from "../../../../../types/metricConfig";
-import { ModifiersMetadata } from "../../../../../types/metricConfig";
-import { Icon } from "../../../../common/Icon";
+} from "@/types/metricConfig";
+import { ModifiersMetadata } from "@/types/metricConfig";
+import { Icon } from "@/common/Icon";
 import { useSortable } from "@dnd-kit/sortable";
-import { ConfigDropdown } from "../../../common/ConfigDropdown";
-import MetricSelector from "../../../common/MetricSelector/MetricSelector";
-import { useVariableStore } from "../../../../../store/variableStore";
+import { ConfigDropdown } from "@/components/widgets/common/ConfigDropdown";
+import MetricSelector from "@/components/widgets/common/MetricSelector/MetricSelector";
+import { useVariableStore } from "@/store/variableStore";
 import { Tooltip } from "react-tooltip";
 
 interface MetricItemProps {

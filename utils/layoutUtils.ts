@@ -1,4 +1,4 @@
-import type { DashboardLayout } from "../types/dashboard";
+import type { DashboardLayout } from "@/types/dashboard";
 import type { Layout } from "react-grid-layout";
 
 /**

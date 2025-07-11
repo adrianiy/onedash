@@ -1,11 +1,12 @@
 import React, { useMemo } from "react";
-import { BarChart } from "../../charts/BarChart";
-import { Icon } from "../../common/Icon";
-import type { ChartWidget as ChartWidgetType } from "../../../types/widget";
+import { BarChart } from "@/components/charts/BarChart";
+import { Icon } from "@/common/Icon";
+import { WidgetPlaceholder } from "../common";
+import type { ChartWidget as ChartWidgetType } from "@/types/widget";
 import {
   generateChartData,
   type ChartSeriesData,
-} from "../../../utils/generateChartData";
+} from "@/utils/generateChartData";
 
 interface ChartWidgetProps {
   widget: ChartWidgetType;
@@ -83,14 +84,11 @@ export const ChartWidget: React.FC<ChartWidgetProps> = ({ widget }) => {
   // Mostrar placeholder si no está configurado
   if (!isConfigured) {
     return (
-      <div className="widget-placeholder">
-        <Icon name="chart-column" size={48} />
-        <h3>Gráfico sin configurar</h3>
-        <div className="placeholder-tip">
-          <Icon name="info" size={16} />
-          <p>Selecciona una dimensión y al menos una métrica para empezar.</p>
-        </div>
-      </div>
+      <WidgetPlaceholder
+        icon="chart-column"
+        title="Gráfico sin configurar"
+        description="Selecciona una dimensión y al menos una métrica para empezar."
+      />
     );
   }
 

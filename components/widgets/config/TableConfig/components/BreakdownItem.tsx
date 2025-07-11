@@ -1,8 +1,8 @@
 import React from "react";
 import { Tooltip } from "react-tooltip";
-import { Icon, type IconName } from "../../../../common/Icon";
+import { Icon, type IconName } from "@/common/Icon";
 import { useSortable } from "@dnd-kit/sortable";
-import type { BreakdownOption } from "../../../../../types/breakdownLevels";
+import type { BreakdownOption } from "@/types/breakdownLevels";
 
 interface BreakdownItemProps {
   id: string;

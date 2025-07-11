@@ -1,5 +1,5 @@
 import React, { type ReactNode, useState } from "react";
-import { Icon } from "../../common/Icon";
+import { Icon } from "@/common/Icon";
 
 interface ConfigSectionProps {
   title: string;

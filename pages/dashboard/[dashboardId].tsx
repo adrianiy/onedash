@@ -1,15 +1,15 @@
 import React, { useEffect, useRef } from "react";
 import { useRouter } from "next/router";
-import { useDashboardStore } from "../../store/dashboardStore";
-import { useWidgetStore } from "../../store/widgetStore";
-import { useVariableLoader } from "../../hooks/useVariableLoader";
-import { DashboardGrid } from "../../components/dashboard/DashboardGrid";
-import { WidgetConfigSidebar } from "../../components/layout/WidgetConfigSidebar";
-import { Header } from "../../components/layout/Header";
-import { FilterBar } from "../../components/layout/FilterBar";
-import { FloatingActionBar } from "../../components/layout/FloatingActionBar";
-import { DashboardSidebar } from "../../components/layout/DashboardSidebar";
-import { ProtectedRoute } from "../../components/auth/ProtectedRoute";
+import { useDashboardStore } from "@/store/dashboardStore";
+import { useWidgetStore } from "@/store/widgetStore";
+import { useVariableLoader } from "@/hooks/useVariableLoader";
+import { DashboardGrid } from "@/components/dashboard/DashboardGrid";
+import { WidgetConfigSidebar } from "@/layout/WidgetConfigSidebar";
+import { Header } from "@/layout/Header";
+import { FilterBar } from "@/layout/FilterBar";
+import { FloatingActionBar } from "@/layout/FloatingActionBar";
+import { DashboardSidebar } from "@/layout/DashboardSidebar";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useState } from "react";
 
 export default function Dashboard() {

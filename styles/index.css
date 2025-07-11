@@ -11,6 +11,7 @@
 @import "./dashboard-form.css";
 @import "./delete-confirm-modal.css";
 @import "./config-panel.css";
+@import "./base-config-tabs.css";
 @import "./breakdown-levels.css";
 @import "./columns-config.css";
 @import "./column-item.css";
@@ -31,6 +32,7 @@
 @import "./auth.css";
 @import "./user-avatar.css";
 @import "./collaborator-selector.css";
+@import "./viz-components.css";
 
 /* Global Styles */
 *,

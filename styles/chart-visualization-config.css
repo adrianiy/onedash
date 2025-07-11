@@ -336,7 +336,6 @@
 }
 
 [data-theme="dark"] .viz-chart-configurator {
-  background: var(--color-surface-tertiary);
   border-color: var(--color-border);
 }
 
@@ -510,10 +509,6 @@
 
   .viz-chart-controls {
     gap: 0.25rem;
-  }
-
-  .viz-control-btn {
-    padding: 0.375rem;
   }
 
   .viz-colors-palette-grid {

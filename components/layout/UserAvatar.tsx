@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useAuthStore } from "../../store/authStore";
-import { Icon } from "../common/Icon";
+import { useAuthStore } from "@/store/authStore";
+import { Icon } from "@/common/Icon";
 import {
   useFloating,
   offset,

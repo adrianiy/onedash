@@ -1,17 +1,17 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Tooltip } from "react-tooltip";
-import { Icon } from "../../../../common/Icon";
+import { Icon } from "@/common/Icon";
 import { useSortable } from "@dnd-kit/sortable";
 import type {
   MetricDefinition,
   MetricModifiers,
-} from "../../../../../types/metricConfig";
+} from "@/types/metricConfig";
 import {
   ModifiersMetadata,
   getDisplayTitle,
-} from "../../../../../types/metricConfig";
-import { useVariableStore } from "../../../../../store/variableStore";
-import { TextInterpolationInput } from "../../../../common/TextInterpolationInput";
+} from "@/types/metricConfig";
+import { useVariableStore } from "@/store/variableStore";
+import { TextInterpolationInput } from "@/common/TextInterpolationInput";
 
 interface ColumnItemProps {
   id: string;

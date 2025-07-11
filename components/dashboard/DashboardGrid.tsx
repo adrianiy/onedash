@@ -1,11 +1,11 @@
 import React, { useMemo } from "react";
 import { Responsive, WidthProvider } from "react-grid-layout";
-import { useDashboardStore } from "../../store/dashboardStore";
-import { useWidgetStore } from "../../store/widgetStore";
-import { useGridLayout } from "../../hooks/useGridLayout";
+import { useDashboardStore } from "@/store/dashboardStore";
+import { useWidgetStore } from "@/store/widgetStore";
+import { useGridLayout } from "@/hooks/useGridLayout";
 import { WidgetContainer } from "./WidgetContainer";
 import { DashboardEmptyPlaceholder } from "./DashboardEmptyPlaceholder";
-import type { WidgetType } from "../../types/widget";
+import type { WidgetType } from "@/types/widget";
 import type { Layout } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";

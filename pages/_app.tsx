@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import type { AppProps } from "next/app";
 import { SessionProvider } from "next-auth/react";
-import { useThemeStore } from "../store/themeStore";
-import { useAuthStore } from "../store/authStore";
-import { useDashboardStore } from "../store/dashboardStore";
+import { useThemeStore } from "@/store/themeStore";
+import { useAuthStore } from "@/store/authStore";
+import { useDashboardStore } from "@/store/dashboardStore";
 import "react-tooltip/dist/react-tooltip.css";
-import "../styles/index.css";
+import "@/styles/index.css";
 
 export default function App({
   Component,

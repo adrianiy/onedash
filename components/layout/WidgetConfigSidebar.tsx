@@ -1,11 +1,11 @@
-import React, { useState, useRef, useEffect } from "react";
+import { Icon } from "@/common/Icon";
+import { ChartConfig } from "@/config/ChartConfig";
+import { MetricConfig } from "@/config/MetricConfig";
+import { TableConfig } from "@/config/TableConfig";
+import { useDashboardStore } from "@/store/dashboardStore";
+import { useWidgetStore } from "@/store/widgetStore";
 import type { KeyboardEvent } from "react";
-import { useDashboardStore } from "../../store/dashboardStore";
-import { useWidgetStore } from "../../store/widgetStore";
-import { Icon } from "../common/Icon";
-import { TableConfig } from "../widgets/config/TableConfig";
-import { MetricConfig } from "../widgets/config/MetricConfig";
-import { ChartConfig } from "../widgets/config/ChartConfig";
+import React, { useEffect, useRef, useState } from "react";
 
 export const WidgetConfigSidebar: React.FC = () => {
   const {

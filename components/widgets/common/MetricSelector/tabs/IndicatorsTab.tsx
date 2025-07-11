@@ -1,11 +1,11 @@
 import React from "react";
 import type { MetricTabProps } from "../types";
-import { CheckboxItem } from "../components/CheckboxItem";
+import { CheckboxItem } from "@/components/widgets/common/MetricSelector/components/CheckboxItem";
 import {
   type IndicatorType,
   IndicatorMetadata,
-} from "../../../../../types/metricConfig";
-import type { VariableBinding } from "../../../../../types/metricConfig";
+} from "@/types/metricConfig";
+import type { VariableBinding } from "@/types/metricConfig";
 
 interface ExtendedMetricTabProps extends MetricTabProps {
   shouldShowDynamicOptionForSelector?: (selectorType: string) => boolean;

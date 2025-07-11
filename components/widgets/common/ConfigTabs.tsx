@@ -1,5 +1,5 @@
 import React from "react";
-import type { Widget } from "../../../types/widget";
+import type { Widget } from "@/types/widget";
 
 export interface ConfigTab {
   id: string;

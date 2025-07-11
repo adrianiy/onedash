@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
-import { useAuthStore } from "../../store/authStore";
-import { Icon } from "../common/Icon";
+import { useAuthStore } from "@/store/authStore";
+import { Icon } from "@/common/Icon";
 
 interface ProtectedRouteProps {
   redirectPath?: string;

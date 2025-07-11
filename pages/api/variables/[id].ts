@@ -1,7 +1,7 @@
 import { NextApiResponse } from "next";
-import { AuthenticatedRequest, withUserData } from "../../../lib/middleware";
-import { connectToDatabase } from "../../../lib/mongodb";
-import Variable from "../../../lib/models/Variable";
+import { AuthenticatedRequest, withUserData } from "@/lib/middleware";
+import { connectToDatabase } from "@/lib/mongodb";
+import Variable from "@/lib/models/Variable";
 import mongoose from "mongoose";
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {

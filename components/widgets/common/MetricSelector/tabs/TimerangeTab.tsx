@@ -1,7 +1,7 @@
 import React from "react";
 import type { MetricTabProps } from "../types";
-import { CheckboxItem } from "../components/CheckboxItem";
-import { ModifiersMetadata } from "../../../../../types/metricConfig";
+import { CheckboxItem } from "@/components/widgets/common/MetricSelector/components/CheckboxItem";
+import { ModifiersMetadata } from "@/types/metricConfig";
 
 export const TimerangeTab: React.FC<MetricTabProps> = ({
   searchQuery,

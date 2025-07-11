@@ -1,6 +1,6 @@
 import React from "react";
-import type { Widget, MetricWidget } from "../../../../types/widget";
-import { MetricConfigTabs } from "./MetricConfigTabs";
+import type { Widget, MetricWidget } from "@/types/widget";
+import { BaseWidgetConfig } from "../base";
 
 interface MetricConfigProps {
   widget: Widget;
@@ -17,7 +17,7 @@ export const MetricConfig: React.FC<MetricConfigProps> = ({ widget }) => {
 
   return (
     <div className="metric-config">
-      <MetricConfigTabs widget={metricWidget} />
+      <BaseWidgetConfig widget={metricWidget} className="metric-config__base" />
     </div>
   );
 };

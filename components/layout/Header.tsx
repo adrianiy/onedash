@@ -1,10 +1,10 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useDashboardStore } from "../../store/dashboardStore";
-import { useThemeStore } from "../../store/themeStore";
-import { useAuthStore } from "../../store/authStore";
-import { Icon } from "../common/Icon";
+import { useDashboardStore } from "@/store/dashboardStore";
+import { useThemeStore } from "@/store/themeStore";
+import { useAuthStore } from "@/store/authStore";
+import { Icon } from "@/common/Icon";
 import { UserAvatar } from "./UserAvatar";
 import { EditToolbar } from "./EditToolbar";
 

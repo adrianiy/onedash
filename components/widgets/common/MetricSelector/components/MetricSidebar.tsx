@@ -1,12 +1,12 @@
 import React from "react";
 import type { MetricSidebarProps } from "../types";
-import { Icon } from "../../../../common/Icon";
+import { Icon } from "@/common/Icon";
 import {
   IndicatorMetadata,
   type MetricDefinition,
-} from "../../../../../types/metricConfig";
-import { useVariableStore } from "../../../../../store/variableStore";
-import { resolveRecursively } from "../../../../../utils/variableResolver";
+} from "@/types/metricConfig";
+import { useVariableStore } from "@/store/variableStore";
+import { resolveRecursively } from "@/utils/variableResolver";
 
 /**
  * Sidebar lateral que muestra el resumen de métricas seleccionadas

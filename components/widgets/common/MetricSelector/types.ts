@@ -1,5 +1,5 @@
-import type { MetricDefinition } from "../../../../types/metricConfig";
-import type { IconName } from "../../../common/Icon";
+import type { MetricDefinition } from "@/types/metricConfig";
+import type { IconName } from "@/common/Icon";
 
 export interface MetricSelectorProps {
   // Modo de selección
@@ -23,7 +23,7 @@ export interface MetricSelectorProps {
 
 export type SelectedModifiers = Record<string, (string | VariableBinding)[]>;
 
-import type { VariableBinding } from "../../../../types/metricConfig";
+import type { VariableBinding } from "@/types/metricConfig";
 
 export interface CheckboxItemProps {
   label: string;

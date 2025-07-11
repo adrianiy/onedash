@@ -1,19 +1,19 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
-import type { MetricDefinition } from "../../../../types/metricConfig";
+import type { MetricDefinition } from "@/types/metricConfig";
 import {
   IndicatorMetadata,
   ModifiersMetadata,
-} from "../../../../types/metricConfig";
-import { useMetricGeneration } from "../../../../hooks/useMetricGeneration";
-import { useDashboardStore } from "../../../../store/dashboardStore";
-import { useWidgetStore } from "../../../../store/widgetStore";
+} from "@/types/metricConfig";
+import { useMetricGeneration } from "@/hooks/useMetricGeneration";
+import { useDashboardStore } from "@/store/dashboardStore";
+import { useWidgetStore } from "@/store/widgetStore";
 import {
   MODIFIER_TO_VARIABLE_TYPE_MAP,
   SELECTOR_TO_VARIABLE_TYPE_MAP,
   DYNAMIC_LABELS,
-} from "../../../../utils/variableResolver";
+} from "@/utils/variableResolver";
 import type { SelectedModifiers } from "./types";
-import type { Widget } from "../../../../types/widget";
+import type { Widget } from "@/types/widget";
 
 /**
  * Hook personalizado para gestionar las funcionalidades del MetricSelector

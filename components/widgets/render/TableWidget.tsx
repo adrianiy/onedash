@@ -1,21 +1,19 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Icon } from "../../common/Icon";
-import type {
-  TableWidget as TableWidgetType,
-  ConditionalFormatRule,
-} from "../../../types/widget";
+import { Icon } from "@/common/Icon";
+import { WidgetPlaceholder, useConditionalFormatting } from "../common";
+import type { TableWidget as TableWidgetType } from "@/types/widget";
 import type {
   MetricDefinition,
   IndicatorType,
-} from "../../../types/metricConfig";
+} from "@/types/metricConfig";
 import {
   generateTableData,
   calculateTotals,
   type TableDataFilters,
-} from "../../../utils/generateTableData";
-import { formatValue } from "../../../utils/format";
-import { getDisplayTitle } from "../../../types/metricConfig";
-import { useVariableStore } from "../../../store/variableStore";
+} from "@/utils/generateTableData";
+import { formatValue } from "@/utils/format";
+import { getDisplayTitle } from "@/types/metricConfig";
+import { useVariableStore } from "@/store/variableStore";
 
 // Tipo ampliado para incluir "desglose"
 type ExtendedIndicatorType = IndicatorType | "desglose";
@@ -52,61 +50,10 @@ export const TableWidget: React.FC<TableWidgetProps> = ({ widget }) => {
   const { variables } = useVariableStore();
   // Verificar si hay filtros específicos del widget configurados
   const widgetFilters = widget.config.widgetFilters;
-  // Función para obtener el estilo condicional de una celda
-  const getConditionalStyle = (
-    columnId: string,
-    value: unknown
-  ): React.CSSProperties => {
-    const formats: ConditionalFormatRule[] =
-      widget.config.visualization?.conditionalFormats || [];
-    let finalStyle: React.CSSProperties = {};
-
-    if (formats.length === 0) {
-      return finalStyle;
-    }
-
-    for (const format of formats) {
-      if (!format.isEnabled || format.columnId !== columnId) {
-        continue;
-      }
-
-      const numericValue = Number(value);
-      const numericRuleValue = Number(format.value);
-      let conditionMet = false;
-
-      switch (format.condition) {
-        case "greater_than":
-          if (!isNaN(numericValue) && !isNaN(numericRuleValue)) {
-            conditionMet = numericValue > numericRuleValue;
-          }
-          break;
-        case "less_than":
-          if (!isNaN(numericValue) && !isNaN(numericRuleValue)) {
-            conditionMet = numericValue < numericRuleValue;
-          }
-          break;
-        case "equals":
-          // eslint-disable-next-line eqeqeq
-          conditionMet = value == format.value;
-          break;
-        case "contains":
-          conditionMet = String(value)
-            .toLowerCase()
-            .includes(String(format.value).toLowerCase());
-          break;
-      }
-
-      if (conditionMet) {
-        finalStyle = {
-          backgroundColor: format.style.backgroundColor,
-          color: format.style.textColor,
-          fontWeight: format.style.fontWeight,
-        };
-      }
-    }
-
-    return finalStyle;
-  };
+  // Use common conditional formatting hook
+  const conditionalFormats =
+    widget.config.visualization?.conditionalFormats || [];
+  const { getConditionalStyle } = useConditionalFormatting(conditionalFormats);
 
   // Estado para datos generados
   const [tableData, setTableData] = useState<Record<string, unknown>[]>([]);
@@ -487,14 +434,11 @@ export const TableWidget: React.FC<TableWidgetProps> = ({ widget }) => {
   // Show placeholder if table is not fully configured
   if (!hasBreakdownLevels || !hasColumns) {
     return (
-      <div className="widget-placeholder">
-        <Icon name="table" size={48} />
-        <h3>Tabla sin configurar</h3>
-        <div className="placeholder-tip">
-          <Icon name="info" size={16} />
-          <p>Configura desgloses y columnas o carga un preset</p>
-        </div>
-      </div>
+      <WidgetPlaceholder
+        icon="table"
+        title="Tabla sin configurar"
+        description="Configura desgloses y columnas o carga un preset"
+      />
     );
   }
 

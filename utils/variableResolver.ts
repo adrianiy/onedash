@@ -1,5 +1,5 @@
-import type { MetricDefinition } from "../types/metricConfig";
-import type { VariableBinding } from "../types/metricConfig";
+import type { MetricDefinition } from "@/types/metricConfig";
+import type { VariableBinding } from "@/types/metricConfig";
 
 /**
  * A simplified representation of a variable for use in resolver logic.

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import type { ConditionalFormatRule } from "../../../../../types/widget";
-import type { MetricDefinition } from "../../../../../types/metricConfig";
-import { Icon } from "../../../../common/Icon";
-import { CustomSelect } from "../../../../common/CustomSelect";
-import type { SelectOption } from "../../../../common/CustomSelect";
-import { CustomColorPicker } from "../../../../common/CustomColorPicker";
-import { ConfigDropdown } from "../../../common/ConfigDropdown";
+import type { ConditionalFormatRule } from "@/types/widget";
+import type { MetricDefinition } from "@/types/metricConfig";
+import { Icon } from "@/common/Icon";
+import { CustomSelect } from "@/common/CustomSelect";
+import type { SelectOption } from "@/common/CustomSelect";
+import { CustomColorPicker } from "@/common/CustomColorPicker";
+import { ConfigDropdown } from "@/components/widgets/common/ConfigDropdown";
 import { Tooltip } from "react-tooltip";
 
 interface ConditionalFormatFormProps {

@@ -1,5 +1,5 @@
 import React from "react";
-import { Icon } from "../../../../common/Icon";
+import { Icon } from "@/common/Icon";
 import { Tooltip } from "react-tooltip";
 import type { MetricFooterProps } from "../types";
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { Icon, type IconName } from "../../common/Icon";
+import { Icon, type IconName } from "@/common/Icon";
 
 interface EmptyPlaceholderProps {
   iconName: IconName;

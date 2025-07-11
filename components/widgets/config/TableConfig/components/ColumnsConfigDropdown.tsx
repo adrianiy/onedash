@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Icon } from "../../../../common/Icon";
-import type { TableWidgetConfig } from "../../../../../types/widget";
+import { Icon } from "@/common/Icon";
+import type { TableWidgetConfig } from "@/types/widget";
 
 // Tipo para una columna de tabla
 interface TableColumn {

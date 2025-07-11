@@ -1,8 +1,8 @@
 import React, { useRef } from "react";
-import type { MetricDefinition } from "../../../../../types/metricConfig";
-import MetricSelector from "../../../common/MetricSelector/MetricSelector";
-import { ConfigDropdown } from "../../../common/ConfigDropdown";
-import { Icon } from "../../../../common/Icon";
+import type { MetricDefinition } from "@/types/metricConfig";
+import MetricSelector from "@/components/widgets/common/MetricSelector/MetricSelector";
+import { ConfigDropdown } from "@/components/widgets/common/ConfigDropdown";
+import { Icon } from "@/common/Icon";
 import { Tooltip } from "react-tooltip";
 
 interface MetricSelectorSingleProps {

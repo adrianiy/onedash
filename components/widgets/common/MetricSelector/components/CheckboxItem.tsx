@@ -1,6 +1,6 @@
 import React from "react";
 import { type CheckboxItemProps } from "../types";
-import { Icon } from "../../../../common/Icon";
+import { Icon } from "@/common/Icon";
 
 /**
  * Componente reutilizable para los elementos checkbox/radio del selector de métricas.

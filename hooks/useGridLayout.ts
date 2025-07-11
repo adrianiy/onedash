@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import type { Layout, ReactGridLayoutProps } from "react-grid-layout";
-import { useDashboardStore } from "../store/dashboardStore";
+import { useDashboardStore } from "@/store/dashboardStore";
 
 export const useGridLayout = () => {
   const { settings, updateLayout, isEditing } = useDashboardStore();

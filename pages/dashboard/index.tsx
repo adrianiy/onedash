@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-import { useDashboardStore } from "../../store/dashboardStore";
-import { ProtectedRoute } from "../../components/auth/ProtectedRoute";
-import { Icon } from "../../components/common/Icon";
+import { useDashboardStore } from "@/store/dashboardStore";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { Icon } from "@/common/Icon";
 
 export default function DashboardIndex() {
   const router = useRouter();
