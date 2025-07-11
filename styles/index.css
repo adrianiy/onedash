@@ -1,171 +1,54 @@
 /* Import CSS variables and component styles */
-@import "./variables.css";
-@import "./globals.css";
-@import "./header.css";
-@import "./edit-toolbar.css";
-@import "./widget-config-sidebar.css";
-@import "./grid.css";
-@import "./widgets.css";
-@import "./floating-bar.css";
-@import "./modal.css";
-@import "./dashboard-form.css";
-@import "./delete-confirm-modal.css";
-@import "./config-panel.css";
-@import "./base-config-tabs.css";
-@import "./breakdown-levels.css";
-@import "./columns-config.css";
-@import "./column-item.css";
-@import "./visualization-config.css";
-@import "./chart-visualization-config.css";
-@import "./legend-position-grid.css";
-@import "./conditional-formatting.css";
-@import "./custom-color-picker.css";
-@import "./table-widget.css";
-@import "./metric-widget.css";
-@import "./metric-config.css";
-@import "./metric-selector.css";
-@import "./events-config.css";
-@import "./filter-bar.css";
-@import "./text-interpolation-input.css";
-@import "./widget-filters.css";
-@import "./text-widget.css";
-@import "./auth.css";
-@import "./user-avatar.css";
-@import "./collaborator-selector.css";
-@import "./viz-components.css";
 
-/* Global Styles */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/* Base styles */
+@import "./base/variables.css";
+@import "./base/globals.css";
+@import "./base/reset.css";
 
-:root {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  line-height: 1.5;
-  font-weight: 400;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
-}
+/* Layout components */
+@import "./components/layout/header.css";
+@import "./components/layout/edit-toolbar.css";
+@import "./components/layout/widget-config-sidebar.css";
+@import "./components/layout/filter-bar.css";
+@import "./components/layout/floating-bar.css";
 
-html {
-  height: 100%;
-  color-scheme: light dark;
-}
+/* Dashboard components */
+@import "./components/dashboard/grid.css";
+@import "./components/dashboard/widgets.css";
+@import "./components/dashboard/dashboard-form.css";
 
-body {
-  margin: 0;
-  height: 100%;
-  background-color: var(--color-background);
-  color: var(--color-text-primary);
-  transition: background-color var(--transition-normal),
-    color var(--transition-normal);
-}
+/* Common components */
+@import "./components/common/modal.css";
+@import "./components/common/delete-confirm-modal.css";
+@import "./components/common/user-avatar.css";
+@import "./components/common/custom-color-picker.css";
+@import "./components/common/text-interpolation-input.css";
+@import "./components/common/collaborator-selector.css";
 
-/* When editing mode is active */
-body.editing {
-  background-color: var(--color-background-editing) !important;
-}
+/* Widget configuration */
+@import "./components/widgets/config/config-panel.css";
+@import "./components/widgets/config/base-config-tabs.css";
+@import "./components/widgets/config/breakdown-levels.css";
+@import "./components/widgets/config/columns-config.css";
+@import "./components/widgets/config/column-item.css";
+@import "./components/widgets/config/visualization-config.css";
+@import "./components/widgets/config/chart-visualization-config.css";
+@import "./components/widgets/config/legend-position-grid.css";
+@import "./components/widgets/config/conditional-formatting.css";
+@import "./components/widgets/config/metric-config.css";
+@import "./components/widgets/config/metric-selector.css";
+@import "./components/widgets/config/events-config.css";
+@import "./components/widgets/config/widget-filters.css";
 
-#__next {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
+/* Widget render components */
+@import "./components/widgets/render/table-widget.css";
+@import "./components/widgets/render/metric-widget.css";
+@import "./components/widgets/render/text-widget.css";
 
-/* Button Reset */
-button {
-  border: none;
-  background: none;
-  font-family: inherit;
-  font-size: inherit;
-  cursor: pointer;
-  outline: none;
-}
+/* Auth styles */
+@import "./auth/auth.css";
 
-/* Link Reset */
-a {
-  color: inherit;
-  text-decoration: none;
-}
+/* Utilities */
+@import "./utils/viz-components.css";
 
-/* Input Reset */
-input,
-textarea,
-select {
-  font-family: inherit;
-  font-size: inherit;
-  border: none;
-  outline: none;
-}
-
-/* Scrollbar Styles - Minimalistas y flotantes */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-border) transparent;
-}
-
-::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-  background-color: transparent;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-  margin: 3px;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: rgba(var(--color-border-rgb), 0.4);
-  border-radius: var(--radius-full);
-  transition: background-color 0.3s ease;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(var(--color-border-hover-rgb), 0.6);
-}
-
-/* Ocultar scrollbar cuando no está en uso pero mantener funcionalidad */
-::-webkit-scrollbar-thumb:vertical:active,
-::-webkit-scrollbar-thumb:horizontal:active {
-  background-color: rgba(var(--color-border-hover-rgb), 0.7);
-}
-
-/* Focus Styles */
-:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
-
-/* Selection Styles */
-::selection {
-  background-color: var(--color-primary-light);
-  color: var(--color-text-primary);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  /* Se eliminó el padding-top del body */
-}
-
-/* Print styles */
-@media print {
-  .dashboard-container {
-    padding-top: 0 !important;
-  }
-
-  .app-header,
-  .edit-toolbar,
-  .floating-action-bar {
-    display: none !important;
-  }
-}
+/* Nota: Los estilos globales se han movido a base/reset.css */
