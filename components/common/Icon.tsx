@@ -1,6 +1,7 @@
 import React from "react";
 import {
   BarChart3,
+  ChartColumn,
   LineChart,
   PieChart,
   Settings,
@@ -74,6 +75,30 @@ import {
   Loader,
   Lock,
   Github,
+  List,
+  Hash,
+  MoveVertical,
+  MoveHorizontal,
+  RotateCw,
+  BarChart,
+  ArrowUp,
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  Euro,
+  Percent,
+  Circle,
+  Droplets,
+  Grape,
+  Leaf,
+  Square,
+  CornerUpLeft,
+  CornerUpRight,
+  CornerDownLeft,
+  CornerDownRight,
+  ChartBarDecreasing,
+  AlignJustify,
+  MoreHorizontal,
   type LucideIcon,
 } from "lucide-react";
 
@@ -90,6 +115,7 @@ import {
 
 const lucideIconMap = {
   "bar-chart": BarChart3,
+  "chart-column": ChartColumn,
   "line-chart": LineChart,
   "pie-chart": PieChart,
   settings: Settings,
@@ -166,6 +192,34 @@ const lucideIconMap = {
   github: Github,
   google: Globe, // Using Globe as placeholder for Google
   microsoft: Globe, // Using Globe as placeholder for Microsoft
+  // Nuevos iconos para gráficos
+  list: List,
+  "grid-3x3": Grid3X3,
+  hash: Hash,
+  "move-vertical": MoveVertical,
+  "move-horizontal": MoveHorizontal,
+  "rotate-cw": RotateCw,
+  "bar-chart-3": BarChart3,
+  "bar-chart-horizontal": BarChart,
+  "chart-bar": BarChart,
+  "arrow-up": ArrowUp,
+  "arrow-down": ArrowDown,
+  "arrow-left": ArrowLeft,
+  "arrow-right": ArrowRight,
+  euro: Euro,
+  percent: Percent,
+  circle: Circle,
+  droplets: Droplets,
+  grape: Grape,
+  leaf: Leaf,
+  square: Square,
+  "corner-up-left": CornerUpLeft,
+  "corner-up-right": CornerUpRight,
+  "corner-down-left": CornerDownLeft,
+  "corner-down-right": CornerDownRight,
+  "chart-bar-decreasing": ChartBarDecreasing,
+  "align-justify": AlignJustify,
+  "more-horizontal": MoreHorizontal,
 } as const;
 
 const tablerIconMap = {
@@ -185,6 +239,7 @@ interface IconProps {
   size?: number;
   className?: string;
   color?: string;
+  style?: React.CSSProperties;
 }
 
 export const Icon: React.FC<IconProps> = ({
@@ -192,6 +247,7 @@ export const Icon: React.FC<IconProps> = ({
   size = 16,
   className = "",
   color,
+  style,
 }) => {
   // Verificar si es un icono de Tabler
   if (name in tablerIconMap) {
@@ -203,6 +259,7 @@ export const Icon: React.FC<IconProps> = ({
         className={className}
         color={color}
         stroke={1.1} // Bordes más finos para un aspecto minimalista
+        style={style}
         aria-hidden="true"
       />
     );
@@ -223,6 +280,7 @@ export const Icon: React.FC<IconProps> = ({
       className={className}
       color={color}
       strokeWidth={1.1} // Bordes más finos para un aspecto minimalista
+      style={style}
       aria-hidden="true"
     />
   );

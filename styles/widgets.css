@@ -472,3 +472,18 @@
 [data-theme="dark"] .widget-filter-badge--section {
   background-color: rgba(var(--color-warning-rgb), 0.2);
 }
+
+/* Chart Widget Styles */
+.chart-widget {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* Important for flex children to shrink */
+}
+
+/* Ensure chart containers adapt to their parent */
+.chart-widget > * {
+  flex: 1;
+  min-height: 0;
+}

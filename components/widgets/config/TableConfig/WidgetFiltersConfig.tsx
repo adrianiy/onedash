@@ -30,7 +30,7 @@ type FilterType = "products" | "sections" | "dateRange";
 export const WidgetFiltersConfig: React.FC<WidgetFiltersConfigProps> = ({
   widget,
 }) => {
-  const tableConfig = widget.type === "table" ? widget.config : {};
+  const tableConfig = widget.config || {};
   const widgetFilters = (tableConfig as TableWidgetConfig).widgetFilters || {};
 
   // Referencia para controlar el estado del dropdown
@@ -55,17 +55,16 @@ export const WidgetFiltersConfig: React.FC<WidgetFiltersConfigProps> = ({
   const updateWidgetFilters = (
     newFilters: Partial<TableWidgetConfig["widgetFilters"]>
   ) => {
-    if (widget.type === "table") {
-      useWidgetStore.getState().updateWidget(widget._id, {
-        config: {
-          ...widget.config,
-          widgetFilters: {
-            ...widgetFilters,
-            ...newFilters,
-          },
+    // Funciona para cualquier widget que tenga `widgetFilters` en su config
+    useWidgetStore.getState().updateWidget(widget._id, {
+      config: {
+        ...widget.config,
+        widgetFilters: {
+          ...widgetFilters,
+          ...newFilters,
         },
-      });
-    }
+      },
+    });
   };
 
   // Handlers para los filtros

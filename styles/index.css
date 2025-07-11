@@ -15,6 +15,8 @@
 @import "./columns-config.css";
 @import "./column-item.css";
 @import "./visualization-config.css";
+@import "./chart-visualization-config.css";
+@import "./legend-position-grid.css";
 @import "./conditional-formatting.css";
 @import "./custom-color-picker.css";
 @import "./table-widget.css";

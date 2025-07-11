@@ -5,6 +5,7 @@ import { useWidgetStore } from "../../store/widgetStore";
 import { Icon } from "../common/Icon";
 import { TableConfig } from "../widgets/config/TableConfig";
 import { MetricConfig } from "../widgets/config/MetricConfig";
+import { ChartConfig } from "../widgets/config/ChartConfig";
 
 export const WidgetConfigSidebar: React.FC = () => {
   const {
@@ -149,6 +150,10 @@ export const WidgetConfigSidebar: React.FC = () => {
 
     if (widget.type === "metric") {
       return <MetricConfig widget={widget} />;
+    }
+
+    if (widget.type === "chart") {
+      return <ChartConfig widget={widget} />;
     }
 
     return (

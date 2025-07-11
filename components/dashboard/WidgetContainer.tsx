@@ -533,6 +533,18 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
           ) : null;
         }
 
+        // Para widgets de gráfico, verificar la configuración de visualización
+        if (widget.type === "chart") {
+          const visualization = widget.config.visualization || {};
+          const showTitle = visualization.showTitle !== false;
+
+          return widget.title && showTitle ? (
+            <div className="widget-header-container">
+              <h4 className="widget-title">{widget.title}</h4>
+            </div>
+          ) : null;
+        }
+
         // Para otros tipos de widgets, mostrar el título si existe
         return widget.title ? (
           <div className="widget-header-container">

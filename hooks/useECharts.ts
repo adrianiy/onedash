@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import * as echarts from "echarts";
 import type { EChartsOption, ECharts } from "echarts";
 import { useThemeStore } from "../store/themeStore";
@@ -18,9 +18,17 @@ export const useECharts = ({
 }: UseEChartsOptions) => {
   const chartRef = useRef<HTMLDivElement>(null);
   const chartInstanceRef = useRef<ECharts | null>(null);
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
   const globalTheme = useThemeStore((state) => state.theme);
 
   const currentTheme = theme || globalTheme;
+
+  // Optimized resize handler with debouncing
+  const handleResize = useCallback(() => {
+    if (chartInstanceRef.current) {
+      chartInstanceRef.current.resize();
+    }
+  }, []);
 
   useEffect(() => {
     if (!chartRef.current) return;
@@ -37,24 +45,32 @@ export const useECharts = ({
       onChartReady(chart);
     }
 
-    // Auto resize handler
-    const handleResize = () => {
-      chart.resize();
-    };
-
     if (autoResize) {
+      // Window resize listener (for overall window changes)
       window.addEventListener("resize", handleResize);
+
+      // ResizeObserver for container size changes
+      if (typeof ResizeObserver !== "undefined") {
+        resizeObserverRef.current = new ResizeObserver(() => {
+          // Use requestAnimationFrame to debounce resize calls
+          requestAnimationFrame(handleResize);
+        });
+        resizeObserverRef.current.observe(chartRef.current);
+      }
     }
 
     // Cleanup
     return () => {
       if (autoResize) {
         window.removeEventListener("resize", handleResize);
+        if (resizeObserverRef.current) {
+          resizeObserverRef.current.disconnect();
+        }
       }
       chart.dispose();
       chartInstanceRef.current = null;
     };
-  }, []);
+  }, [handleResize, onChartReady, currentTheme, autoResize]);
 
   // Update option when it changes
   useEffect(() => {

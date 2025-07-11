@@ -14,7 +14,7 @@ interface BaseChartProps {
 export const BaseChart: React.FC<BaseChartProps> = ({
   option,
   width = "100%",
-  height = "300px",
+  height = "100%",
   className = "",
   theme,
   onChartReady,

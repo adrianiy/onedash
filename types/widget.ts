@@ -24,10 +24,50 @@ export interface ConditionalFormatRule {
 }
 
 export interface ChartWidgetConfig {
-  chartType: ChartType;
-  dataSource?: string;
+  chartType: "bar"; // Fijo por ahora
+  // Dimensión del eje X
+  xAxisDimension?: "time" | "product" | "section" | "category";
+  // Series del eje Y (métricas)
+  series?: (MetricDefinition & { visible?: boolean })[];
+  // Datos procesados (generados automáticamente)
   data: Array<{ name: string; value: number }>;
-  options: Record<string, unknown>;
+  // Filtros específicos del widget
+  widgetFilters?: {
+    products?: string[];
+    sections?: string[];
+    dateRange?: {
+      start: string | null;
+      end: string | null;
+    };
+  };
+  // Configuración visual
+  visualization?: {
+    showTitle?: boolean;
+    showLegend?: boolean;
+    showGrid?: boolean;
+    showValues?: boolean;
+    showXAxis?: boolean;
+    showYAxis?: boolean;
+    rotateXLabels?: boolean;
+    chartOrientation?: "horizontal" | "vertical";
+    legendPosition?:
+      | {
+          vertical: "top" | "center" | "bottom";
+          horizontal: "left" | "center" | "right";
+        }
+      | "top"
+      | "bottom"
+      | "left"
+      | "right"; // Mantener compatibilidad con formato antiguo
+    legendOrientation?: "horizontal" | "vertical";
+    tooltipPosition?: "top" | "bottom" | "left" | "right";
+    valueFormat?: "auto" | "currency" | "percent";
+    filterDisplayMode?: "badges" | "info" | "hidden";
+    colorMode?: "default" | "palette" | "custom";
+    colorPalette?: "default" | "black" | "blue" | "violet" | "green";
+    customColors?: string[];
+    seriesColors?: { [seriesId: string]: string };
+  };
 }
 
 export interface MetricWidgetConfig {
