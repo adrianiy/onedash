@@ -1,10 +1,8 @@
-import { useEffect } from "react";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { signIn, getSession } from "next-auth/react";
-import { Card } from "@/common/Card";
 import { Icon } from "@/common/Icon";
 import { useAuthStore } from "@/store/authStore";
+import { getSession, signIn } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 export default function Login() {
   const router = useRouter();
@@ -41,7 +39,7 @@ export default function Login() {
   };
   return (
     <div className="auth-page">
-      <Card className="auth-page__card" padding="lg" shadow="md">
+      <div className="auth-page__card">
         <form className="auth-form">
           <div className="auth-form__icon-wrapper">
             <Icon name="log-in" size={36} className="auth-form__icon" />
@@ -58,6 +56,16 @@ export default function Login() {
 
           {/* Botones OAuth */}
           <div className="auth-form__oauth">
+            <button
+              type="button"
+              className="auth-form__oauth-button auth-form__oauth-button--microsoft"
+              onClick={() => handleOAuthLogin("azure-ad")}
+              disabled={isLoading}
+            >
+              <Icon name="brand-microsoft" size={20} />
+              Continuar con Microsoft
+            </button>
+
             <button
               type="button"
               className="auth-form__oauth-button auth-form__oauth-button--google"
@@ -77,27 +85,9 @@ export default function Login() {
               <Icon name="github" size={20} />
               Continuar con GitHub
             </button>
-
-            <button
-              type="button"
-              className="auth-form__oauth-button auth-form__oauth-button--microsoft"
-              onClick={() => handleOAuthLogin("azure-ad")}
-              disabled={isLoading}
-            >
-              <Icon name="brand-microsoft" size={20} />
-              Continuar con Microsoft
-            </button>
-          </div>
-
-          {/* Footer con link a registro */}
-          <div className="auth-form__footer">
-            ¿No tienes una cuenta?
-            <Link href="/register" className="auth-form__link">
-              Regístrate
-            </Link>
           </div>
         </form>
-      </Card>
+      </div>
     </div>
   );
 }
