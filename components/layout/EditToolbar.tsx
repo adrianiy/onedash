@@ -286,7 +286,6 @@ export const EditToolbar: React.FC = () => {
       config: {
         chartType: "bar",
         data: [],
-        options: {},
       },
       isConfigured: false,
     });
