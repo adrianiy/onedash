@@ -1,10 +1,10 @@
-import React from "react";
 import { Icon } from "@/common/Icon";
-import { Tooltip } from "react-tooltip";
-import type { ChartWidget } from "@/types/widget";
 import { useWidgetStore } from "@/store/widgetStore";
+import type { ChartWidget } from "@/types/widget";
+import React from "react";
+import { Tooltip } from "react-tooltip";
 import { VisualizationToggleButton } from "../../common/controls/VisualizationToggleButton";
-import { SeriesColorChip } from "@/config/ChartConfig/components/SeriesColorChip";
+import { SeriesColorChip } from "./SeriesColorChip";
 
 interface ColorModeSectionProps {
   widget: ChartWidget;

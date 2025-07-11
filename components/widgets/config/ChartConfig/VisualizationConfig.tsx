@@ -2,7 +2,7 @@ import { Icon } from "@/common/Icon";
 import {
   FilterDisplayControl,
   VisualizationToggleButton,
-} from "@/components/widgets/config/common";
+} from "@/config/common";
 import { useVisualizationLogic } from "@/config/hooks/useVisualizationLogic";
 import { useWidgetStore } from "@/store/widgetStore";
 import type { ChartWidget } from "@/types/widget";
@@ -13,7 +13,7 @@ import {
   ChartTypeSection,
   ColorModeSection,
   LegendAccordionSection,
-} from "./components";
+} from "./visualization";
 
 interface VisualizationConfigProps {
   widget: ChartWidget;

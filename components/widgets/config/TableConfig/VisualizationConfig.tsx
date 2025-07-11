@@ -3,8 +3,8 @@ import {
   FilterDisplayControl,
   TitleToggleControl,
   VisualizationToggleButton,
-} from "@/components/widgets/config/common";
-import { ConditionalFormatsControl } from "@/components/widgets/config/common/controls/ConditionalFormatsControl";
+} from "@/config/common";
+import { ConditionalFormatsControl } from "@/config/common/controls/ConditionalFormatsControl";
 import { useWidgetStore } from "@/store/widgetStore";
 import type { TableWidget, Widget } from "@/types/widget";
 import React from "react";
@@ -15,7 +15,7 @@ import {
   TablePreviewContainer,
   TableStyleControlsSection,
   TableTotalRowSection,
-} from "./components";
+} from "./visualization";
 
 interface VisualizationConfigProps {
   widget: Widget;

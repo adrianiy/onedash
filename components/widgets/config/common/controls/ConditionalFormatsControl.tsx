@@ -1,15 +1,15 @@
-import React, { useRef, useState } from "react";
+import { Icon } from "@/common/Icon";
+import { useWidgetStore } from "@/store/widgetStore";
+import type { MetricDefinition } from "@/types/metricConfig";
 import type {
-  ConditionalFormatRule,
   ChartWidget,
+  ConditionalFormatRule,
   MetricWidget,
   TableWidget,
 } from "@/types/widget";
-import type { MetricDefinition } from "@/types/metricConfig";
-import { useWidgetStore } from "@/store/widgetStore";
+import React, { useRef, useState } from "react";
 import { ConfigDropdown } from "../ui/ConfigDropdown";
-import { ConditionalFormatForm } from "@/config/TableConfig/components/ConditionalFormatForm";
-import { Icon } from "@/common/Icon";
+import { ConditionalFormatForm } from "./ConditionalFormatForm";
 
 interface ConditionalFormatsControlProps {
   widget: ChartWidget | MetricWidget | TableWidget;

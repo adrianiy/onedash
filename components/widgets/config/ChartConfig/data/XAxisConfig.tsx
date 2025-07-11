@@ -1,11 +1,11 @@
-import React, { useState, useRef } from "react";
-import type { Widget, ChartWidgetConfig } from "@/types/widget";
+import { Icon } from "@/common/Icon";
 import { ConfigDropdown } from "@/components/widgets/config/common/ui/ConfigDropdown";
 import { EmptyPlaceholder } from "@/components/widgets/config/common/ui/EmptyPlaceholder";
-import { Icon } from "@/common/Icon";
 import { useWidgetStore } from "@/store/widgetStore";
 import { breakdownCategories } from "@/types/breakdownLevels";
-import { XAxisItem } from "./components/XAxisItem";
+import type { ChartWidgetConfig, Widget } from "@/types/widget";
+import React, { useRef, useState } from "react";
+import { XAxisItem } from "./XAxisItem";
 
 interface XAxisConfigProps {
   widget: Widget;

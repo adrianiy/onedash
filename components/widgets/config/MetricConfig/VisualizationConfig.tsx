@@ -1,13 +1,13 @@
-import React from "react";
-import type { MetricWidget } from "@/types/widget";
-import { useWidgetStore } from "@/store/widgetStore";
 import {
-  FilterDisplayControl,
   ConditionalFormatsControl,
-  VisualizationToggleButton,
+  FilterDisplayControl,
   VisualizationControlGroup,
-} from "@/components/widgets/config/common";
+  VisualizationToggleButton,
+} from "@/config/common";
 import { useVisualizationLogic } from "@/config/hooks/useVisualizationLogic";
+import { useWidgetStore } from "@/store/widgetStore";
+import type { MetricWidget } from "@/types/widget";
+import React from "react";
 
 interface VisualizationConfigProps {
   widget: MetricWidget;

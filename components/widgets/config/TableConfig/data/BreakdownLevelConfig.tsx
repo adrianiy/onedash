@@ -1,26 +1,26 @@
-import React, { useState, useRef } from "react";
-import type { Widget, TableWidgetConfig } from "@/types/widget";
+import { Icon } from "@/common/Icon";
 import { ConfigDropdown } from "@/components/widgets/config/common/ui/ConfigDropdown";
 import { EmptyPlaceholder } from "@/components/widgets/config/common/ui/EmptyPlaceholder";
-import { Icon } from "@/common/Icon";
 import { useWidgetStore } from "@/store/widgetStore";
 import { breakdownCategories } from "@/types/breakdownLevels";
-import { BreakdownItem } from "./components/BreakdownItem";
+import type { TableWidgetConfig, Widget } from "@/types/widget";
 import {
   DndContext,
-  closestCenter,
-  useSensors,
-  useSensor,
-  PointerSensor,
   KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
   type DragEndEvent,
 } from "@dnd-kit/core";
 import {
   SortableContext,
+  arrayMove,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
-  arrayMove,
 } from "@dnd-kit/sortable";
+import React, { useRef, useState } from "react";
+import { BreakdownItem } from "./BreakdownItem";
 
 interface BreakdownLevelConfigProps {
   widget: Widget;

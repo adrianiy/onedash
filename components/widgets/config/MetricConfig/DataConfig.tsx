@@ -1,20 +1,18 @@
-import React, { useRef, useState } from "react";
-import type { MetricWidget } from "@/types/widget";
-import type { MetricDefinition } from "@/types/metricConfig";
-import { useWidgetStore } from "@/store/widgetStore";
-import { ConfigDropdown } from "@/components/widgets/config/common/ui/ConfigDropdown";
-import { EmptyPlaceholder } from "@/components/widgets/config/common/ui/EmptyPlaceholder";
 import { Icon } from "@/common/Icon";
-import MetricSelector from "@/components/widgets/config/common/MetricSelector/MetricSelector";
-import { MetricItem } from "./components/MetricItem";
-import { WidgetFiltersConfig } from "@/components/widgets/config/common/controls/WidgetFiltersConfig";
+import { WidgetFiltersConfig } from "@/config/common/controls/WidgetFiltersConfig";
+import MetricSelector from "@/config/common/MetricSelector/MetricSelector";
+import { ConfigDropdown } from "@/config/common/ui/ConfigDropdown";
+import { EmptyPlaceholder } from "@/config/common/ui/EmptyPlaceholder";
+import { useWidgetStore } from "@/store/widgetStore";
+import type { MetricDefinition } from "@/types/metricConfig";
+import type { MetricWidget } from "@/types/widget";
 import {
   DndContext,
-  closestCenter,
-  useSensors,
-  useSensor,
-  PointerSensor,
   KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
   type DragEndEvent,
 } from "@dnd-kit/core";
 import {
@@ -22,6 +20,8 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import React, { useRef, useState } from "react";
+import { MetricItem } from "./data/MetricItem";
 
 interface DataConfigProps {
   widget: MetricWidget;

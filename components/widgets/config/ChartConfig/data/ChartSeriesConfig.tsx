@@ -1,17 +1,17 @@
-import React from "react";
-import type { Widget, ChartWidgetConfig } from "@/types/widget";
-import type { MetricDefinition } from "@/types/metricConfig";
-import { useWidgetStore } from "@/store/widgetStore";
 import { GenericMetricListConfig } from "@/components/widgets/config/common/controls/GenericMetricListConfig";
-import { SeriesItemAdapter } from "./components/SeriesItemAdapter";
+import { useWidgetStore } from "@/store/widgetStore";
+import type { MetricDefinition } from "@/types/metricConfig";
+import type { ChartWidgetConfig, Widget } from "@/types/widget";
+import React from "react";
+import { SeriesItemAdapter } from "./SeriesItemAdapter";
 
-interface ChartSeriesConfigWrapperProps {
+interface ChartSeriesConfigProps {
   widget: Widget;
 }
 
-export const ChartSeriesConfigWrapper: React.FC<
-  ChartSeriesConfigWrapperProps
-> = ({ widget }) => {
+export const ChartSeriesConfig: React.FC<ChartSeriesConfigProps> = ({
+  widget,
+}) => {
   const { updateWidget } = useWidgetStore();
 
   // Verificar que es un widget de chart y obtener las series

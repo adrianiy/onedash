@@ -1,17 +1,17 @@
+import { GenericMetricListConfig } from "@/components/widgets/config/common/controls/GenericMetricListConfig";
 import { useWidgetStore } from "@/store/widgetStore";
 import type { MetricDefinition } from "@/types/metricConfig";
 import type { TableWidgetConfig, Widget } from "@/types/widget";
-import { GenericMetricListConfig } from "@/components/widgets/config/common/controls/GenericMetricListConfig";
 import React from "react";
-import { ColumnItemAdapter } from "./components/ColumnItemAdapter";
+import { ColumnItemAdapter } from "./ColumnItemAdapter";
 
-interface TableColumnsConfigWrapperProps {
+interface TableColumnsConfigProps {
   widget: Widget;
 }
 
-export const TableColumnsConfigWrapper: React.FC<
-  TableColumnsConfigWrapperProps
-> = ({ widget }) => {
+export const TableColumnsConfig: React.FC<TableColumnsConfigProps> = ({
+  widget,
+}) => {
   const { updateWidget } = useWidgetStore();
 
   // Verificar que es un widget de table y obtener las columnas

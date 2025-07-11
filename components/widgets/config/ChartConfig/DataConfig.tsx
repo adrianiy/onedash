@@ -1,8 +1,8 @@
-import React from "react";
+import { WidgetFiltersConfig } from "@/config/common/controls/WidgetFiltersConfig";
 import type { ChartWidget } from "@/types/widget";
-import { ChartSeriesConfig } from "./ChartSeriesConfig";
-import { WidgetFiltersConfig } from "@/components/widgets/config/common/controls/WidgetFiltersConfig";
-import { XAxisConfig } from "./XAxisConfig";
+import React from "react";
+import { ChartSeriesConfig } from "./data/ChartSeriesConfig";
+import { XAxisConfig } from "./data/XAxisConfig";
 
 interface DataConfigProps {
   widget: ChartWidget;
