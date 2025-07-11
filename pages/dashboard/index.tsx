@@ -1,8 +1,9 @@
-import { useEffect } from "react";
-import { useRouter } from "next/router";
-import { useDashboardStore } from "@/store/dashboardStore";
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Icon } from "@/common/Icon";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { useDashboardStore } from "@/store/dashboardStore";
+import Head from "next/head";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 export default function DashboardIndex() {
   const router = useRouter();
@@ -30,15 +31,24 @@ export default function DashboardIndex() {
 
   // Mostrar loading mientras se carga
   return (
-    <ProtectedRoute>
-      <div className="auth-page">
-        <div className="auth-page__loader-container">
-          <div className="auth-page__loader-content">
-            <Icon name="loader" className="auth-page__loader-icon" size={48} />
-            <p className="auth-page__loader-text">Cargando dashboard...</p>
+    <>
+      <Head>
+        <title>ONE - Dashboards</title>
+      </Head>
+      <ProtectedRoute>
+        <div className="auth-page">
+          <div className="auth-page__loader-container">
+            <div className="auth-page__loader-content">
+              <Icon
+                name="loader"
+                className="auth-page__loader-icon"
+                size={48}
+              />
+              <p className="auth-page__loader-text">Cargando dashboard...</p>
+            </div>
           </div>
         </div>
-      </div>
-    </ProtectedRoute>
+      </ProtectedRoute>
+    </>
   );
 }
