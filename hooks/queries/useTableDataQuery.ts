@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MetricDefinition } from "@/types/metricConfig";
 import { DataFilters } from "@/utils/dataGeneration";
 import { getDatasourceFromIndicator } from "./useWidgetDataQuery";
+import { useVariableStore } from "@/store/variableStore";
 
 // Tipo para los datos de una tabla
 export type TableData = Record<string, unknown>[];
@@ -31,6 +32,18 @@ export function useTableDataQuery(
     };
   }
 ) {
+  // Obtener las variables de filtro del store
+  const { variables } = useVariableStore();
+
+  // Crear un objeto de filtro combinado (prioriza los filtros específicos del widget)
+  const combinedFilters = {
+    products: filters?.products || variables.selectedProducts || [],
+    sections: filters?.sections || variables.selectedSections || [],
+    dateRange: filters?.dateRange || {
+      start: variables.dateStart || null,
+      end: variables.dateEnd || null,
+    },
+  };
   // Comprobar si hay datos suficientes para generar la tabla
   const canFetchData = Boolean(
     columns.length > 0 && breakdownLevels.length > 0
@@ -67,7 +80,7 @@ export function useTableDataQuery(
           }))
         : [],
       breakdownLevels,
-      filters,
+      combinedFilters,
     ],
 
     queryFn: async () => {
@@ -78,20 +91,20 @@ export function useTableDataQuery(
         };
       }
 
-      // Convertir los filtros al formato de la API
+      // Convertir los filtros combinados al formato de la API
       const apiFilters: DataFilters = {};
 
-      if (filters?.products?.length) {
-        apiFilters.selectedProducts = filters.products;
+      if (combinedFilters.products?.length) {
+        apiFilters.selectedProducts = combinedFilters.products;
       }
 
-      if (filters?.sections?.length) {
-        apiFilters.selectedSections = filters.sections;
+      if (combinedFilters.sections?.length) {
+        apiFilters.selectedSections = combinedFilters.sections;
       }
 
-      if (filters?.dateRange) {
-        apiFilters.dateStart = filters.dateRange.start;
-        apiFilters.dateEnd = filters.dateRange.end;
+      if (combinedFilters.dateRange) {
+        apiFilters.dateStart = combinedFilters.dateRange.start;
+        apiFilters.dateEnd = combinedFilters.dateRange.end;
       }
 
       const response = await fetch(`/api/widget-data/${finalDatasource}`, {

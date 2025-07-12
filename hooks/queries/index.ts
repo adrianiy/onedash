@@ -1,7 +1,6 @@
 // Re-exportar todos los hooks de queries para acceso más fácil
 
 export {
-  useWidgetDataQuery,
   getDatasourceFromIndicator,
   type WidgetDataParams,
   type ApiResponse,
