@@ -181,6 +181,9 @@ export const EditToolbar: React.FC = () => {
           {/* Sección Widgets */}
           <ToolbarWidgetActions addWidgetToBoard={addWidgetToBoard} />
 
+          {/* Espacio flexible para empujar el botón de configuración a la derecha */}
+          <div className="edit-toolbar__spacer"></div>
+
           {/* Botón de configuración */}
           <ConfigButton
             selectedWidgetId={selectedWidgetId}

@@ -144,10 +144,14 @@
   border: 1px solid transparent;
   flex-direction: row;
   gap: var(--spacing-sm);
-  margin-left: auto;
   min-width: auto;
   padding: var(--spacing-sm) var(--spacing-lg);
   height: 60px;
+}
+
+/* Elemento que empuja el botón de config a la derecha */
+.edit-toolbar__spacer {
+  flex-grow: 1;
 }
 
 .edit-toolbar__button--config:hover {
