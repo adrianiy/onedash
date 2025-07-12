@@ -34,6 +34,9 @@ export const ToolbarWidgetActions: React.FC<ToolbarWidgetActionsProps> = ({
     });
 
     addWidgetToBoard(newMetricWidget, { w: 4, h: 4 });
+
+    // Disparar evento para el wizard
+    document.dispatchEvent(new Event("widget-create"));
   };
 
   /**
@@ -51,6 +54,9 @@ export const ToolbarWidgetActions: React.FC<ToolbarWidgetActionsProps> = ({
     });
 
     addWidgetToBoard(newTableWidget, { w: 6, h: 6 });
+
+    // Disparar evento para el wizard
+    document.dispatchEvent(new Event("widget-create"));
   };
 
   /**
@@ -71,6 +77,9 @@ export const ToolbarWidgetActions: React.FC<ToolbarWidgetActionsProps> = ({
     });
 
     addWidgetToBoard(newChartWidget, { w: 6, h: 4 });
+
+    // Disparar evento para el wizard
+    document.dispatchEvent(new Event("widget-create"));
   };
 
   /**
@@ -88,6 +97,9 @@ export const ToolbarWidgetActions: React.FC<ToolbarWidgetActionsProps> = ({
     });
 
     addWidgetToBoard(newTextWidget, { w: 4, h: 3 });
+
+    // Disparar evento para el wizard
+    document.dispatchEvent(new Event("widget-create"));
   };
 
   return (

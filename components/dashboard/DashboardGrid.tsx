@@ -176,6 +176,9 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
         openConfigSidebar();
       }
 
+      // Disparar evento para el wizard
+      document.dispatchEvent(new Event("widget-create"));
+
       // Resetear el tamaño del droppingItem al finalizar el drop
       resetDroppingItemSize();
     } catch (error) {
