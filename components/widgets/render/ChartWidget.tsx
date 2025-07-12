@@ -2,11 +2,11 @@ import React, { useMemo } from "react";
 import { BarChart } from "@/components/charts/BarChart";
 import { Icon } from "@/common/Icon";
 import { WidgetPlaceholder } from "../config/common";
+import { WidgetSkeleton } from "./skeletons/WidgetSkeleton";
 import type { ChartWidget as ChartWidgetType } from "@/types/widget";
-import {
-  generateChartData,
-  type ChartSeriesData,
-} from "@/utils/generateChartData";
+import { useChartDataQuery } from "@/hooks/queries";
+import { useVariableStore } from "@/store/variableStore";
+import { resolveMetricDefinition } from "@/utils/variableResolver";
 
 interface ChartWidgetProps {
   widget: ChartWidgetType;
@@ -22,17 +22,23 @@ export const ChartWidget: React.FC<ChartWidgetProps> = ({ widget }) => {
     [chartType, series, xAxisDimension]
   );
 
-  // Generar datos del gráfico dinámicamente
-  const chartData = useMemo((): ChartSeriesData => {
-    if (!isConfigured) return { categories: [], series: [] };
-    const filters = {
-      selectedProducts: widgetFilters?.products,
-      selectedSections: widgetFilters?.sections,
-      dateStart: widgetFilters?.dateRange?.start,
-      dateEnd: widgetFilters?.dateRange?.end,
-    };
-    return generateChartData(xAxisDimension!, series!, filters);
-  }, [isConfigured, xAxisDimension, series, widgetFilters]);
+  // Resolver las variables en las series
+  const variables = useVariableStore((state) => state.variables);
+  const resolvedSeries = useMemo(() => {
+    if (!series) return [];
+    return series.map((serie) => resolveMetricDefinition(serie, variables));
+  }, [series, variables]);
+
+  // Obtener datos del gráfico usando React Query
+  const { data: chartData, isLoading } = useChartDataQuery(
+    xAxisDimension,
+    resolvedSeries,
+    {
+      products: widgetFilters?.products,
+      sections: widgetFilters?.sections,
+      dateRange: widgetFilters?.dateRange,
+    }
+  );
 
   // Determinar el tipo de valor para el formateo
   const valueType = useMemo(() => {
@@ -88,6 +94,22 @@ export const ChartWidget: React.FC<ChartWidgetProps> = ({ widget }) => {
         icon="chart-column"
         title="Gráfico sin configurar"
         description="Selecciona una dimensión y al menos una métrica para empezar."
+      />
+    );
+  }
+
+  // Mostrar skeleton mientras carga
+  if (isLoading) {
+    return <WidgetSkeleton className="chart-widget-skeleton" />;
+  }
+
+  // Si hay error o no hay datos
+  if (!chartData || chartData.series.length === 0) {
+    return (
+      <WidgetPlaceholder
+        icon="alert-circle"
+        title="Error al cargar datos"
+        description="No se pudieron obtener los datos del gráfico"
       />
     );
   }

@@ -2,11 +2,23 @@ import { useAuthStore } from "@/store/authStore";
 import { useDashboardStore } from "@/store/dashboardStore";
 import { useThemeStore } from "@/store/themeStore";
 import "@/styles/index.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import { useEffect } from "react";
 import "react-tooltip/dist/react-tooltip.css";
+
+// Crear instancia de QueryClient
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60000, // 1 minuto
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 export default function App({
   Component,
@@ -70,9 +82,11 @@ export default function App({
         {/* Favicon por defecto */}
         <link rel="icon" href="/favicon-32x32.png" />
       </Head>
-      <SessionProvider session={session}>
-        <Component {...pageProps} />
-      </SessionProvider>
+      <QueryClientProvider client={queryClient}>
+        <SessionProvider session={session}>
+          <Component {...pageProps} />
+        </SessionProvider>
+      </QueryClientProvider>
     </>
   );
 }

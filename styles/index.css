@@ -44,6 +44,7 @@
 @import "./components/widgets/render/table-widget.css";
 @import "./components/widgets/render/metric-widget.css";
 @import "./components/widgets/render/text-widget.css";
+@import "./components/widgets/render/widget-skeleton.css";
 
 /* Auth styles */
 @import "./auth/auth.css";

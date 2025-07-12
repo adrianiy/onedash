@@ -1,12 +1,14 @@
 import { useConditionalFormatting } from "@/hooks";
-import { useResolvedMetric } from "@/hooks/useResolvedMetric";
+import { useMetricDataQuery } from "@/hooks/queries";
 import { useVariableOperations } from "@/hooks/useVariableOperations";
 import { useDashboardStore } from "@/store/dashboardStore";
 import { useVariableStore } from "@/store/variableStore";
+import { resolveMetricDefinition } from "@/utils/variableResolver";
 import type { MetricWidget as MetricWidgetType } from "@/types/widget";
 import { formatValue } from "@/utils/format";
 import React, { useMemo, useState } from "react";
 import { WidgetFiltersDisplay, WidgetPlaceholder } from "../config/common";
+import { WidgetSkeleton } from "./skeletons/WidgetSkeleton";
 
 interface MetricWidgetProps {
   widget: MetricWidgetType;
@@ -46,17 +48,17 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
   );
 
   // Verificar si el KPI está "activo" (sus variables coinciden con el estado actual)
-  const variables = useVariableStore((state) => state.variables);
+  const allVariables = useVariableStore((state) => state.variables);
   const isActive = useMemo(() => {
     if (!isClickable || !clickEvent || !clickEvent.setVariables) return false;
 
     // Verificar si alguna de las variables del evento coincide con el estado actual
     return Object.entries(clickEvent.setVariables).some(
       ([variableId, value]) => {
-        return variables[variableId] === value;
+        return allVariables[variableId] === value;
       }
     );
-  }, [isClickable, clickEvent, variables]);
+  }, [isClickable, clickEvent, allVariables]);
 
   // Función para manejar el click en el widget
   const handleWidgetClick = () => {
@@ -70,20 +72,58 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
     persistMultiple(clickEvent.setVariables);
   };
 
-  // Resolver las métricas usando el hook
-  const primaryMetricData = useResolvedMetric(widget.config.primaryMetric);
-  const secondaryMetricData = useResolvedMetric(widget.config.secondaryMetric);
+  // Usar las variables para resolver las métricas
+  const resolvedPrimaryMetric = useMemo(
+    () =>
+      widget.config.primaryMetric
+        ? resolveMetricDefinition(widget.config.primaryMetric, allVariables)
+        : undefined,
+    [widget.config.primaryMetric, allVariables]
+  );
+
+  const resolvedSecondaryMetric = useMemo(
+    () =>
+      widget.config.secondaryMetric
+        ? resolveMetricDefinition(widget.config.secondaryMetric, allVariables)
+        : undefined,
+    [widget.config.secondaryMetric, allVariables]
+  );
+
+  // Obtener datos de las métricas desde la API usando React Query
+  const { data: primaryMetricData, isLoading: isPrimaryLoading } =
+    useMetricDataQuery(resolvedPrimaryMetric, widgetFilters);
+
+  const { data: secondaryMetricData } = useMetricDataQuery(
+    resolvedSecondaryMetric,
+    widgetFilters
+  );
 
   // Use common conditional formatting hook
   const { getConditionalStyle } = useConditionalFormatting(conditionalFormats);
 
   // Si no hay métricas configuradas, mostrar placeholder
-  if (!primaryMetricData) {
+  if (!resolvedPrimaryMetric) {
     return (
       <WidgetPlaceholder
         icon="target"
         title="Métrica sin configurar"
         description="Configura una métrica para mostrar datos"
+      />
+    );
+  }
+
+  // Si están cargando, mostrar skeleton
+  if (isPrimaryLoading) {
+    return <WidgetSkeleton className={`metric-widget-skeleton--${size}`} />;
+  }
+
+  // Si no hay datos, mostrar mensaje de error
+  if (!primaryMetricData) {
+    return (
+      <WidgetPlaceholder
+        icon="alert-circle"
+        title="Error al cargar datos"
+        description="No se pudieron obtener los datos de la métrica"
       />
     );
   }
@@ -130,11 +170,11 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
         {/* Footer con título del widget y métrica secundaria */}
         <div
           className={`metric-widget__footer ${
-            !secondaryMetricData ? "metric-widget__footer--centered" : ""
+            !resolvedSecondaryMetric ? "metric-widget__footer--centered" : ""
           }`}
         >
           <div className="metric-widget__title">{widget.title}</div>
-          {secondaryMetricData && (
+          {resolvedSecondaryMetric && secondaryMetricData && (
             <div
               className="metric-widget__secondary-value"
               style={getConditionalStyle(
