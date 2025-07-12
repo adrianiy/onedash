@@ -350,7 +350,6 @@
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
-  background-color: rgba(66, 153, 225, 0.1);
   border-radius: var(--radius-full);
   padding: var(--spacing-md) var(--spacing-lg);
   white-space: nowrap;
