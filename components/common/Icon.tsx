@@ -99,6 +99,7 @@ import {
   ChartBarDecreasing,
   AlignJustify,
   MoreHorizontal,
+  ListTodo,
   type LucideIcon,
 } from "lucide-react";
 
@@ -111,6 +112,7 @@ import {
   IconTag,
   IconBrandGoogle,
   IconBrandWindows,
+  IconHanger,
 } from "@tabler/icons-react";
 
 const lucideIconMap = {
@@ -220,6 +222,7 @@ const lucideIconMap = {
   "chart-bar-decreasing": ChartBarDecreasing,
   "align-justify": AlignJustify,
   "more-horizontal": MoreHorizontal,
+  "list-todo": ListTodo,
 } as const;
 
 const tablerIconMap = {
@@ -230,6 +233,7 @@ const tablerIconMap = {
   label: IconTag,
   "brand-google": IconBrandGoogle,
   "brand-microsoft": IconBrandWindows,
+  hanger: IconHanger,
 } as const;
 
 export type IconName = keyof typeof lucideIconMap | keyof typeof tablerIconMap;

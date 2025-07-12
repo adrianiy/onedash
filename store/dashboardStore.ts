@@ -330,6 +330,8 @@ export const useDashboardStore = create<DashboardState>()(
         } else {
           // Si no estamos en modo edición, iniciar edición
           get().startEditing();
+          // Emitir evento para el wizard
+          document.dispatchEvent(new CustomEvent("edit-mode"));
         }
       },
 
@@ -479,6 +481,9 @@ export const useDashboardStore = create<DashboardState>()(
               selectedWidgetId: null,
               originalSnapshot: null, // Limpiar snapshot después de guardar
             });
+
+            // Emitir evento para el wizard
+            document.dispatchEvent(new CustomEvent("dashboard-save"));
 
             console.log("✅ Dashboard guardado exitosamente");
           }

@@ -1,0 +1,458 @@
+/* App Wizard */
+.app-wizard {
+  position: fixed;
+  bottom: calc(var(--spacing-lg) + 50px); /* Colocado encima del botón */
+  right: var(--spacing-3xl);
+  width: 360px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform var(--transition-normal),
+    opacity var(--transition-normal);
+}
+
+/* Versión acordeón del wizard */
+.app-wizard--accordion {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Botón flotante para mostrar/cerrar el wizard - ahora siempre visible */
+.app-wizard__toggle-btn {
+  position: fixed;
+  bottom: var(--spacing-lg);
+  right: var(--spacing-3xl);
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-fast),
+    background-color var(--transition-fast);
+  z-index: 1001; /* Para que quede por encima del wizard */
+}
+
+.app-wizard__toggle-btn:hover {
+  transform: scale(1.05);
+  background-color: var(--color-primary-hover);
+}
+
+/* Versión fija del botón toggle cuando el wizard está visible */
+.app-wizard__toggle-btn--fixed {
+  position: fixed;
+  bottom: var(--spacing-lg);
+  right: var(--spacing-3xl);
+}
+
+/* Estado minimizado */
+.app-wizard--minimized {
+  position: fixed;
+  bottom: var(--spacing-lg);
+  right: var(--spacing-3xl);
+  z-index: 1000;
+}
+
+.app-wizard__toggle-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-success);
+  color: var(--color-text-inverse);
+  font-size: 12px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--color-surface);
+}
+
+/* Nueva sección introductoria con la información del paso welcome */
+.app-wizard__intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-lg);
+  gap: var(--spacing-lg);
+  text-align: center;
+}
+
+.app-wizard__intro-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin: 0 0 var(--spacing-sm) 0;
+  color: var(--color-text-primary);
+}
+
+.app-wizard__intro-description {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+/* Subtítulo con información de progreso */
+.app-wizard__subtitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.app-wizard__progress-info {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+/* Barra de progreso */
+.app-wizard__progress-container {
+  min-height: 4px;
+  background-color: var(--color-border);
+  overflow: hidden;
+}
+
+.app-wizard__progress-bar {
+  min-height: 4px;
+  background-color: var(--color-primary);
+  transition: width var(--transition-normal);
+}
+
+/* Contenedor de pasos en acordeón */
+.app-wizard__steps-container {
+  padding: 0;
+}
+
+/* Cada paso individual del acordeón */
+.app-wizard__step {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.app-wizard__step:last-child {
+  border-bottom: none;
+}
+
+/* Paso deshabilitado (cuando no está en modo edición) */
+.app-wizard__step--disabled .app-wizard__step-header {
+  opacity: 0.7;
+}
+
+.app-wizard__step--disabled .app-wizard__step-title {
+  color: var(--color-text-secondary);
+}
+
+.app-wizard__step--disabled .app-wizard__step-number {
+  background-color: var(--color-surface-tertiary);
+}
+
+/* Cabecera de cada paso */
+.app-wizard__step-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: var(--spacing-xxl) var(--spacing-lg);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color var(--transition-fast);
+}
+
+.app-wizard__step-header:hover {
+  background-color: var(--color-surface-hover);
+}
+
+/* Número del paso */
+.app-wizard__step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface-secondary);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  margin-right: var(--spacing-md);
+  flex-shrink: 0;
+}
+
+.app-wizard__step--completed .app-wizard__step-number {
+  background-color: var(--color-success);
+  border-color: var(--color-success);
+  color: var(--color-text-inverse);
+}
+
+/* Título del paso */
+.app-wizard__step-title {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  font-weight: 400;
+  color: var(--color-text-primary);
+}
+
+.app-wizard__step-title-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: var(--spacing-sm);
+  color: var(--color-text-secondary);
+}
+
+.app-wizard__step--completed .app-wizard__step-title-icon {
+  color: var(--color-success);
+}
+
+.app-wizard__step-toggle-icon {
+  margin-left: auto;
+  color: var(--color-text-secondary);
+  transition: transform var(--transition-fast);
+}
+
+.app-wizard__step--expanded .app-wizard__step-toggle-icon {
+  transform: rotate(180deg);
+}
+
+/* Contenido de cada paso (expandible) */
+.app-wizard__step-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height var(--transition-normal),
+    padding var(--transition-normal);
+  padding: 0 var(--spacing-lg);
+  opacity: 0;
+}
+
+.app-wizard__step--expanded .app-wizard__step-content {
+  max-height: 300px;
+  padding: var(--spacing-md) var(--spacing-lg);
+  padding-bottom: var(--spacing-xxl);
+  opacity: 1;
+}
+
+.app-wizard__step-description {
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+/* Mensaje de advertencia para modo edición */
+.app-wizard__edit-mode-warning {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  background-color: rgba(var(--color-warning-rgb), 0.1);
+  color: var(--color-warning);
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+.app-wizard__edit-mode-warning svg {
+  flex-shrink: 0;
+}
+
+/* Acciones de cada paso */
+.app-wizard__step-actions {
+  display: flex;
+  white-space: nowrap;
+  align-items: center;
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-xl);
+}
+
+/* Botones de acción */
+.app-wizard__try-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border: none;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  font-weight: 400;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  font-size: 0.875rem;
+}
+
+.app-wizard__try-btn:hover {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.app-wizard__try-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--color-border);
+  color: var(--color-text-secondary);
+  transform: none;
+  box-shadow: none;
+}
+
+.app-wizard__complete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.app-wizard__complete-btn:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+}
+
+.app-wizard__complete-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+  background-color: var(--color-surface-secondary);
+}
+
+/* Footer cuando todos los pasos están completados */
+.app-wizard__footer {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-surface-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* Estilo para el check superpuesto en el botón de completado */
+.app-wizard__complete-check {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-success);
+}
+
+.app-wizard__completion-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-sm);
+  background-color: rgba(var(--color-success-rgb), 0.1);
+  color: var(--color-success);
+}
+
+/* Resaltado de elementos (solo para elementos externos que se muestran al hacer clic en "Ver elemento") */
+.wizard-highlight {
+  position: relative;
+  z-index: 1002;
+  box-shadow: 0 0 0 4px rgba(var(--color-primary-rgb), 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--color-primary-rgb), 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(var(--color-primary-rgb), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--color-primary-rgb), 0);
+  }
+}
+
+/* Dark Theme Adjustments */
+[data-theme="dark"] .app-wizard__toggle-btn {
+  box-shadow: var(--shadow-lg);
+}
+
+[data-theme="dark"] .app-wizard {
+  box-shadow: var(--shadow-xl);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .app-wizard {
+    width: calc(100% - var(--spacing-lg) * 2);
+    max-width: 450px;
+    bottom: var(--spacing-lg);
+    right: var(--spacing-3xl);
+  }
+}
+
+@media (max-width: 480px) {
+  .app-wizard {
+    width: calc(100% - var(--spacing-md) * 2);
+    bottom: var(--spacing-md);
+    right: var(--spacing-md);
+    left: var(--spacing-md);
+    max-width: none;
+  }
+
+  .app-wizard__toggle-btn {
+    bottom: var(--spacing-md);
+    right: var(--spacing-3xl);
+  }
+
+  .app-wizard__step-number {
+    width: 20px;
+    height: 20px;
+    font-size: 0.7rem;
+  }
+
+  .app-wizard__header,
+  .app-wizard__subtitle,
+  .app-wizard__step-header {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .app-wizard__step-content {
+    padding: 0 var(--spacing-md);
+  }
+
+  .app-wizard__step--expanded .app-wizard__step-content {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .app-wizard__intro {
+    padding: var(--spacing-md);
+  }
+}

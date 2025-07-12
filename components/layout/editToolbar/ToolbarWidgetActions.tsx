@@ -91,7 +91,7 @@ export const ToolbarWidgetActions: React.FC<ToolbarWidgetActionsProps> = ({
   };
 
   return (
-    <div className="edit-toolbar__section">
+    <div className="edit-toolbar__section toolbar-widget-actions">
       <div className="edit-toolbar__section-buttons">
         <button
           className="edit-toolbar__button"

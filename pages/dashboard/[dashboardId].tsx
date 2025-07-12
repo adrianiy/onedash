@@ -1,5 +1,6 @@
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { DashboardGrid } from "@/components/dashboard/DashboardGrid";
+import { AppWizard } from "@/components/wizard/AppWizard";
 import { useVariableLoader } from "@/hooks/useVariableLoader";
 import { DashboardSidebar } from "@/layout/DashboardSidebar";
 import { FilterBar } from "@/layout/FilterBar";
@@ -30,6 +31,8 @@ export default function Dashboard() {
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+    // Emitir evento para el wizard
+    document.dispatchEvent(new CustomEvent("sidebar-toggle"));
   };
 
   const closeSidebar = () => {
@@ -122,6 +125,7 @@ export default function Dashboard() {
           isSidebarOpen={isSidebarOpen}
         />
         <DashboardSidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+        <AppWizard />
       </ProtectedRoute>
     </>
   );

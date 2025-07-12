@@ -52,6 +52,13 @@ export const useWidgetCreator = (): WidgetCreatorHookReturn => {
       // Seleccionar el widget recién creado
       selectWidget(widget._id);
 
+      // Emitir evento de creación de widget para el wizard
+      document.dispatchEvent(
+        new CustomEvent("widget-create", {
+          detail: { widgetId: widget._id, widgetType: widget.type },
+        })
+      );
+
       if (widget.type === "text") return;
 
       // Abrir automáticamente el sidebar de configuración

@@ -73,7 +73,7 @@ export const SaveButton: React.FC<SaveButtonProps> = ({
   return (
     <>
       <button
-        className={`edit-toolbar__button ${saveButtonContent.className}`}
+        className={`edit-toolbar__button save-button ${saveButtonContent.className}`}
         onClick={handleSave}
         data-tooltip-id="save-tooltip"
         disabled={saveState === "saving"}

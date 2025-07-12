@@ -31,6 +31,13 @@ export const ThemeSelector: React.FC = () => {
   const handleThemeChange = (selectedTheme: "light" | "dark" | "itx") => {
     setTheme(selectedTheme);
     setIsOpen(false);
+
+    // Emitir evento para el wizard
+    document.dispatchEvent(
+      new CustomEvent("theme-changed", {
+        detail: { theme: selectedTheme },
+      })
+    );
   };
 
   // Obtener el icono según el tema actual
@@ -41,7 +48,7 @@ export const ThemeSelector: React.FC = () => {
       case "dark":
         return "moon";
       case "itx":
-        return "square";
+        return "hanger";
       default:
         return "sun";
     }
@@ -98,7 +105,7 @@ export const ThemeSelector: React.FC = () => {
             }`}
             onClick={() => handleThemeChange("itx")}
           >
-            <Icon name="square" size={16} />
+            <Icon name="hanger" size={16} />
             <span>ITX</span>
           </button>
         </div>
