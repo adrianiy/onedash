@@ -6,7 +6,7 @@ import type {
   MetricWidget,
   TableWidget,
 } from "@/types/widget";
-import type { UseWidgetConfigOptions } from "@/components/widgets/config/base/types";
+import type { UseWidgetConfigOptions } from "@/widgets/config/hooks";
 
 type WidgetWithVisualization = ChartWidget | MetricWidget | TableWidget;
 
