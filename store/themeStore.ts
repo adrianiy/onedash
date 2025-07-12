@@ -2,10 +2,10 @@ import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 
 interface ThemeState {
-  theme: "light" | "dark";
+  theme: "light" | "dark" | "itx";
 
   // Actions
-  setTheme: (theme: "light" | "dark") => void;
+  setTheme: (theme: "light" | "dark" | "itx") => void;
   toggleTheme: () => void;
 }
 
@@ -25,7 +25,23 @@ export const useThemeStore = create<ThemeState>()(
 
         toggleTheme: () => {
           const { theme } = get();
-          const newTheme = theme === "light" ? "dark" : "light";
+          // Rotación de temas: light -> dark -> itx -> light
+          let newTheme: "light" | "dark" | "itx";
+
+          switch (theme) {
+            case "light":
+              newTheme = "dark";
+              break;
+            case "dark":
+              newTheme = "itx";
+              break;
+            case "itx":
+              newTheme = "light";
+              break;
+            default:
+              newTheme = "light";
+          }
+
           get().setTheme(newTheme);
         },
       }),

@@ -11,6 +11,7 @@
 @import "./components/layout/widget-config-sidebar.css";
 @import "./components/layout/filter-bar.css";
 @import "./components/layout/floating-bar.css";
+@import "./components/layout/theme-selector.css";
 
 /* Dashboard components */
 @import "./components/dashboard/grid.css";
@@ -32,6 +33,7 @@
 @import "./components/widgets/config/columns-config.css";
 @import "./components/widgets/config/column-item.css";
 @import "./components/widgets/config/visualization-config.css";
+@import "./components/widgets/config/visualization-config-itx.css";
 @import "./components/widgets/config/chart-visualization-config.css";
 @import "./components/widgets/config/legend-position-grid.css";
 @import "./components/widgets/config/conditional-formatting.css";

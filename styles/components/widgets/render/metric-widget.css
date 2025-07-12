@@ -431,7 +431,6 @@
 .metric-widget__filters--badges {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
   gap: var(--spacing-xs);
   padding: 2px;
   justify-content: center;

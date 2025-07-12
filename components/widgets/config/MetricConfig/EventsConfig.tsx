@@ -208,7 +208,7 @@ export const EventsConfig: React.FC<EventsConfigProps> = ({ widget }) => {
       >
         <div className="viz-control-with-label">
           <Icon name="zap" size={16} />
-          <span className="viz-control-label">Filtrar al hacer clic</span>
+          <h4 className="viz-section-title">Filtrar al hacer clic</h4>
         </div>
         <input
           type="checkbox"

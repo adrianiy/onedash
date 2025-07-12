@@ -1,0 +1,70 @@
+/* Estilos específicos para el tema ITX en visualización */
+
+/* Eliminar border-radius para elementos específicos */
+[data-theme="itx"] .custom-multiselect__control {
+  border-radius: 0 !important;
+}
+
+[data-theme="itx"] .sidebar-header,
+[data-theme="itx"] .widget-config-sidebar__header {
+  background: transparent !important;
+}
+
+/* Paneles de configuración sin padding, background y border cuando hay selecciones */
+[data-theme="itx"] .column-item--selected,
+[data-theme="itx"] .metric-selector-single__trigger--selected,
+[data-theme="itx"] .config-panel,
+[data-theme="itx"] .config-panel__header,
+[data-theme="itx"] .config-panel .column-item--selected {
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+[data-theme="itx"] .edit-toolbar__button--config:hover {
+  border-color: transparent;
+  background: none;
+  color: #2563eb;
+}
+
+[data-theme="itx"] .delete {
+  color: var(--color-danger) !important;
+}
+
+[data-theme="itx"] .editing .react-grid-item .widget-selected {
+  box-shadow: 0 0 0 1px #3b82f6 !important;
+}
+[data-theme="itx"] .editing .react-grid-item > .react-resizable-handle::after {
+  border: 1px solid #3b82f6 !important;
+}
+[data-theme="itx"] .editing .react-grid-item:hover {
+  border: 1px dashed #2563eb !important;
+}
+
+/* Botones de acción con tono azul acentuado en el tema ITX */
+[data-theme="itx"] .viz-add-button,
+[data-theme="itx"] [class*="__action-btn"],
+[data-theme="itx"] [class*="-action-btn"]:not(.delete),
+[data-theme="itx"] .empty-placeholder--clickable,
+[data-theme="itx"] .metric-selector__trigger-btn,
+[data-theme="itx"] .config-panel__add-button,
+[data-theme="itx"] [class*="add-format"],
+[data-theme="itx"] .widget-config-sidebar__config-action {
+  color: #3b82f6 !important; /* Color azul para dar efecto de texto de acción */
+}
+
+[data-theme="itx"] .config-panel--resizable::after {
+  display: none !important;
+}
+
+[data-theme="itx"] .viz-add-button:hover,
+[data-theme="itx"] [class*="add-button"]:hover:not(.delete),
+[data-theme="itx"] [class*="__action-btn"]:hover,
+[data-theme="itx"] [class*="-action-btn"]:hover:not(.delete),
+[data-theme="itx"] .empty-placeholder--clickable:hover,
+[data-theme="itx"] .metric-selector__trigger-btn:hover,
+[data-theme="itx"] [class*="add-format"]:hover,
+[data-theme="itx"] .widget-config-sidebar__config-action:hover {
+  color: #2563eb !important; /* Color azul más oscuro para el hover */
+}

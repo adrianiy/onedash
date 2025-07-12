@@ -428,7 +428,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
             {isSelected && (
               <button
                 className={`floating-action-btn pin ${
-                  isPinned ? "active" : ""
+                  !isPinned ? "active" : ""
                 }`}
                 onClick={handleTogglePin}
                 onMouseDown={handleButtonMouseDown}

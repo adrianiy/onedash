@@ -106,12 +106,9 @@
 }
 
 /* Editing Mode Styles */
-.editing .react-grid-item {
-  border: 1px dashed var(--color-border);
-}
 
 .editing .react-grid-item:hover:not(:has(.widget-selected)) {
-  border-color: var(--color-primary);
+  border: 1px dashed var(--color-primary);
 }
 
 /* Widget Selection Styles */

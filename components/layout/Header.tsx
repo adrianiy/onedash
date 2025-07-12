@@ -2,15 +2,13 @@ import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useDashboardStore } from "@/store/dashboardStore";
-import { useThemeStore } from "@/store/themeStore";
+import { ThemeSelector } from "./ThemeSelector";
 import { useAuthStore } from "@/store/authStore";
-import { Icon } from "@/common/Icon";
 import { UserAvatar } from "./UserAvatar";
 import { EditToolbar } from "./editToolbar";
 
 export const Header: React.FC = () => {
   const { currentDashboard } = useDashboardStore();
-  const { theme, toggleTheme } = useThemeStore();
   const { user, isAuthenticated } = useAuthStore();
   const router = useRouter();
 
@@ -31,13 +29,7 @@ export const Header: React.FC = () => {
 
           <div className="app-header-right">
             <div className="app-header-actions">
-              <button
-                className="header-action-btn"
-                onClick={toggleTheme}
-                title={theme === "light" ? "Modo Oscuro" : "Modo Claro"}
-              >
-                <Icon name={theme === "light" ? "moon" : "sun"} size={16} />
-              </button>
+              <ThemeSelector />
 
               {isAuthenticated ? (
                 <UserAvatar
