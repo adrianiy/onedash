@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Tooltip } from "react-tooltip";
-import { useDashboardStore } from "../../store/dashboardStore";
-import { Icon } from "../common/Icon";
+import { useDashboardStore } from "@/store/dashboardStore";
+import { Icon } from "@/common/Icon";
 
 interface FloatingActionBarProps {
   onToggleSidebar: () => void;

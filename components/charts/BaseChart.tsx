@@ -1,6 +1,6 @@
 import React from "react";
 import type { EChartsOption, ECharts } from "echarts";
-import { useECharts } from "../../hooks/useECharts";
+import { useECharts } from "@/hooks/useECharts";
 
 interface BaseChartProps {
   option: EChartsOption;

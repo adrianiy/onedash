@@ -1,0 +1,535 @@
+/* Chart Visualization Config Styles - Replicando estructura de tabla */
+.viz-chart-configurator {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+}
+
+/* Preview del gráfico */
+.viz-chart-preview {
+  width: calc(100% - 48px);
+  overflow: hidden;
+  margin: var(--spacing-md) 0;
+}
+
+.viz-chart-sample {
+  width: 100%;
+  height: 180px;
+  position: relative;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-collapse: separate;
+  border-spacing: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+/* Controles visuales */
+.viz-chart-controls {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.viz-chart-controls--top {
+  width: calc(100% - 48px);
+  justify-content: space-between;
+}
+
+.viz-chart-controls--right {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  flex-direction: column;
+  transform: translateY(-50%);
+  width: 36px;
+}
+
+.viz-chart-controls--bottom {
+  justify-content: flex-start;
+}
+
+.viz-chart-sample--grid::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: linear-gradient(
+      to right,
+      var(--color-border) 1px,
+      transparent 1px
+    ),
+    linear-gradient(to bottom, var(--color-border) 1px, transparent 1px);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* Chart placeholder elements */
+.viz-chart-placeholder {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  padding: 1rem;
+}
+
+/* Chart bars */
+.viz-chart-bars {
+  display: flex;
+  gap: 0.5rem;
+  height: 100%;
+}
+
+.viz-chart-bars--vertical {
+  align-items: end;
+  flex-direction: row;
+}
+
+.viz-chart-bars--horizontal {
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 100%;
+  height: 100%;
+}
+
+/* Estilos para placeholders del gráfico similar a la tabla */
+.viz-chart-placeholder {
+  background-color: rgba(var(--color-secondary-rgb), 0.15);
+  border-radius: var(--radius-sm);
+  transition: all 0.3s ease;
+}
+
+/* Vertical bars (columns) */
+.viz-chart-bars--vertical .viz-chart-placeholder {
+  width: 20px;
+  min-height: 20px;
+}
+
+.viz-chart-bars--vertical .viz-chart-placeholder--short {
+  height: 30%;
+}
+
+.viz-chart-bars--vertical .viz-chart-placeholder--medium {
+  height: 60%;
+}
+
+.viz-chart-bars--vertical .viz-chart-placeholder--tall {
+  height: 85%;
+}
+
+/* Horizontal bars */
+.viz-chart-bars--horizontal .viz-chart-placeholder {
+  height: 15px;
+  min-width: 20px;
+}
+
+.viz-chart-bars--horizontal .viz-chart-placeholder--short {
+  width: 30%;
+}
+
+.viz-chart-bars--horizontal .viz-chart-placeholder--medium {
+  width: 60%;
+}
+
+.viz-chart-bars--horizontal .viz-chart-placeholder--tall {
+  width: 85%;
+}
+
+/* Chart axes */
+.viz-chart-axis {
+  position: absolute;
+  background: var(--color-text-secondary);
+}
+
+.viz-chart-axis--x {
+  bottom: 0.5rem;
+  left: 0.5rem;
+  right: 0.5rem;
+  height: 1px;
+}
+
+.viz-chart-axis--y {
+  left: 0.5rem;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  width: 1px;
+}
+
+.viz-chart-axis-line {
+  width: 100%;
+  height: 100%;
+  background: currentColor;
+}
+
+.viz-chart-axis--rotated::after {
+  content: "↻";
+  position: absolute;
+  right: -1rem;
+  top: -0.5rem;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+/* Chart type section */
+.viz-chart-type-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Legend position section */
+.viz-legend-position-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Value format section */
+.viz-value-format-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Colors section */
+.viz-colors-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Control buttons with labels */
+.viz-control-with-label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.viz-control-label {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+/* Palette selection section */
+.viz-colors-palette-section {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+}
+
+.viz-colors-palette-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.5rem;
+}
+
+.viz-palette-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+}
+
+.viz-palette-btn:hover {
+  border-color: var(--color-primary);
+  background: var(--color-surface-hover);
+}
+
+.viz-palette-btn--active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+/* Custom colors section */
+.viz-colors-custom-section {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+}
+
+/* Series color chip - compact chip design */
+.viz-series-colors-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.series-color-chip {
+  display: flex;
+  flex: 1;
+}
+
+.series-color-chip__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  font-size: 0.8125rem;
+  color: var(--color-text-primary);
+  width: 100%;
+  max-width: 100%;
+}
+
+.series-color-chip__button:hover {
+  border-color: var(--color-primary);
+  background: var(--color-surface-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.series-color-chip__color-swatch {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.series-color-chip__name {
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.series-color-chip__chevron {
+  transition: transform 0.2s ease;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+/* Color picker dropdown styling */
+.series-color-chip .color-picker-dropdown {
+  min-width: 240px;
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .viz-chart-sample {
+  background: var(--color-surface-secondary);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .viz-chart-placeholder {
+  background-color: rgba(var(--color-secondary-rgb), 0.25);
+}
+
+[data-theme="dark"] .viz-chart-configurator {
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .viz-palette-btn {
+  background: var(--color-surface-secondary);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .viz-palette-btn:hover {
+  background: var(--color-surface-tertiary);
+}
+
+[data-theme="dark"] .viz-palette-btn--active {
+  background: rgba(var(--color-primary-rgb), 0.2);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+[data-theme="dark"] .series-color-chip__button {
+  background: var(--color-surface-secondary);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .series-color-chip__button:hover {
+  background: var(--color-surface-tertiary);
+}
+
+/* Legend Accordion Styles */
+.viz-legend-accordion {
+  cursor: pointer;
+  user-select: none;
+}
+
+.viz-legend-position-header {
+  cursor: pointer;
+}
+
+.viz-legend-position-header .viz-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.viz-legend-accordion-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.viz-legend-summary-text {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  font-weight: 400;
+}
+
+.viz-legend-accordion-content {
+  margin-top: 0.75rem;
+  padding: 1rem 0;
+}
+
+.viz-legend-section {
+  margin-bottom: 1.5rem;
+}
+
+.viz-legend-section:last-child {
+  margin-bottom: 0;
+}
+
+.viz-legend-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.viz-legend-section-controls {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.viz-legend-control-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  font-weight: 400;
+  min-width: auto;
+  white-space: nowrap;
+}
+
+.viz-legend-control-btn:hover {
+  border-color: var(--color-primary);
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+.viz-legend-control-btn--active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+/* Dark theme adjustments for accordion */
+
+[data-theme="dark"] .viz-legend-control-btn {
+  background: var(--color-surface-tertiary);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .viz-legend-control-btn:hover {
+  background: var(--color-surface);
+}
+
+[data-theme="dark"] .viz-legend-control-btn--active {
+  background: rgba(var(--color-primary-rgb), 0.2);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* Chart Config Event Placeholder Styles */
+.chart-config__placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  height: 200px;
+  padding: var(--spacing-xl);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-secondary);
+  background-color: var(--color-surface-secondary);
+  text-align: center;
+}
+
+.chart-config__placeholder svg {
+  opacity: 0.6;
+}
+
+.chart-config__placeholder span {
+  font-size: 0.9rem;
+}
+
+/* Dark theme adjustments for chart config placeholder */
+[data-theme="dark"] .chart-config__placeholder {
+  background-color: var(--color-surface-tertiary);
+  border-color: var(--color-border);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .viz-chart-configurator {
+    padding: 1rem;
+  }
+
+  .viz-chart-preview {
+    width: 250px;
+    height: 160px;
+  }
+
+  .viz-chart-controls {
+    gap: 0.25rem;
+  }
+
+  .viz-colors-palette-grid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  }
+
+  .viz-palette-btn {
+    padding: 0.5rem;
+    font-size: 0.8125rem;
+  }
+
+  .series-color-chip__button {
+    padding: 0.625rem;
+  }
+
+  .viz-legend-section-controls {
+    flex-direction: column;
+  }
+
+  .viz-legend-control-btn {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}

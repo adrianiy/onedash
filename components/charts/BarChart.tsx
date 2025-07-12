@@ -1,7 +1,7 @@
 import React from "react";
 import type { EChartsOption } from "echarts";
 import { BaseChart } from "./BaseChart";
-import { formatValue } from "../../utils/format";
+import { formatValue } from "@/utils/format";
 
 interface BarChartData {
   categories: string[];

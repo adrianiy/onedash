@@ -1,21 +1,16 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { Icon } from "../../common/Icon";
-import type {
-  TableWidget as TableWidgetType,
-  ConditionalFormatRule,
-} from "../../../types/widget";
-import type {
-  MetricDefinition,
-  IndicatorType,
-} from "../../../types/metricConfig";
-import {
-  generateTableData,
-  calculateTotals,
-  type TableDataFilters,
-} from "../../../utils/generateTableData";
-import { formatValue } from "../../../utils/format";
-import { getDisplayTitle } from "../../../types/metricConfig";
-import { useVariableStore } from "../../../store/variableStore";
+import { Icon } from "@/common/Icon";
+import { useConditionalFormatting } from "@/hooks";
+import { useTableDataQuery } from "@/hooks/queries";
+import { useVariableStore } from "@/store/variableStore";
+import type { IndicatorType, MetricDefinition } from "@/types/metricConfig";
+import { getDisplayTitle } from "@/types/metricConfig";
+import type { TableWidget as TableWidgetType } from "@/types/widget";
+import { formatValue } from "@/utils/format";
+import { calculateTotals } from "@/utils/generateTableData";
+import { resolveMetricDefinition } from "@/utils/variableResolver";
+import React, { useEffect, useMemo, useState } from "react";
+import { WidgetPlaceholder } from "../config/common";
+import { WidgetSkeleton } from "./skeletons/WidgetSkeleton";
 
 // Tipo ampliado para incluir "desglose"
 type ExtendedIndicatorType = IndicatorType | "desglose";
@@ -50,66 +45,18 @@ interface TableWidgetProps {
 export const TableWidget: React.FC<TableWidgetProps> = ({ widget }) => {
   // Obtener variables para actualizar títulos dinámicos
   const { variables } = useVariableStore();
-  // Verificar si hay filtros específicos del widget configurados
-  const widgetFilters = widget.config.widgetFilters;
-  // Función para obtener el estilo condicional de una celda
-  const getConditionalStyle = (
-    columnId: string,
-    value: unknown
-  ): React.CSSProperties => {
-    const formats: ConditionalFormatRule[] =
-      widget.config.visualization?.conditionalFormats || [];
-    let finalStyle: React.CSSProperties = {};
-
-    if (formats.length === 0) {
-      return finalStyle;
-    }
-
-    for (const format of formats) {
-      if (!format.isEnabled || format.columnId !== columnId) {
-        continue;
-      }
-
-      const numericValue = Number(value);
-      const numericRuleValue = Number(format.value);
-      let conditionMet = false;
-
-      switch (format.condition) {
-        case "greater_than":
-          if (!isNaN(numericValue) && !isNaN(numericRuleValue)) {
-            conditionMet = numericValue > numericRuleValue;
-          }
-          break;
-        case "less_than":
-          if (!isNaN(numericValue) && !isNaN(numericRuleValue)) {
-            conditionMet = numericValue < numericRuleValue;
-          }
-          break;
-        case "equals":
-          // eslint-disable-next-line eqeqeq
-          conditionMet = value == format.value;
-          break;
-        case "contains":
-          conditionMet = String(value)
-            .toLowerCase()
-            .includes(String(format.value).toLowerCase());
-          break;
-      }
-
-      if (conditionMet) {
-        finalStyle = {
-          backgroundColor: format.style.backgroundColor,
-          color: format.style.textColor,
-          fontWeight: format.style.fontWeight,
-        };
-      }
-    }
-
-    return finalStyle;
+  // Preparar filtros para la consulta
+  const widgetFilters = {
+    products: widget.config.widgetFilters?.products,
+    sections: widget.config.widgetFilters?.sections,
+    dateRange: widget.config.widgetFilters?.dateRange,
   };
+  // Use common conditional formatting hook
+  const conditionalFormats =
+    widget.config.visualization?.conditionalFormats || [];
+  const { getConditionalStyle } = useConditionalFormatting(conditionalFormats);
 
-  // Estado para datos generados
-  const [tableData, setTableData] = useState<Record<string, unknown>[]>([]);
+  // Estado inicial
   const [totals, setTotals] = useState<Record<string, unknown>>({});
 
   // Estado para ordenación (por defecto ordenado por la primera métrica)
@@ -132,6 +79,35 @@ export const TableWidget: React.FC<TableWidgetProps> = ({ widget }) => {
   const hasBreakdownLevels =
     widget.config.breakdownLevels && widget.config.breakdownLevels.length > 0;
   const hasColumns = widget.config.columns && widget.config.columns.length > 0;
+
+  // Resolver variables en las columnas
+  const resolvedColumns = useMemo(() => {
+    if (!widget.config.columns || !widget.config.columns.length) return [];
+
+    return widget.config.columns.map((col) =>
+      resolveMetricDefinition(col, variables)
+    );
+  }, [widget.config.columns, variables]);
+
+  // Obtener datos de la tabla usando React Query
+  const {
+    data: tableData = [],
+    isLoading,
+    isError,
+    error,
+  } = useTableDataQuery(
+    resolvedColumns,
+    widget.config.breakdownLevels || [],
+    widgetFilters
+  );
+
+  // Calcular totales cuando llegan los datos
+  useMemo(() => {
+    if (tableData && tableData.length > 0 && resolvedColumns.length > 0) {
+      const calculatedTotals = calculateTotals(tableData, resolvedColumns);
+      setTotals(calculatedTotals);
+    }
+  }, [tableData, resolvedColumns]);
 
   // Transformar los datos planos en estructura jerárquica y calcular valores acumulados para nodos intermedios
   const transformDataToHierarchical = useMemo(() => {
@@ -312,9 +288,9 @@ export const TableWidget: React.FC<TableWidgetProps> = ({ widget }) => {
     const mainBreakdownId = breakdownLevels[0];
 
     // Filtrar columnas visibles
-    const columns = (
-      widget.config.columns as ExtendedColumnDefinition[]
-    ).filter((col) => col.visible !== false);
+    const columns = (resolvedColumns as ExtendedColumnDefinition[]).filter(
+      (col) => col.visible !== false
+    );
 
     // La columna de desglose
     const breakdownColumn: ExtendedColumnDefinition = {
@@ -341,7 +317,7 @@ export const TableWidget: React.FC<TableWidgetProps> = ({ widget }) => {
 
     return [breakdownColumn, ...metricColumns];
   }, [
-    widget.config.columns,
+    resolvedColumns,
     widget.config.breakdownLevels,
     hasColumns,
     hasBreakdownLevels,
@@ -350,6 +326,8 @@ export const TableWidget: React.FC<TableWidgetProps> = ({ widget }) => {
 
   // Función para ordenar datos (independientemente de si hay datos)
   const sortedData = useMemo(() => {
+    if (!tableData) return [];
+
     const dataToSort = [...tableData];
 
     if (sortConfig.key && sortConfig.direction) {
@@ -391,85 +369,6 @@ export const TableWidget: React.FC<TableWidgetProps> = ({ widget }) => {
     };
   }, [sortedData, currentPage, rowsPerPage]);
 
-  // Generar datos de tabla cuando cambia la configuración o las variables
-  useEffect(() => {
-    if (hasBreakdownLevels && hasColumns) {
-      // Resolver columnas con variables dinámicas antes de generar datos
-      const resolvedColumns = widget.config.columns.map((col) => {
-        // Si el indicador es dinámico, resolverlo
-        if (
-          typeof col.indicator === "object" &&
-          col.indicator.type === "variable"
-        ) {
-          const resolvedIndicator = variables[col.indicator.key];
-          return {
-            ...col,
-            indicator: resolvedIndicator || col.indicator,
-          };
-        }
-
-        // Si algún modificador es dinámico, resolverlo
-        const resolvedModifiers = { ...col.modifiers };
-        Object.entries(col.modifiers).forEach(([key, value]) => {
-          if (
-            typeof value === "object" &&
-            value !== null &&
-            "type" in value &&
-            value.type === "variable"
-          ) {
-            const resolvedValue = variables[value.key];
-            if (resolvedValue !== undefined && resolvedValue !== null) {
-              // Asignar el valor resuelto con el tipo correcto
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              (resolvedModifiers as any)[key] = resolvedValue;
-            }
-          }
-        });
-
-        return {
-          ...col,
-          modifiers: resolvedModifiers,
-        };
-      });
-
-      // Usar filtros del widget si existen, o caer a variables globales
-      const effectiveFilters: TableDataFilters = {
-        // Fechas
-        dateStart: widgetFilters?.dateRange?.start || variables.dateStart,
-        dateEnd: widgetFilters?.dateRange?.end || variables.dateEnd,
-        // Productos
-        selectedProducts:
-          widgetFilters?.products || variables.selectedProducts || [],
-        // Secciones
-        selectedSections:
-          widgetFilters?.sections || variables.selectedSections || [],
-      };
-
-      // Generar datos o usar los existentes si están disponibles
-      const data =
-        widget.config.data && widget.config.data.length > 0
-          ? widget.config.data
-          : generateTableData(
-              resolvedColumns,
-              widget.config.breakdownLevels as string[],
-              effectiveFilters // Pasar los filtros efectivos a generateTableData
-            );
-
-      // Calcular totales con las columnas resueltas
-      const calculatedTotals = calculateTotals(data, resolvedColumns);
-
-      setTableData(data);
-      setTotals(calculatedTotals);
-    }
-  }, [
-    widget.config.columns,
-    widget.config.breakdownLevels,
-    widget.config.data,
-    hasBreakdownLevels,
-    hasColumns,
-    variables, // Añadir variables como dependencia
-  ]);
-
   // Establecer ordenación inicial por la primera métrica cuando las columnas estén disponibles
   useEffect(() => {
     if (hasColumns && organizedColumns.length > 1) {
@@ -487,14 +386,29 @@ export const TableWidget: React.FC<TableWidgetProps> = ({ widget }) => {
   // Show placeholder if table is not fully configured
   if (!hasBreakdownLevels || !hasColumns) {
     return (
-      <div className="widget-placeholder">
-        <Icon name="table" size={48} />
-        <h3>Tabla sin configurar</h3>
-        <div className="placeholder-tip">
-          <Icon name="info" size={16} />
-          <p>Configura desgloses y columnas o carga un preset</p>
-        </div>
-      </div>
+      <WidgetPlaceholder
+        icon="table"
+        title="Tabla sin configurar"
+        description="Configura desgloses y columnas o carga un preset"
+      />
+    );
+  }
+
+  // Show skeleton while loading
+  if (isLoading) {
+    return <WidgetSkeleton className="table-widget-skeleton" />;
+  }
+
+  // Show error placeholder if there was an error
+  if (isError || !tableData) {
+    return (
+      <WidgetPlaceholder
+        icon="alert-circle"
+        title="Error al cargar datos"
+        description={
+          error?.message || "No se pudieron obtener los datos de la tabla"
+        }
+      />
     );
   }
 

@@ -1,5 +1,5 @@
-import type { MetricDefinition } from "../types/metricConfig";
-import { ModifiersMetadata } from "../types/metricConfig";
+import type { MetricDefinition } from "@/types/metricConfig";
+import { ModifiersMetadata } from "@/types/metricConfig";
 
 export interface VariableOption {
   key: string;

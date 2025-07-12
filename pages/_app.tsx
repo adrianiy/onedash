@@ -1,11 +1,24 @@
-import { useEffect } from "react";
-import type { AppProps } from "next/app";
+import { useAuthStore } from "@/store/authStore";
+import { useDashboardStore } from "@/store/dashboardStore";
+import { useThemeStore } from "@/store/themeStore";
+import "@/styles/index.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SessionProvider } from "next-auth/react";
-import { useThemeStore } from "../store/themeStore";
-import { useAuthStore } from "../store/authStore";
-import { useDashboardStore } from "../store/dashboardStore";
+import type { AppProps } from "next/app";
+import Head from "next/head";
+import { useEffect } from "react";
 import "react-tooltip/dist/react-tooltip.css";
-import "../styles/index.css";
+
+// Crear instancia de QueryClient
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60000, // 1 minuto
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 export default function App({
   Component,
@@ -38,8 +51,42 @@ export default function App({
   }, [fetchDashboards, isAuthenticated]);
 
   return (
-    <SessionProvider session={session}>
-      <Component {...pageProps} />
-    </SessionProvider>
+    <>
+      <Head>
+        <title>ONE</title>
+        <meta
+          name="description"
+          content="Dashboard de métricas y visualizaciones"
+        />
+
+        {/* Favicons */}
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="96x96"
+          href="/favicon-96x96.png"
+        />
+
+        {/* Favicon por defecto */}
+        <link rel="icon" href="/favicon-32x32.png" />
+      </Head>
+      <QueryClientProvider client={queryClient}>
+        <SessionProvider session={session}>
+          <Component {...pageProps} />
+        </SessionProvider>
+      </QueryClientProvider>
+    </>
   );
 }

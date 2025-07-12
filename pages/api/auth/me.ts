@@ -1,5 +1,5 @@
 import { NextApiResponse } from "next";
-import { AuthenticatedRequest, withUserData } from "../../../lib/middleware";
+import { AuthenticatedRequest, withUserData } from "@/lib/middleware";
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   // Solo aceptar método GET

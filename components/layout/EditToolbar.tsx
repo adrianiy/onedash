@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { Tooltip } from "react-tooltip";
-import { useDashboardStore } from "../../store/dashboardStore";
-import { useWidgetStore } from "../../store/widgetStore";
-import { useAuthStore } from "../../store/authStore";
-import { Icon } from "../common/Icon";
-import { ReadonlyConfirmModal } from "../common/ReadonlyConfirmModal";
-import type { Dashboard } from "../../types/dashboard";
-import type { Widget } from "../../types/widget";
+import { useDashboardStore } from "@/store/dashboardStore";
+import { useWidgetStore } from "@/store/widgetStore";
+import { useAuthStore } from "@/store/authStore";
+import { Icon } from "@/common/Icon";
+import { ReadonlyConfirmModal } from "@/common/ReadonlyConfirmModal";
+import type { Dashboard } from "@/types/dashboard";
+import type { Widget } from "@/types/widget";
 
 type SaveState = "idle" | "saving" | "success" | "error";
 

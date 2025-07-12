@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { connectToDatabase } from "../../../lib/mongodb";
-import User from "../../../lib/models/User";
-import { hashPassword, generateToken } from "../../../lib/auth";
+import { connectToDatabase } from "@/lib/mongodb";
+import User from "@/lib/models/User";
+import { hashPassword, generateToken } from "@/lib/auth";
 import { setCookie } from "cookies-next";
 
 export default async function handler(

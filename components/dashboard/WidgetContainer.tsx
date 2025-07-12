@@ -1,17 +1,17 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useDashboardStore } from "../../store/dashboardStore";
-import { useWidgetStore } from "../../store/widgetStore";
+import { useDashboardStore } from "@/store/dashboardStore";
+import { useWidgetStore } from "@/store/widgetStore";
 import { Tooltip } from "react-tooltip";
-import { Icon } from "../common/Icon";
+import { Icon } from "@/common/Icon";
 import {
   ChartWidget,
   MetricWidget,
   TableWidget,
   TextWidget,
   ErrorWidget,
-} from "../widgets/render";
-import type { Widget } from "../../types/widget";
-import type { DashboardLayout } from "../../types/dashboard";
+} from "@/widgets/render";
+import type { Widget } from "@/types/widget";
+import type { DashboardLayout } from "@/types/dashboard";
 
 interface WidgetContainerProps {
   widget: Widget;

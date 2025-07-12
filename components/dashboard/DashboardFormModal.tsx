@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Tooltip } from "react-tooltip";
-import { Icon } from "../common/Icon";
+import { Icon } from "@/common/Icon";
 import { CollaboratorSelector } from "./CollaboratorSelector";
-import { useAuthStore } from "../../store/authStore";
-import type { Dashboard } from "../../types/dashboard";
+import { useAuthStore } from "@/store/authStore";
+import type { Dashboard } from "@/types/dashboard";
 
 interface User {
   _id: string;

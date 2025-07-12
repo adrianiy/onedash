@@ -1,12 +1,14 @@
+import { useConditionalFormatting } from "@/hooks";
+import { useMetricDataQuery } from "@/hooks/queries";
+import { useVariableOperations } from "@/hooks/useVariableOperations";
+import { useDashboardStore } from "@/store/dashboardStore";
+import { useVariableStore } from "@/store/variableStore";
+import { resolveMetricDefinition } from "@/utils/variableResolver";
+import type { MetricWidget as MetricWidgetType } from "@/types/widget";
+import { formatValue } from "@/utils/format";
 import React, { useMemo, useState } from "react";
-import { Icon } from "../../common/Icon";
-import type { MetricWidget as MetricWidgetType } from "../../../types/widget";
-import { formatValue } from "../../../utils/format";
-import { useVariableStore } from "../../../store/variableStore";
-import { useVariablePersistence } from "../../../hooks/useVariablePersistence";
-import { useDashboardStore } from "../../../store/dashboardStore";
-import { useResolvedMetric } from "../../../hooks/useResolvedMetric";
-import { Tooltip } from "react-tooltip";
+import { WidgetFiltersDisplay, WidgetPlaceholder } from "../config/common";
+import { WidgetSkeleton } from "./skeletons/WidgetSkeleton";
 
 interface MetricWidgetProps {
   widget: MetricWidgetType;
@@ -14,9 +16,10 @@ interface MetricWidgetProps {
 
 export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
   const { currentDashboard } = useDashboardStore();
-  const { persistMultiple } = useVariablePersistence(
-    currentDashboard?._id || null
-  );
+  const { persistMultiple } = useVariableOperations({
+    dashboardId: currentDashboard?._id || null,
+    enablePersistence: true,
+  });
   const [isClicked, setIsClicked] = useState(false);
 
   const size = widget.config.size || "medium";
@@ -45,17 +48,17 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
   );
 
   // Verificar si el KPI está "activo" (sus variables coinciden con el estado actual)
-  const variables = useVariableStore((state) => state.variables);
+  const allVariables = useVariableStore((state) => state.variables);
   const isActive = useMemo(() => {
     if (!isClickable || !clickEvent || !clickEvent.setVariables) return false;
 
     // Verificar si alguna de las variables del evento coincide con el estado actual
     return Object.entries(clickEvent.setVariables).some(
       ([variableId, value]) => {
-        return variables[variableId] === value;
+        return allVariables[variableId] === value;
       }
     );
-  }, [isClickable, clickEvent, variables]);
+  }, [isClickable, clickEvent, allVariables]);
 
   // Función para manejar el click en el widget
   const handleWidgetClick = () => {
@@ -69,161 +72,59 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
     persistMultiple(clickEvent.setVariables);
   };
 
-  // Resolver las métricas usando el hook
-  const primaryMetricData = useResolvedMetric(widget.config.primaryMetric);
-  const secondaryMetricData = useResolvedMetric(widget.config.secondaryMetric);
+  // Usar las variables para resolver las métricas
+  const resolvedPrimaryMetric = useMemo(
+    () =>
+      widget.config.primaryMetric
+        ? resolveMetricDefinition(widget.config.primaryMetric, allVariables)
+        : undefined,
+    [widget.config.primaryMetric, allVariables]
+  );
 
-  // Función para obtener el estilo condicional
-  const getConditionalStyle = (
-    metricType: "primaryMetric" | "secondaryMetric",
-    value: number
-  ): React.CSSProperties => {
-    let finalStyle: React.CSSProperties = {};
+  const resolvedSecondaryMetric = useMemo(
+    () =>
+      widget.config.secondaryMetric
+        ? resolveMetricDefinition(widget.config.secondaryMetric, allVariables)
+        : undefined,
+    [widget.config.secondaryMetric, allVariables]
+  );
 
-    for (const format of conditionalFormats) {
-      if (!format.isEnabled || format.columnId !== metricType) {
-        continue;
-      }
+  // Obtener datos de las métricas desde la API usando React Query
+  const { data: primaryMetricData, isLoading: isPrimaryLoading } =
+    useMetricDataQuery(resolvedPrimaryMetric, widgetFilters);
 
-      const numericRuleValue = Number(format.value);
-      let conditionMet = false;
+  const { data: secondaryMetricData } = useMetricDataQuery(
+    resolvedSecondaryMetric,
+    widgetFilters
+  );
 
-      switch (format.condition) {
-        case "greater_than":
-          if (!isNaN(numericRuleValue)) {
-            conditionMet = value > numericRuleValue;
-          }
-          break;
-        case "less_than":
-          if (!isNaN(numericRuleValue)) {
-            conditionMet = value < numericRuleValue;
-          }
-          break;
-        case "equals":
-          conditionMet = value === numericRuleValue;
-          break;
-        case "contains":
-          conditionMet = String(value).includes(String(format.value));
-          break;
-      }
-
-      if (conditionMet) {
-        finalStyle = {
-          backgroundColor: format.style.backgroundColor,
-          color: format.style.textColor,
-          fontWeight: format.style.fontWeight,
-          fontStyle: format.style.fontStyle,
-        };
-        // Romper el bucle después de aplicar el primer formato que coincida
-        break;
-      }
-    }
-
-    return finalStyle;
-  };
-
-  // Función para renderizar los filtros según el modo
-  const renderFilters = () => {
-    if (!hasFilters || !filterDisplayMode || filterDisplayMode === "hidden") {
-      return null;
-    }
-
-    // Modo badge: mostrar etiquetas con los valores de los filtros
-    if (filterDisplayMode === "badges") {
-      return (
-        <div className="metric-widget__filters metric-widget__filters--badges">
-          {widgetFilters.products && widgetFilters.products.length > 0 && (
-            <span
-              className="metric-widget__filter-badge metric-widget__filter-badge--product"
-              data-tooltip-id={`filter-products-tooltip-${widget._id}`}
-              data-tooltip-content={`Productos: ${widgetFilters.products.join(
-                ", "
-              )}`}
-            >
-              <span>
-                {widgetFilters.products.length === 1
-                  ? widgetFilters.products[0]
-                  : `${widgetFilters.products.length} Productos`}
-              </span>
-            </span>
-          )}
-
-          {widgetFilters.sections && widgetFilters.sections.length > 0 && (
-            <span
-              className="metric-widget__filter-badge metric-widget__filter-badge--section"
-              data-tooltip-id={`filter-sections-tooltip-${widget._id}`}
-              data-tooltip-content={`Secciones: ${widgetFilters.sections.join(
-                ", "
-              )}`}
-            >
-              <span>
-                {widgetFilters.sections.length === 1
-                  ? widgetFilters.sections[0]
-                  : `${widgetFilters.sections.length} Secciones`}
-              </span>
-            </span>
-          )}
-
-          {widgetFilters.dateRange &&
-            (widgetFilters.dateRange.start || widgetFilters.dateRange.end) && (
-              <span
-                className="metric-widget__filter-badge metric-widget__filter-badge--date"
-                data-tooltip-id={`filter-date-tooltip-${widget._id}`}
-                data-tooltip-content={`Fechas: ${
-                  widgetFilters.dateRange.start || ""
-                } - ${widgetFilters.dateRange.end || ""}`}
-              >
-                <span>Fecha</span>
-              </span>
-            )}
-        </div>
-      );
-    }
-
-    // Modo info: mostrar solo un icono de filtro
-    if (filterDisplayMode === "info") {
-      return (
-        <div
-          className="metric-widget__filters metric-widget__filters--info"
-          data-tooltip-id={`metric-filters-tooltip-${widget._id}`}
-          data-tooltip-content={`${
-            widgetFilters.products?.length
-              ? `Productos: ${widgetFilters.products.join(", ")}\n`
-              : ""
-          }${
-            widgetFilters.sections?.length
-              ? `Secciones: ${widgetFilters.sections.join(", ")}\n`
-              : ""
-          }${
-            widgetFilters.dateRange &&
-            (widgetFilters.dateRange.start || widgetFilters.dateRange.end)
-              ? `Fechas: ${widgetFilters.dateRange.start || ""} - ${
-                  widgetFilters.dateRange.end || ""
-                }`
-              : ""
-          }`}
-        >
-          <div className="metric-widget__filter-indicator">
-            <Icon name="filter" size={12} />
-          </div>
-        </div>
-      );
-    }
-
-    return null;
-  };
+  // Use common conditional formatting hook
+  const { getConditionalStyle } = useConditionalFormatting(conditionalFormats);
 
   // Si no hay métricas configuradas, mostrar placeholder
+  if (!resolvedPrimaryMetric) {
+    return (
+      <WidgetPlaceholder
+        icon="target"
+        title="Métrica sin configurar"
+        description="Configura una métrica para mostrar datos"
+      />
+    );
+  }
+
+  // Si están cargando, mostrar skeleton
+  if (isPrimaryLoading) {
+    return <WidgetSkeleton className={`metric-widget-skeleton--${size}`} />;
+  }
+
+  // Si no hay datos, mostrar mensaje de error
   if (!primaryMetricData) {
     return (
-      <div className="widget-placeholder">
-        <Icon name="target" size={48} />
-        <h3>Métrica sin configurar</h3>
-        <div className="placeholder-tip">
-          <Icon name="info" size={16} />
-          <p>Configura una métrica para mostrar datos</p>
-        </div>
-      </div>
+      <WidgetPlaceholder
+        icon="alert-circle"
+        title="Error al cargar datos"
+        description="No se pudieron obtener los datos de la métrica"
+      />
     );
   }
 
@@ -242,14 +143,19 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
         onClick={handleWidgetClick}
         style={{ cursor: isClickable ? "pointer" : "default" }}
       >
-        {renderFilters()}
-        <Tooltip id={`filter-date-tooltip-${widget._id}`} place="top" />
-        <Tooltip id={`filter-products-tooltip-${widget._id}`} place="top" />
-        <Tooltip id={`filter-sections-tooltip-${widget._id}`} place="top" />
-        <Tooltip
-          id={`metric-filters-tooltip-${widget._id}`}
-          place="top"
-          style={{ whiteSpace: "pre-line" }}
+        <WidgetFiltersDisplay
+          filters={{
+            products: widgetFilters.products,
+            sections: widgetFilters.sections,
+            dateRange: widgetFilters.dateRange
+              ? {
+                  start: widgetFilters.dateRange.start || undefined,
+                  end: widgetFilters.dateRange.end || undefined,
+                }
+              : undefined,
+          }}
+          mode={filterDisplayMode}
+          widgetId={widget._id}
         />
         {/* Valor principal arriba en grande */}
         <div
@@ -264,11 +170,11 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
         {/* Footer con título del widget y métrica secundaria */}
         <div
           className={`metric-widget__footer ${
-            !secondaryMetricData ? "metric-widget__footer--centered" : ""
+            !resolvedSecondaryMetric ? "metric-widget__footer--centered" : ""
           }`}
         >
           <div className="metric-widget__title">{widget.title}</div>
-          {secondaryMetricData && (
+          {resolvedSecondaryMetric && secondaryMetricData && (
             <div
               className="metric-widget__secondary-value"
               style={getConditionalStyle(

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Icon } from "../../../common/Icon";
-import { useWidgetStore } from "../../../../store/widgetStore";
-import { useVariableStore } from "../../../../store/variableStore";
-import { useDashboardStore } from "../../../../store/dashboardStore";
-import type { MetricWidget, WidgetEvent } from "../../../../types/widget";
-import type { MetricDefinition } from "../../../../types/metricConfig";
-import { ModifiersMetadata } from "../../../../types/metricConfig";
+import { Icon } from "@/common/Icon";
+import { useWidgetStore } from "@/store/widgetStore";
+import { useVariableStore } from "@/store/variableStore";
+import { useDashboardStore } from "@/store/dashboardStore";
+import type { MetricWidget, WidgetEvent } from "@/types/widget";
+import type { MetricDefinition } from "@/types/metricConfig";
+import { ModifiersMetadata } from "@/types/metricConfig";
 
 interface EventsConfigProps {
   widget: MetricWidget;

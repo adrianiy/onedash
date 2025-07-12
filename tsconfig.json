@@ -15,7 +15,20 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@/components/*": ["components/*"],
+      "@/widgets/*": ["components/widgets/*"],
+      "@/common/*": ["components/common/*"],
+      "@/config/*": ["components/widgets/config/*"],
+      "@/render/*": ["components/widgets/render/*"],
+      "@/layout/*": ["components/layout/*"],
+      "@/hooks/*": ["hooks/*"],
+      "@/lib/*": ["lib/*"],
+      "@/store/*": ["store/*"],
+      "@/types/*": ["types/*"],
+      "@/utils/*": ["utils/*"],
+      "@/styles/*": ["styles/*"],
+      "@/services/*": ["services/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

@@ -1,15 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Tooltip } from "react-tooltip";
 import { Icon } from "./Icon";
-import { ConfigDropdown } from "../widgets/common/ConfigDropdown";
-import type { MetricDefinition } from "../../types/metricConfig";
+import { ConfigDropdown } from "@/components/widgets/config/common/ui/ConfigDropdown";
+import type { MetricDefinition } from "@/types/metricConfig";
 import {
   interpolateText,
   getAvailableVariables,
   filterVariables,
   insertVariableAtPosition,
   findInsertPosition,
-} from "../../utils/textInterpolation";
+} from "@/utils/textInterpolation";
 
 interface TextInterpolationInputProps {
   value: string;

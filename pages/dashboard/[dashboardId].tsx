@@ -1,16 +1,16 @@
-import React, { useEffect, useRef } from "react";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { DashboardGrid } from "@/components/dashboard/DashboardGrid";
+import { useVariableLoader } from "@/hooks/useVariableLoader";
+import { DashboardSidebar } from "@/layout/DashboardSidebar";
+import { FilterBar } from "@/layout/FilterBar";
+import { FloatingActionBar } from "@/layout/FloatingActionBar";
+import { Header } from "@/layout/Header";
+import { WidgetConfigSidebar } from "@/layout/WidgetConfigSidebar";
+import { useDashboardStore } from "@/store/dashboardStore";
+import { useWidgetStore } from "@/store/widgetStore";
+import Head from "next/head";
 import { useRouter } from "next/router";
-import { useDashboardStore } from "../../store/dashboardStore";
-import { useWidgetStore } from "../../store/widgetStore";
-import { useVariableLoader } from "../../hooks/useVariableLoader";
-import { DashboardGrid } from "../../components/dashboard/DashboardGrid";
-import { WidgetConfigSidebar } from "../../components/layout/WidgetConfigSidebar";
-import { Header } from "../../components/layout/Header";
-import { FilterBar } from "../../components/layout/FilterBar";
-import { FloatingActionBar } from "../../components/layout/FloatingActionBar";
-import { DashboardSidebar } from "../../components/layout/DashboardSidebar";
-import { ProtectedRoute } from "../../components/auth/ProtectedRoute";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -106,18 +106,23 @@ export default function Dashboard() {
   }, [isEditing]);
 
   return (
-    <ProtectedRoute>
-      <Header />
-      <FilterBar />
-      <div className={`dashboard-container ${isEditing ? "editing" : ""}`}>
-        <DashboardGrid />
-        <WidgetConfigSidebar />
-      </div>
-      <FloatingActionBar
-        onToggleSidebar={toggleSidebar}
-        isSidebarOpen={isSidebarOpen}
-      />
-      <DashboardSidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
-    </ProtectedRoute>
+    <>
+      <Head>
+        <title>ONE - {currentDashboard?.name || "Dashboard"}</title>
+      </Head>
+      <ProtectedRoute>
+        <Header />
+        <FilterBar />
+        <div className={`dashboard-container ${isEditing ? "editing" : ""}`}>
+          <DashboardGrid />
+          <WidgetConfigSidebar />
+        </div>
+        <FloatingActionBar
+          onToggleSidebar={toggleSidebar}
+          isSidebarOpen={isSidebarOpen}
+        />
+        <DashboardSidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+      </ProtectedRoute>
+    </>
   );
 }

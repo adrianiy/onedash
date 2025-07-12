@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { Icon } from "@/common/Icon";
+import { useAuthStore } from "@/store/authStore";
+import { useDashboardStore } from "@/store/dashboardStore";
+import Head from "next/head";
 import { useRouter } from "next/router";
-import { useAuthStore } from "../store/authStore";
-import { useDashboardStore } from "../store/dashboardStore";
-import { Icon } from "../components/common/Icon";
+import { useEffect, useRef, useState } from "react";
 
 export default function Loading() {
   const router = useRouter();
@@ -59,13 +60,18 @@ export default function Loading() {
   }, [hasInitialized, isAuthenticated, isLoading, router, fetchDashboards]);
 
   return (
-    <div className="auth-page">
-      <div className="auth-page__loader-container">
-        <div className="auth-page__loader-content">
-          <Icon name="loader" className="auth-page__loader-icon" size={48} />
-          <p className="auth-page__loader-text">Iniciando sesión...</p>
+    <>
+      <Head>
+        <title>ONE - Cargando</title>
+      </Head>
+      <div className="auth-page">
+        <div className="auth-page__loader-container">
+          <div className="auth-page__loader-content">
+            <Icon name="loader" className="auth-page__loader-icon" size={48} />
+            <p className="auth-page__loader-text">Iniciando sesión...</p>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

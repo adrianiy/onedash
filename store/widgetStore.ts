@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { Types } from "mongoose";
-import type { Widget } from "../types/widget";
+import type { Widget } from "@/types/widget";
 
 interface WidgetState {
   widgets: Widget[];

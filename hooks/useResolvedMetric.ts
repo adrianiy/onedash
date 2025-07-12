@@ -1,7 +1,7 @@
 import { useMemo } from "react";
-import type { MetricDefinition } from "../types/metricConfig";
-import { useVariableStore } from "../store/variableStore";
-import { resolveMetricDefinition as resolveMetric } from "../utils/variableResolver";
+import type { MetricDefinition } from "@/types/metricConfig";
+import { useVariableStore } from "@/store/variableStore";
+import { resolveMetricDefinition as resolveMetric } from "@/utils/variableResolver";
 
 // Datos simulados para la resolución de valores.
 // En una implementación real, esto vendría de una API.

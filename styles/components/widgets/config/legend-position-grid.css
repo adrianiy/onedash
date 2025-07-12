@@ -1,0 +1,33 @@
+/* Fila de posicionamiento de leyenda simplificada */
+.viz-legend-position-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+/* Legend position specific overrides */
+.viz-legend-position-controls .viz-control-btn {
+  width: 32px;
+  height: 32px;
+}
+
+.viz-legend-position-controls .viz-control-btn:hover {
+  transform: translateY(-1px);
+}
+
+.viz-legend-position-controls .viz-control-btn--active:hover {
+  transform: translateY(-1px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .viz-legend-position-controls {
+    gap: 2px;
+  }
+
+  .viz-legend-position-controls .viz-control-btn {
+    width: 28px;
+    height: 28px;
+  }
+}

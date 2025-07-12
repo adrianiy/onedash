@@ -6,10 +6,10 @@ import { useCreateBlockNote } from "@blocknote/react";
 import type { BlockNoteEditor } from "@blocknote/core";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Icon } from "../../common/Icon";
-import type { TextWidget as TextWidgetType } from "../../../types/widget";
-import { useWidgetStore } from "../../../store/widgetStore";
-import { useThemeStore } from "../../../store/themeStore";
+import { Icon } from "@/common/Icon";
+import type { TextWidget as TextWidgetType } from "@/types/widget";
+import { useWidgetStore } from "@/store/widgetStore";
+import { useThemeStore } from "@/store/themeStore";
 
 // Import BlockNote styles
 import "@blocknote/core/fonts/inter.css";

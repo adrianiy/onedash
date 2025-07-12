@@ -1,8 +1,8 @@
+import { WidgetFiltersConfig } from "@/config/common/controls/WidgetFiltersConfig";
+import type { Widget } from "@/types/widget";
 import React from "react";
-import type { Widget } from "../../../../types/widget";
-import { BreakdownLevelConfig } from "./BreakdownLevelConfig";
-import { TableColumnsConfig } from "./TableColumnsConfig";
-import { WidgetFiltersConfig } from "./WidgetFiltersConfig";
+import { BreakdownLevelConfig } from "./data/BreakdownLevelConfig";
+import { TableColumnsConfig } from "./data/TableColumnsConfig";
 
 interface DataConfigProps {
   widget: Widget;

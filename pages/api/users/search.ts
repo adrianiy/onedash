@@ -1,7 +1,7 @@
 import { NextApiResponse } from "next";
-import { AuthenticatedRequest, withUserData } from "../../../lib/middleware";
-import { connectToDatabase } from "../../../lib/mongodb";
-import User from "../../../lib/models/User";
+import { AuthenticatedRequest, withUserData } from "@/lib/middleware";
+import { connectToDatabase } from "@/lib/mongodb";
+import User from "@/lib/models/User";
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   if (!req.user?.id) {

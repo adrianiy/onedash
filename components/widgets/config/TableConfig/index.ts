@@ -1,5 +1,4 @@
-export { TableConfig } from "./TableConfig";
-export { TableConfigTabs } from "./TableConfigTabs";
 export { DataConfig } from "./DataConfig";
-export { VisualizationConfig } from "./VisualizationConfig";
 export { EventsConfig } from "./EventsConfig";
+export { TableConfig } from "./TableConfig";
+export { VisualizationConfig } from "./VisualizationConfig";
