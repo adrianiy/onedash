@@ -1,0 +1,54 @@
+import type { Dashboard } from "@/types/dashboard";
+import type { Widget } from "@/types/widget";
+
+export type SaveState = "idle" | "saving" | "success" | "error";
+
+export interface SaveButtonProps {
+  onSave: () => Promise<void>;
+  saveState: SaveState;
+  setSaveState: (state: SaveState) => void;
+}
+
+export interface SaveResult {
+  needsConfirmation?: boolean;
+  dashboard?: Dashboard | null;
+  error?: unknown;
+}
+
+export interface ToolbarFileActionsProps {
+  isDiscarding: boolean;
+  hasUnsavedChanges: boolean;
+  onSave: () => Promise<SaveResult | void>;
+  onCloseEditing: () => Promise<void>;
+}
+
+export interface ToolbarWidgetActionsProps {
+  addWidgetToBoard: (widget: Widget, layout: { w: number; h: number }) => void;
+}
+
+export interface ConfigButtonProps {
+  selectedWidgetId: string | null;
+  getWidget: (id: string) => Widget | undefined;
+  openConfigSidebar: () => void;
+}
+
+export interface ReadonlyDashboardHandlerProps {
+  isOpen: boolean;
+  dashboard: Dashboard | null;
+  onConfirm: (newName: string) => void;
+  onCancel: () => void;
+}
+
+export interface WidgetCreatorHookReturn {
+  addMetricWidget: () => void;
+  addTableWidget: () => void;
+  addChartWidget: () => void;
+  addTextWidget: () => void;
+}
+
+export interface DragAndDropHookReturn {
+  handleMetricDragStart: (e: React.DragEvent) => void;
+  handleTableDragStart: (e: React.DragEvent) => void;
+  handleChartDragStart: (e: React.DragEvent) => void;
+  handleTextDragStart: (e: React.DragEvent) => void;
+}

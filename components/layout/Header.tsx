@@ -6,7 +6,7 @@ import { useThemeStore } from "@/store/themeStore";
 import { useAuthStore } from "@/store/authStore";
 import { Icon } from "@/common/Icon";
 import { UserAvatar } from "./UserAvatar";
-import { EditToolbar } from "./EditToolbar";
+import { EditToolbar } from "./editToolbar";
 
 export const Header: React.FC = () => {
   const { currentDashboard } = useDashboardStore();
