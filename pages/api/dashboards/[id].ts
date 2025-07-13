@@ -83,7 +83,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       const {
         name,
         description,
-        layout,
+        layouts,
         widgets,
         visibility,
         collaborators,
@@ -101,7 +101,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
 
       if (name) updateFields.name = name;
       if (description !== undefined) updateFields.description = description;
-      if (layout) updateFields.layout = layout;
+      if (layouts) updateFields.layouts = layouts;
       if (widgets) updateFields.widgets = widgets;
       if (defaultVariables !== undefined) {
         updateFields.defaultVariables = defaultVariables;
@@ -247,7 +247,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       const dashboardCopy = new Dashboard({
         name: `${dashboard.name} (Copia)`,
         description: dashboard.description,
-        layout: dashboard.layout,
+        layouts: dashboard.layouts,
         widgets: dashboard.widgets,
         userId: req.user.id,
         visibility: "private", // Las copias son privadas por defecto

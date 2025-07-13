@@ -24,8 +24,13 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
   widget,
   isSelected = false,
 }) => {
-  const { isEditing, selectWidget, openConfigSidebar, clearSelection } =
-    useUIStore();
+  const {
+    isEditing,
+    currentBreakpoint,
+    selectWidget,
+    openConfigSidebar,
+    clearSelection,
+  } = useUIStore();
   const { dashboard, addWidget, removeWidget } = useGridStore();
   const [showFloatingHeader, setShowFloatingHeader] = useState(false);
   const [isHiding, setIsHiding] = useState(false);
@@ -46,7 +51,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
   const handleCopy = () => {
     if (dashboard) {
       // Find the original widget in the layout to get its size
-      const originalLayout = dashboard.layout.find(
+      const originalLayout = dashboard.layouts[currentBreakpoint].find(
         (item: DashboardLayout) => item.i === widget._id
       );
 
@@ -56,7 +61,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
 
       // Find the first free position for the copied widget
       const freePosition = findFirstFreePosition(
-        dashboard.layout,
+        dashboard.layouts[currentBreakpoint],
         widgetWidth,
         widgetHeight,
         12 // Usar un valor por defecto para gridCols

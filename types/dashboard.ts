@@ -1,12 +1,16 @@
 import { Layout } from "react-grid-layout";
 
 export type DashboardLayout = Layout;
+export type Breakpoint = "lg" | "md" | "sm"; // Breakpoints soportados
 
 export interface Dashboard {
   _id: string;
   name: string;
   description?: string;
-  layout: DashboardLayout[];
+
+  // Reemplazar layout por layouts
+  layouts: Record<Breakpoint, DashboardLayout[]>;
+
   widgets: string[];
   userId: string; // Puede ser solo el ID o el objeto usuario completo
   variables?: Record<string, unknown>; // Variables del dashboard como objeto clave-valor

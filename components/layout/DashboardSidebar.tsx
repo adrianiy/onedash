@@ -160,7 +160,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
         visibility: dashboardData.visibility || "private",
         userId: currentUser?._id || "",
         // Inicializar con arrays vacíos
-        layout: [],
+        layouts: { lg: [], md: [], sm: [], xs: [], xxs: [] },
         widgets: [],
         collaborators: [],
       });

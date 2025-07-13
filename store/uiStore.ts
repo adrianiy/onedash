@@ -1,4 +1,4 @@
-import { DashboardSettings } from "@/types/dashboard";
+import { Breakpoint, DashboardSettings } from "@/types/dashboard";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
@@ -10,6 +10,7 @@ interface UIState {
   selectedWidgetId: string | null;
   droppingItemSize: { w: number; h: number };
   lockChanges: boolean;
+  currentBreakpoint: Breakpoint; // Añadido: breakpoint actual
 
   // Acciones de UI
   toggleEditing: () => void;
@@ -23,6 +24,7 @@ interface UIState {
   setDroppingItemSize: (size: { w: number; h: number }) => void;
   resetDroppingItemSize: () => void;
   setLockChanges: (value: boolean) => void;
+  setCurrentBreakpoint: (breakpoint: Breakpoint) => void; // Añadido: acción para cambiar breakpoint
 }
 
 const defaultSettings: DashboardSettings = {
@@ -43,6 +45,7 @@ export const useUIStore = create<UIState>()(
       selectedWidgetId: null,
       droppingItemSize: { w: 6, h: 6 },
       lockChanges: false,
+      currentBreakpoint: "lg", // Añadido: valor por defecto (desktop)
 
       // Acciones de UI
       toggleEditing: () => set((state) => ({ isEditing: !state.isEditing })),
@@ -67,6 +70,10 @@ export const useUIStore = create<UIState>()(
       resetDroppingItemSize: () => set({ droppingItemSize: { w: 6, h: 6 } }),
 
       setLockChanges: (value) => set({ lockChanges: value }),
+
+      // Añadido: acción para cambiar el breakpoint
+      setCurrentBreakpoint: (breakpoint) =>
+        set({ currentBreakpoint: breakpoint }),
     }),
     {
       name: "ui-store",

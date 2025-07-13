@@ -3,6 +3,7 @@ import { generateId } from "@/utils/helpers";
 import { Widget, WidgetType } from "@/types/widget";
 import { WidgetCreatorHookReturn } from "../types";
 import { findFirstFreePosition } from "@/utils/layoutUtils";
+import { useUIStore } from "@/store/uiStore";
 
 /**
  * Hook que proporciona funciones para crear diferentes tipos de widgets
@@ -10,6 +11,7 @@ import { findFirstFreePosition } from "@/utils/layoutUtils";
 export const useWidgetCreator = (): WidgetCreatorHookReturn => {
   // Usar nuevos stores
   const { dashboard } = useGridStore();
+  const { currentBreakpoint } = useUIStore();
   const { addWidgetAndSelect } = useGridAndUI();
 
   /**
@@ -42,7 +44,7 @@ export const useWidgetCreator = (): WidgetCreatorHookReturn => {
     } as Widget; // Cast al final para evitar el error de tipo específico
 
     const freePosition = findFirstFreePosition(
-      dashboard.layout,
+      dashboard.layouts[currentBreakpoint],
       layout.w,
       layout.h
     );

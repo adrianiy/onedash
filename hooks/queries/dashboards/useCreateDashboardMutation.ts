@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Dashboard, DashboardLayout } from "@/types/dashboard";
+import { Dashboard } from "@/types/dashboard";
 import { apiService } from "@/services/apiService";
+import { Layouts } from "react-grid-layout";
 
 interface CreateDashboardParams {
   name: string;
@@ -10,7 +11,7 @@ interface CreateDashboardParams {
   defaultVariables?: Record<string, unknown>;
   variables?: Record<string, unknown>;
   userId?: string;
-  layout?: DashboardLayout[];
+  layouts?: Layouts;
   widgets?: string[];
   originalId?: string; // ID del dashboard original (para copias)
 }

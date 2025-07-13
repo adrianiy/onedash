@@ -13,6 +13,7 @@ import { ToolbarWidgetActions } from "./ToolbarWidgetActions";
 import { ToolbarUndoActions } from "./ToolbarUndoActions";
 import { ConfigButton } from "./ConfigButton";
 import { ReadonlyDashboardHandler } from "./ReadonlyDashboardHandler";
+import { BreakpointSelector } from "./BreakpointSelector"; // Importamos el selector de breakpoints
 import type { Dashboard } from "@/types/dashboard";
 import { SaveResult } from "./types";
 
@@ -74,7 +75,7 @@ export const EditToolbar: React.FC = () => {
             {
               id: dashboard._id,
               updates: {
-                layout: dashboard.layout,
+                layouts: dashboard.layouts, // Actualizado: guardamos layouts en lugar de solo layout
                 widgets: dashboard.widgets,
               },
             },
@@ -126,7 +127,7 @@ export const EditToolbar: React.FC = () => {
       createDashboard({
         name: newName,
         description: readonlyDashboard.description,
-        layout: readonlyDashboard.layout,
+        layouts: readonlyDashboard.layouts, // Actualizado: usamos layouts en lugar de solo layout
         widgets: readonlyDashboard.widgets,
         variables: readonlyDashboard.variables,
         visibility: "private", // Por defecto privado
@@ -173,6 +174,11 @@ export const EditToolbar: React.FC = () => {
 
           {/* Sección Widgets */}
           <ToolbarWidgetActions />
+
+          <div className="edit-toolbar__separator" />
+
+          {/* Selector de breakpoints */}
+          <BreakpointSelector />
 
           {/* Espacio flexible para empujar el botón de configuración a la derecha */}
           <div className="edit-toolbar__spacer"></div>

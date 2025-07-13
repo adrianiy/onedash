@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { temporal } from "zundo";
-import type { Dashboard, DashboardLayout } from "@/types/dashboard";
+import type { Breakpoint, Dashboard, DashboardLayout } from "@/types/dashboard";
 import type { Widget } from "@/types/widget";
 import { useUIStore } from "./uiStore";
 import { Layout } from "react-grid-layout";
@@ -23,7 +23,11 @@ interface GridState {
   updateDashboard: (updates: Partial<Dashboard>) => void;
   setWidgets: (widgets: Widgets) => void;
   updateWidget: (widgetId: string, updates: Partial<Widget>) => void;
-  updateDashboardLayout: (layout: DashboardLayout[]) => void;
+  updateDashboardLayout: (
+    layout: DashboardLayout[],
+    breakpoint: Breakpoint
+  ) => void;
+  updateDashboardLayouts: (layouts: Record<string, Layout[]>) => void;
   addWidget: (widget: Widget, layout: Layout) => void;
   removeWidget: (widgetId: string) => void;
 
@@ -86,15 +90,38 @@ export const useGridStore = create<GridState>()(
             "updateWidget"
           ),
 
-        updateDashboardLayout: (layout) =>
+        updateDashboardLayout: (layout, breakpoint) =>
           set(
             (state) => ({
               dashboard: state.dashboard
-                ? { ...state.dashboard, layout }
+                ? {
+                    ...state.dashboard,
+                    layouts: {
+                      ...state.dashboard.layouts,
+                      [breakpoint]: layout,
+                    },
+                  }
                 : null,
             }),
             false,
             "updateDashboardLayout"
+          ),
+
+        updateDashboardLayouts: (layouts) =>
+          set(
+            (state) => ({
+              dashboard: state.dashboard
+                ? {
+                    ...state.dashboard,
+                    layouts: {
+                      ...state.dashboard.layouts,
+                      ...layouts,
+                    },
+                  }
+                : null,
+            }),
+            false,
+            "updateDashboardLayouts"
           ),
 
         addWidget: (widget, layout) =>
@@ -102,6 +129,7 @@ export const useGridStore = create<GridState>()(
             (state) => {
               // Asegurarse de que el widget tenga un ID
               const widgetWithId = widget;
+              const currentBreakpoint = useUIStore.getState().currentBreakpoint;
 
               // Marcar como añadido y eliminar de eliminados (por si acaso)
               const newAddedWidgets = new Set(state.addedWidgets);
@@ -110,13 +138,26 @@ export const useGridStore = create<GridState>()(
               const newDeletedWidgets = new Set(state.deletedWidgets);
               newDeletedWidgets.delete(widgetWithId._id);
 
+              // Crear un nuevo layout para cada breakpoint
+              const updatedLayouts: Record<Breakpoint, Layout[]> = {
+                lg: [...(state.dashboard?.layouts?.lg || [])],
+                md: [...(state.dashboard?.layouts?.md || [])],
+                sm: [...(state.dashboard?.layouts?.sm || [])],
+              };
+
+              // Añadir el layout al breakpoint actual
+              updatedLayouts[currentBreakpoint] = [
+                ...updatedLayouts[currentBreakpoint],
+                layout,
+              ];
+
               return {
                 widgets: { ...state.widgets, [widgetWithId._id]: widgetWithId },
                 // Actualizar también el dashboard si existe
                 dashboard: state.dashboard
                   ? {
                       ...state.dashboard,
-                      layout: [...state.dashboard.layout, layout],
+                      layouts: updatedLayouts,
                       widgets: [...state.dashboard.widgets, widgetWithId._id],
                     }
                   : null,
@@ -146,6 +187,19 @@ export const useGridStore = create<GridState>()(
               // Si estaba marcado como modificado, ya no lo está (se eliminó)
               newModifiedWidgets.delete(widgetId);
 
+              // Filtrar el layout del widget en todos los breakpoints
+              const updatedLayouts: Record<Breakpoint, Layout[]> = {
+                lg: (state.dashboard?.layouts?.lg || []).filter(
+                  (item) => item.i !== widgetId
+                ),
+                md: (state.dashboard?.layouts?.md || []).filter(
+                  (item) => item.i !== widgetId
+                ),
+                sm: (state.dashboard?.layouts?.sm || []).filter(
+                  (item) => item.i !== widgetId
+                ),
+              };
+
               return {
                 // Eliminar el widget del diccionario
                 widgets: Object.fromEntries(
@@ -159,9 +213,7 @@ export const useGridStore = create<GridState>()(
                   widgets: state.dashboard.widgets.filter(
                     (id) => id !== widgetId
                   ),
-                  layout: state.dashboard.layout.filter(
-                    (item) => item.i !== widgetId
-                  ),
+                  layouts: updatedLayouts,
                 },
                 addedWidgets: newAddedWidgets,
                 deletedWidgets: newDeletedWidgets,

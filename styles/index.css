@@ -13,6 +13,7 @@
 @import "./components/layout/filter-bar.css";
 @import "./components/layout/floating-bar.css";
 @import "./components/layout/theme-selector.css";
+@import "./components/layout/breakpoint-selector.css";
 
 /* Wizard */
 @import "./components/wizard/app-wizard.css";

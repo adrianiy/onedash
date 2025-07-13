@@ -1,0 +1,4 @@
+/* Ajustes específicos para los botones de breakpoints */
+.breakpoint-selector .edit-toolbar__section-buttons {
+  gap: var(--spacing-xs);
+}

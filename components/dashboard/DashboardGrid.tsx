@@ -9,6 +9,7 @@ import type { Widget, WidgetType } from "@/types/widget";
 import type { Layout } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
+import { Breakpoint } from "@/types/dashboard";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -45,7 +46,13 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
   // Usar los nuevos stores
   const { dashboard, widgets } = useGridStore();
 
-  const layout = useMemo(() => dashboard?.layout, [dashboard?.layout]);
+  // Usar layouts en lugar de layout
+  const layouts = useMemo(() => {
+    if (!dashboard?.layouts) {
+      return { lg: [], md: [], sm: [] };
+    }
+    return dashboard.layouts;
+  }, [dashboard?.layouts]);
 
   const {
     isEditing,
@@ -53,6 +60,8 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
     selectWidget,
     droppingItemSize,
     resetDroppingItemSize,
+    currentBreakpoint,
+    setCurrentBreakpoint,
   } = useUIStore();
 
   const { getGridProps } = useGridLayout();
@@ -132,6 +141,16 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
     resetDroppingItemSize();
   };
 
+  // Handler para manejar cambios de breakpoint
+  const handleBreakpointChange = (newBreakpoint: Breakpoint) => {
+    if (newBreakpoint !== currentBreakpoint) {
+      setCurrentBreakpoint(newBreakpoint);
+      if (process.env.NODE_ENV === "development") {
+        console.log(`🔄 Breakpoint cambiado a: ${newBreakpoint}`);
+      }
+    }
+  };
+
   // Debug logging to help identify layout issues
   if (process.env.NODE_ENV === "development") {
     console.log(
@@ -139,8 +158,13 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
       JSON.parse(
         JSON.stringify({
           dashboardId: dashboard._id,
-          originalLayout: dashboard.layout,
-          layoutCount: dashboard.layout.length,
+          layouts: dashboard.layouts,
+          currentBreakpoint,
+          layoutCount: {
+            lg: dashboard.layouts?.lg?.length || 0,
+            md: dashboard.layouts?.md?.length || 0,
+            sm: dashboard.layouts?.sm?.length || 0,
+          },
           dashboard: dashboard,
           widgets: widgets,
         })
@@ -160,9 +184,9 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
       {(dashboard.widgets.length > 0 || isEditing) && (
         <ResponsiveGridLayout
           {...gridProps}
-          layouts={{ lg: layout! }}
-          breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-          cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+          layouts={layouts}
+          breakpoints={{ lg: 1200, md: 996, sm: 768 }}
+          cols={{ lg: 24, md: 18, sm: 12 }}
           isDroppable={isEditing}
           onDrop={(layout, item, e) =>
             handleWidgetDrop(
@@ -171,6 +195,8 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
               e as unknown as React.DragEvent<HTMLElement>
             )
           }
+          onBreakpointChange={handleBreakpointChange}
+          breakpoint={currentBreakpoint}
           droppingItem={{
             i: "__dropping-elem__",
             w: droppingItemSize.w,

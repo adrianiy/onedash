@@ -2,6 +2,7 @@ import mongoose, { Schema } from "mongoose";
 import { IUser } from "./User";
 import { Types } from "mongoose";
 import { VariableValue } from "./Variable";
+import { Breakpoint } from "@/types/dashboard";
 
 // Interfaces de tipos
 export interface DashboardLayout {
@@ -20,7 +21,10 @@ export interface IDashboard {
   _id?: string | Types.ObjectId;
   name: string;
   description?: string;
-  layout: DashboardLayout[];
+
+  // Reemplazar layout por layouts
+  layouts: Record<Breakpoint, DashboardLayout[]>;
+
   widgets: string[]; // Referencias a los IDs de widgets
   userId: string | Types.ObjectId | IUser; // Referencia al propietario
   collaborators?: Array<string | Types.ObjectId>; // IDs de usuarios con permisos de edición
@@ -30,6 +34,13 @@ export interface IDashboard {
   isShared?: boolean; // Indica si el dashboard es compartible con usuarios autenticados
   createdAt: Date;
   updatedAt: Date;
+}
+
+interface LayoutsObject {
+  lg: unknown[];
+  md: unknown[];
+  sm: unknown[];
+  [key: string]: unknown[];
 }
 
 const DashboardSchema = new Schema<IDashboard>(
@@ -44,22 +55,30 @@ const DashboardSchema = new Schema<IDashboard>(
       type: String,
       maxlength: [500, "La descripción no puede tener más de 500 caracteres"],
     },
-    layout: {
-      type: [
-        {
-          i: String,
-          x: Number,
-          y: Number,
-          w: Number,
-          h: Number,
-          minW: Number,
-          minH: Number,
-          maxW: Number,
-          maxH: Number,
+
+    // Reemplazar layout por layouts
+    layouts: {
+      type: Schema.Types.Mixed, // Usamos Mixed para almacenar un objeto complejo
+      default: {
+        lg: [],
+        md: [],
+        sm: [],
+      },
+      validate: {
+        validator: function (value: LayoutsObject) {
+          // Validar que layouts tiene las propiedades esperadas
+          return (
+            value &&
+            typeof value === "object" &&
+            Array.isArray(value.lg) &&
+            Array.isArray(value.md) &&
+            Array.isArray(value.sm)
+          );
         },
-      ],
-      default: [],
+        message: 'Los layouts deben contener arrays para "lg", "md" y "sm"',
+      },
     },
+
     widgets: {
       type: [String], // Array de IDs de widgets
       default: [],

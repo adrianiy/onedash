@@ -170,7 +170,7 @@
   transform: scale(0.98);
 }
 
-/* Botones pequeños para undo/redo */
+/* Botones pequeños para undo/redo y responsive */
 .edit-toolbar__button--small {
   min-width: 32px;
   min-height: 32px;
@@ -184,6 +184,11 @@
 
 .edit-toolbar__button--small:active {
   transform: translateY(0);
+}
+
+.edit-toolbar__button--active {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
 }
 
 .edit-toolbar__separator {

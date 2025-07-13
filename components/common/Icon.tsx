@@ -104,6 +104,9 @@ import {
   Link,
   Bookmark,
   Star,
+  Monitor,
+  Tablet,
+  Smartphone,
   type LucideIcon,
 } from "lucide-react";
 
@@ -231,6 +234,10 @@ const lucideIconMap = {
   link: Link,
   bookmark: Bookmark,
   star: Star,
+  // Añadidos: iconos para los breakpoints
+  monitor: Monitor,
+  tablet: Tablet,
+  smartphone: Smartphone,
 } as const;
 
 const tablerIconMap = {

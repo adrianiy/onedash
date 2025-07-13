@@ -1,4 +1,4 @@
-import { useGridStore } from "@/store/gridStore";
+import { useGridAndUI } from "@/store/gridStore";
 import { useUIStore } from "@/store/uiStore";
 import { Widget } from "@/types/widget";
 import { useCreateWidgetMutation } from "./useCreateWidgetMutation";
@@ -9,8 +9,8 @@ import { useCreateWidgetMutation } from "./useCreateWidgetMutation";
  */
 export const useWidgetCreatorMutation = () => {
   const { mutate: createWidget } = useCreateWidgetMutation();
-  const { dashboard, updateDashboardLayout } = useGridStore();
-  const { selectWidget, openConfigSidebar } = useUIStore();
+  const { dashboard, addWidgetAndSelect } = useGridAndUI();
+  const { openConfigSidebar } = useUIStore();
 
   const addWidgetToBoard = (
     widgetData: Pick<Widget, "type" | "title" | "config" | "isConfigured">,
@@ -38,11 +38,7 @@ export const useWidgetCreatorMutation = () => {
             h: layout.h,
           };
 
-          // Actualizar estado local
-          updateDashboardLayout([...dashboard.layout, newLayout]);
-
-          // Seleccionar widget
-          selectWidget(newWidget._id);
+          addWidgetAndSelect(newWidget, newLayout);
 
           // Evento para wizard
           document.dispatchEvent(

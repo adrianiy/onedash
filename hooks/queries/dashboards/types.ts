@@ -35,7 +35,7 @@ export interface CreateDashboardParams {
   defaultVariables?: Record<string, unknown>;
   variables?: Record<string, unknown>;
   userId?: string;
-  layout?: Dashboard["layout"];
+  layouts?: Dashboard["layouts"]; // Soporte para layouts por breakpoint
   widgets?: string[];
   originalId?: string; // ID del dashboard original (para copias)
   isShared?: boolean; // Indica si el dashboard es compartido

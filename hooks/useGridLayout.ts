@@ -5,23 +5,50 @@ import { useUIStore } from "@/store/uiStore";
 
 export const useGridLayout = () => {
   const { updateDashboardLayout, dashboard } = useGridStore();
-  const { settings, isEditing, lockChanges, setLockChanges } = useUIStore();
+  const {
+    settings,
+    isEditing,
+    lockChanges,
+    setLockChanges,
+    currentBreakpoint,
+  } = useUIStore();
 
   const handleLayoutChange = useCallback(
-    (layout: Layout[]) => {
-      const sameLayout =
-        JSON.stringify(layout) === JSON.stringify(dashboard?.layout);
-      if (isEditing && !lockChanges && !sameLayout) {
-        // Log layout changes for debugging
+    (layout: Layout[], allLayouts: Record<string, Layout[]>) => {
+      if (isEditing && !lockChanges) {
         if (process.env.NODE_ENV === "development") {
-          console.log("📐 Layout changed:", layout, lockChanges);
+          console.log("📐 All layouts changed:", allLayouts);
         }
-        updateDashboardLayout(layout);
+        console.log(allLayouts, layout);
+        // Si no, solo actualizamos el layout del breakpoint actual
+        const sameLayout =
+          dashboard?.layouts &&
+          JSON.stringify(layout) ===
+            JSON.stringify(dashboard.layouts[currentBreakpoint]);
+
+        if (!sameLayout) {
+          // Log layout changes for debugging
+          if (process.env.NODE_ENV === "development") {
+            console.log(
+              `📐 Layout changed for ${currentBreakpoint}:`,
+              layout,
+              lockChanges
+            );
+          }
+          updateDashboardLayout(layout, currentBreakpoint);
+        }
       } else {
         setLockChanges(false);
       }
     },
-    [isEditing, lockChanges, dashboard, updateDashboardLayout, setLockChanges]
+    [
+      isEditing,
+      lockChanges,
+      dashboard?.layouts,
+      currentBreakpoint,
+      updateDashboardLayout,
+      setLockChanges,
+    ]
   );
 
   const generateLayout = useCallback(
