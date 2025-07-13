@@ -153,6 +153,18 @@
   background-color: var(--color-primary-dark);
 }
 
+.modal-footer__button--link {
+  background-color: transparent;
+  color: var(--color-primary);
+  border: none;
+  margin-right: auto;
+  padding-left: var(--spacing-sm);
+}
+
+.modal-footer__button--link:hover:not(:disabled) {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+}
+
 /* Animations */
 @keyframes fadeIn {
   from {

@@ -14,6 +14,7 @@ export interface Dashboard {
   collaborators?: string[]; // IDs de usuarios con permisos de edición
   isReadonly?: boolean; // Mantenerlo por ahora para compatibilidad con código existente
   defaultVariables?: Record<string, unknown>; // Valores por defecto de variables
+  isShared?: boolean; // Indica si el dashboard es compartible con usuarios autenticados
   createdAt: Date;
   updatedAt: Date;
   originalId?: string;

@@ -38,4 +38,5 @@ export interface CreateDashboardParams {
   layout?: Dashboard["layout"];
   widgets?: string[];
   originalId?: string; // ID del dashboard original (para copias)
+  isShared?: boolean; // Indica si el dashboard es compartido
 }

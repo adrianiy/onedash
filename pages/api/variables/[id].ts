@@ -36,8 +36,31 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       });
     }
 
-    // Verificar si el usuario es el propietario de la variable
-    if (variable.userId.toString() !== req.user.id) {
+    // Verificar permisos
+    let hasAccess = false;
+
+    // Si el usuario es el propietario de la variable
+    if (variable.userId.toString() === req.user!.id) {
+      hasAccess = true;
+    }
+    // Si la variable está asociada a un dashboard, verificar permisos sobre el dashboard
+    else if (variable.dashboardId) {
+      const Dashboard = (await import("../../../lib/models/Dashboard")).default;
+      const dashboard = await Dashboard.findById(variable.dashboardId);
+
+      if (dashboard) {
+        const isOwner = dashboard.userId.toString() === req.user!.id;
+        const isPublic = dashboard.visibility === "public";
+        const isShared = dashboard.isShared === true;
+        const isCollaborator = dashboard.collaborators?.some(
+          (collaboratorId: string) => collaboratorId.toString() === req.user!.id
+        );
+
+        hasAccess = isOwner || isPublic || isShared || isCollaborator;
+      }
+    }
+
+    if (!hasAccess) {
       return res.status(403).json({
         success: false,
         error: "No tienes permiso para acceder a esta variable",

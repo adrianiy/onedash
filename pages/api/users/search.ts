@@ -13,11 +13,38 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
 
   await connectToDatabase();
 
-  // GET - Buscar usuarios por nombre o email
+  // GET - Buscar usuarios por nombre, email o IDs
   if (req.method === "GET") {
     try {
-      const { q, limit = 10 } = req.query;
+      const { q, ids, limit = 10 } = req.query;
 
+      // Búsqueda por IDs específicos
+      if (ids) {
+        // Convertir el string de IDs separados por comas a un array
+        const idArray = typeof ids === "string" ? ids.split(",") : [];
+
+        if (idArray.length === 0) {
+          return res.status(400).json({
+            success: false,
+            error: "Lista de IDs inválida",
+          });
+        }
+
+        // Buscar usuarios por IDs
+        const users = await User.find({
+          _id: { $in: idArray },
+        })
+          .select("_id name email") // Solo devolver campos necesarios
+          .lean();
+
+        return res.status(200).json({
+          success: true,
+          count: users.length,
+          data: users,
+        });
+      }
+
+      // Búsqueda por texto (nombre o email)
       if (!q || typeof q !== "string") {
         return res.status(400).json({
           success: false,

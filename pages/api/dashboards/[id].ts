@@ -41,7 +41,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       });
     }
 
-    // Verificar permisos: propietario, colaborador o público
+    // Verificar permisos: propietario, colaborador, público o compartido
     const isOwner = dashboard.userId.toString
       ? dashboard.userId.toString() === req.user.id
       : dashboard.userId === req.user.id;
@@ -49,12 +49,14 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       (collaboratorId) => collaboratorId.toString() === req.user?.id
     );
     const isPublic = dashboard.visibility === "public";
+    const isShared = dashboard.isShared;
+    const canView = isOwner || isCollaborator || isPublic || isShared;
     const canEdit = isOwner || isCollaborator;
 
     // GET - Obtener dashboard por ID
     if (req.method === "GET") {
-      // Para ver un dashboard debe ser propietario o ser público
-      if (!isOwner && !isPublic) {
+      // Para ver un dashboard debe ser propietario, colaborador, público o compartido
+      if (!canView) {
         return res.status(403).json({
           success: false,
           error: "No tienes permiso para ver este dashboard",
@@ -86,6 +88,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         visibility,
         collaborators,
         defaultVariables,
+        isShared,
       } = req.body;
 
       console.log(
@@ -108,10 +111,12 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         );
       }
 
-      // Solo el propietario puede cambiar la visibilidad y colaboradores
+      console.log(isOwner, isShared);
+      // Solo el propietario puede cambiar la visibilidad, colaboradores y estado compartido
       if (isOwner) {
         if (visibility) updateFields.visibility = visibility;
         if (collaborators) updateFields.collaborators = collaborators;
+        if (isShared !== undefined) updateFields.isShared = isShared;
       }
 
       // Actualizar en MongoDB con los campos dinámicos

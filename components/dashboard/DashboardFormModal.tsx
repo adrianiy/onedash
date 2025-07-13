@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Tooltip } from "react-tooltip";
 import { Icon } from "@/common/Icon";
 import { CollaboratorSelector } from "./CollaboratorSelector";
+import { ShareDashboardSection } from "./ShareDashboardSection";
 import { useAuthStore } from "@/store/authStore";
 import type { Dashboard } from "@/types/dashboard";
 
@@ -34,7 +35,9 @@ export const DashboardFormModal: React.FC<DashboardFormModalProps> = ({
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [visibility, setVisibility] = useState<"public" | "private">("private");
+  const [isShared, setIsShared] = useState(false);
   const [collaborators, setCollaborators] = useState<User[]>([]);
+  const [copied, setCopied] = useState(false);
 
   // Estado para validación
   const [nameError, setNameError] = useState("");
@@ -49,13 +52,20 @@ export const DashboardFormModal: React.FC<DashboardFormModalProps> = ({
       setName(dashboard.name || "");
       setDescription(dashboard.description || "");
       setVisibility(dashboard.visibility || "private");
-      // TODO: Cargar colaboradores existentes cuando se implemente en el Dashboard
-      setCollaborators([]);
+      setIsShared(dashboard.isShared || false);
+
+      // Cargar colaboradores existentes si están disponibles
+      if (dashboard.collaborators && dashboard.collaborators.length > 0) {
+        fetchCollaboratorsData(dashboard.collaborators);
+      } else {
+        setCollaborators([]);
+      }
     } else {
       // Valores por defecto para un nuevo dashboard
       setName("");
       setDescription("");
       setVisibility("private");
+      setIsShared(false);
       setCollaborators([]);
     }
     // Limpiar errores
@@ -90,6 +100,24 @@ export const DashboardFormModal: React.FC<DashboardFormModalProps> = ({
     }
   };
 
+  // Función para obtener datos de colaboradores
+  const fetchCollaboratorsData = async (collaboratorIds: string[]) => {
+    try {
+      // Esta es una implementación ejemplo, debería adaptarse a tu API
+      const response = await fetch(
+        "/api/users/search?ids=" + collaboratorIds.join(",")
+      );
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setCollaborators(data.data);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching collaborators data:", error);
+    }
+  };
+
   // Manejar el envío del formulario
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,7 +133,10 @@ export const DashboardFormModal: React.FC<DashboardFormModalProps> = ({
         description,
         visibility,
         collaborators:
-          visibility === "public" ? collaborators.map((c) => c._id) : [],
+          visibility === "public" || isShared
+            ? collaborators.map((c) => c._id)
+            : [],
+        isShared: visibility === "private" ? isShared : false, // Solo aplica a dashboards privados
       });
     }
   };
@@ -245,10 +276,55 @@ export const DashboardFormModal: React.FC<DashboardFormModalProps> = ({
                 </div>
               </div>
             )}
+
+            {visibility === "private" && (
+              <div className="dashboard-form__field">
+                <ShareDashboardSection
+                  isShared={isShared}
+                  onShareStatusChange={setIsShared}
+                  collaborators={collaborators}
+                  onCollaboratorsChange={setCollaborators}
+                  dashboardId={dashboard?._id || ""}
+                  disabled={isLoading}
+                />
+              </div>
+            )}
           </div>
 
           {/* Pie del modal */}
           <div className="modal-footer">
+            {visibility === "private" && isShared && dashboard?._id && (
+              <button
+                type="button"
+                className="modal-footer__button modal-footer__button--link"
+                onClick={() => {
+                  const shareUrl =
+                    typeof window !== "undefined"
+                      ? `${window.location.origin}/dashboard/${dashboard._id}`
+                      : "";
+
+                  if (navigator.clipboard && shareUrl) {
+                    navigator.clipboard.writeText(shareUrl).then(() => {
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 2000); // Resetear después de 2 segundos
+                    });
+                  }
+                }}
+                disabled={isLoading}
+              >
+                {copied ? (
+                  <>
+                    <Icon name="check" size={16} />
+                    <span>Enlace copiado</span>
+                  </>
+                ) : (
+                  <>
+                    <Icon name="copy" size={16} />
+                    <span>Copiar enlace</span>
+                  </>
+                )}
+              </button>
+            )}
             <button
               type="button"
               className="modal-footer__button modal-footer__button--secondary"

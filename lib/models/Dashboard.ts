@@ -27,6 +27,7 @@ export interface IDashboard {
   visibility: "public" | "private";
   originalId?: string | Types.ObjectId; // Referencia al dashboard original (para copias)
   defaultVariables?: Record<string, VariableValue>; // Valores por defecto de variables
+  isShared?: boolean; // Indica si el dashboard es compartible con usuarios autenticados
   createdAt: Date;
   updatedAt: Date;
 }
@@ -86,6 +87,10 @@ const DashboardSchema = new Schema<IDashboard>(
     defaultVariables: {
       type: Schema.Types.Mixed,
       default: {},
+    },
+    isShared: {
+      type: Boolean,
+      default: false,
     },
   },
   {

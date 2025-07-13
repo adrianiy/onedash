@@ -49,7 +49,8 @@
 
 /* Botones de acción con tono azul acentuado en el tema ITX */
 [data-theme="itx"] .viz-add-button,
-[data-theme="itx"] [class*="__action-btn"],
+[data-theme="itx"]
+  [class*="__action-btn"]:not(.dashboard-shared-indicator__action-btn),
 [data-theme="itx"] [class*="-action-btn"]:not(.delete),
 [data-theme="itx"] .empty-placeholder--clickable,
 [data-theme="itx"] .metric-selector__trigger-btn,
@@ -59,17 +60,36 @@
   color: #3b82f6 !important; /* Color azul para dar efecto de texto de acción */
 }
 
+/* Mantener el texto blanco para el botón del indicador de dashboard compartido */
+[data-theme="itx"] .dashboard-shared-indicator__action-btn {
+  color: white !important;
+}
+
+[data-theme="itx"] .dashboard-shared-indicator__action-btn svg {
+  color: white !important;
+}
+
 [data-theme="itx"] .config-panel--resizable::after {
   display: none !important;
 }
 
 [data-theme="itx"] .viz-add-button:hover,
 [data-theme="itx"] [class*="add-button"]:hover:not(.delete),
-[data-theme="itx"] [class*="__action-btn"]:hover,
+[data-theme="itx"]
+  [class*="__action-btn"]:hover:not(.dashboard-shared-indicator__action-btn),
 [data-theme="itx"] [class*="-action-btn"]:hover:not(.delete),
 [data-theme="itx"] .empty-placeholder--clickable:hover,
 [data-theme="itx"] .metric-selector__trigger-btn:hover,
 [data-theme="itx"] [class*="add-format"]:hover,
 [data-theme="itx"] .widget-config-sidebar__config-action:hover {
   color: #2563eb !important; /* Color azul más oscuro para el hover */
+}
+
+/* Mantener el texto blanco para el botón del indicador de dashboard compartido en hover */
+[data-theme="itx"] .dashboard-shared-indicator__action-btn:hover {
+  color: white !important;
+}
+
+[data-theme="itx"] .dashboard-shared-indicator__action-btn:hover svg {
+  color: white !important;
 }

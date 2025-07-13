@@ -21,6 +21,8 @@
 @import "./components/dashboard/grid.css";
 @import "./components/dashboard/widgets.css";
 @import "./components/dashboard/dashboard-form.css";
+@import "./components/dashboard/share-section.css";
+@import "./components/dashboard/shared-indicator.css";
 
 /* Common components */
 @import "./components/common/modal.css";

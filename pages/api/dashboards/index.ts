@@ -51,6 +51,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         visibility = "private",
         defaultVariables,
         collaborators = [],
+        isShared,
       } = req.body;
 
       if (!name) {
@@ -75,6 +76,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         widgets: [],
         defaultVariables: defaultVariables || {},
         collaborators: visibility === "public" ? collaborators : [],
+        isShared,
       });
 
       console.log(

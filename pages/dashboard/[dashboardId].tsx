@@ -1,6 +1,7 @@
 import { ErrorPage, LoaderPage } from "@/components/common";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { DashboardGrid } from "@/components/dashboard/DashboardGrid";
+import { DashboardSharedIndicator } from "@/components/dashboard/DashboardSharedIndicator";
 import { AppWizard } from "@/components/wizard/AppWizard";
 import {
   useDashboardByIdQuery,
@@ -125,6 +126,7 @@ export default function Dashboard() {
       <ProtectedRoute>
         <Header />
         <FilterBar />
+        <DashboardSharedIndicator dashboard={dashboard} />
         <div className={`dashboard-container ${isEditing ? "editing" : ""}`}>
           <DashboardGrid />
           <WidgetConfigSidebar />

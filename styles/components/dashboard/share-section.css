@@ -1,0 +1,108 @@
+.share-dashboard-section {
+  margin-bottom: var(--spacing-md);
+}
+
+.share-dashboard-section__option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.share-dashboard-section__option-content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.share-dashboard-section__option-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  color: var(--color-primary);
+}
+
+.share-dashboard-section__option-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.share-dashboard-section__option-title {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+}
+
+.share-dashboard-section__option-description {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+/* Toggle switch */
+.share-dashboard-section__toggle {
+  position: relative;
+  width: 40px;
+  height: 20px;
+  border-radius: 9999px;
+  background-color: var(--color-surface-tertiary);
+  transition: var(--transition-fast);
+  border: none;
+  cursor: pointer;
+}
+
+.share-dashboard-section__toggle--active {
+  background-color: rgba(var(--color-primary-rgb), 0.6);
+}
+
+.share-dashboard-section__toggle-slider {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background-color: var(--color-surface);
+  transition: var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.share-dashboard-section__toggle-slider--active {
+  left: 22px; /* 40px (ancho) - 16px (ancho slider) - 2px (margen) */
+}
+
+/* Sección de colaboradores */
+.share-dashboard-section__collaborators {
+  margin-bottom: var(--spacing-md);
+}
+
+.share-dashboard-section__collaborators-description {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Nota informativa */
+.share-dashboard-section__note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm);
+  background-color: rgba(var(--color-info-rgb), 0.1);
+  border-radius: var(--radius-sm);
+  margin-top: var(--spacing-sm);
+}
+
+.share-dashboard-section__note svg {
+  color: var(--color-info);
+  margin-top: 2px; /* Alinear el icono un poco más arriba */
+}
+
+.share-dashboard-section__note span {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}

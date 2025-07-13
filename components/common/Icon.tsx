@@ -101,6 +101,9 @@ import {
   MoreHorizontal,
   ListTodo,
   Bell,
+  Link,
+  Bookmark,
+  Star,
   type LucideIcon,
 } from "lucide-react";
 
@@ -225,6 +228,9 @@ const lucideIconMap = {
   "align-justify": AlignJustify,
   "more-horizontal": MoreHorizontal,
   "list-todo": ListTodo,
+  link: Link,
+  bookmark: Bookmark,
+  star: Star,
 } as const;
 
 const tablerIconMap = {

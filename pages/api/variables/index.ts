@@ -19,22 +19,55 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       // Opcionalmente filtrar por dashboard
       const { dashboardId } = req.query;
 
-      // Construir la consulta
-      const query: Record<string, unknown> = { userId: req.user.id };
-
-      // Si se especifica un dashboardId, filtrar por él
+      // Si se especifica un dashboardId
       if (dashboardId) {
-        query.dashboardId = dashboardId;
+        // Verificar si el usuario tiene acceso al dashboard
+        const Dashboard = (await import("../../../lib/models/Dashboard"))
+          .default;
+        const dashboard = await Dashboard.findById(dashboardId);
+
+        if (!dashboard) {
+          return res.status(404).json({
+            success: false,
+            error: "Dashboard no encontrado",
+          });
+        }
+
+        // Verificar permisos: propietario, público, compartido o colaborador
+        const isOwner = dashboard.userId.toString() === req.user!.id;
+        const isPublic = dashboard.visibility === "public";
+        const isShared = dashboard.isShared === true;
+        const isCollaborator = dashboard.collaborators?.some(
+          (collaboratorId: string) => collaboratorId.toString() === req.user!.id
+        );
+
+        const hasAccess = isOwner || isPublic || isShared || isCollaborator;
+
+        if (!hasAccess) {
+          return res.status(403).json({
+            success: false,
+            error: "No tienes permisos para acceder a este dashboard",
+          });
+        }
+
+        // Si tiene acceso, obtener las variables del dashboard
+        const variables = await Variable.find({ dashboardId });
+
+        return res.status(200).json({
+          success: true,
+          count: variables.length,
+          data: variables,
+        });
+      } else {
+        // Si no se especifica dashboardId, obtener solo las variables del usuario
+        const variables = await Variable.find({ userId: req.user!.id });
+
+        return res.status(200).json({
+          success: true,
+          count: variables.length,
+          data: variables,
+        });
       }
-
-      // Obtener variables
-      const variables = await Variable.find(query);
-
-      return res.status(200).json({
-        success: true,
-        count: variables.length,
-        data: variables,
-      });
     } catch (error) {
       console.error("Error al obtener variables:", error);
       return res.status(500).json({
@@ -60,7 +93,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       // Verificar si ya existe una variable con la misma key en el dashboard
       const existingVariable = await Variable.findOne({
         dashboardId,
-        userId: req.user.id,
+        userId: req.user!.id,
         key,
       });
 
@@ -79,7 +112,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       // Crear variable
       const variable = await Variable.create({
         dashboardId,
-        userId: req.user.id,
+        userId: req.user!.id,
         key,
         value,
       });
