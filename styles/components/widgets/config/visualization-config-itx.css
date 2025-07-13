@@ -11,15 +11,16 @@
 }
 
 /* Paneles de configuración sin padding, background y border cuando hay selecciones */
-[data-theme="itx"] .column-item--selected,
 [data-theme="itx"] .metric-selector-single__trigger--selected,
 [data-theme="itx"] .config-panel,
-[data-theme="itx"] .config-panel__header,
-[data-theme="itx"] .config-panel .column-item--selected {
+[data-theme="itx"] .config-panel__header {
   padding: 0 !important;
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
+}
+[data-theme="itx"] .column-item--selected {
+  background: none !important;
 }
 
 [data-theme="itx"] .edit-toolbar__button--config:hover {
