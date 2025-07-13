@@ -2,7 +2,7 @@
 .data-config {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-xxl);
 }
 
 /* Estilos específicos de botones para breakdown */
@@ -37,11 +37,11 @@
 
 /* Estilos para el dropdown */
 .breakdown-dropdown {
-  width: 350px;
-  max-height: 500px;
+  width: 300px;
+  max-height: 400px;
   overflow-y: auto;
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-sm);
   border: 1px solid var(--color-border);
   background-color: var(--color-surface);
   z-index: 1000;
@@ -55,7 +55,7 @@
   top: 0;
   z-index: 5;
   background-color: var(--color-surface);
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-xs) var(--spacing-md);
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -67,18 +67,18 @@
 
 .breakdown-search-icon {
   position: absolute;
-  left: var(--spacing-sm);
+  left: var(--spacing-xxs);
   color: var(--color-text-muted);
 }
 
 .breakdown-search-input {
   width: 100%;
-  padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm)
-    calc(var(--spacing-sm) * 2 + 16px);
+  padding: var(--spacing-sm) var(--spacing-xs) var(--spacing-sm)
+    calc(var(--spacing-sm) * 2 + 12px);
   border: none;
   border-radius: var(--radius-md);
-  background-color: var(--color-surface);
-  font-size: 0.9rem;
+  background-color: transparent;
+  font-size: 0.85rem;
   color: var(--color-text-primary);
 }
 
@@ -105,120 +105,101 @@
 
 /* Categorías de desglose */
 .breakdown-category {
-  margin-bottom: 8px; /* Separación entre categorías */
+  margin-bottom: var(--spacing-md); /* Mayor separación entre categorías */
+  margin-top: var(--spacing-md); /* Mayor separación entre categorías */
 }
 
 .breakdown-category:last-child {
   margin-bottom: 0;
 }
 
-/* Encabezados con colores según categoría */
+/* Encabezados simplificados sin fondos coloreados ni bordes */
 .breakdown-category__header {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
-  padding: var(--spacing-sm) calc(var(--spacing-lg) + var(--spacing-xs));
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
 }
 
 .breakdown-category__header--purple {
-  background-color: rgba(147, 51, 234, 0.1); /* Color púrpura para geográfico */
-  border-bottom: 1px solid rgba(147, 51, 234, 0.2);
-  border-top: 1px solid rgba(147, 51, 234, 0.2);
-  border-radius: 3px 3px 0 0;
+  border-left: 2px solid #7e22ce; /* Borde lateral sutil */
 }
 
 .breakdown-category__header--blue {
-  background-color: rgba(59, 130, 246, 0.1); /* Color azul para comercial */
-  border-bottom: 1px solid rgba(59, 130, 246, 0.2);
-  border-top: 1px solid rgba(59, 130, 246, 0.2);
-  border-radius: 3px 3px 0 0;
+  border-left: 2px solid #2563eb; /* Borde lateral sutil */
 }
 
 .breakdown-category__header--green {
-  background-color: rgba(34, 197, 94, 0.1); /* Color verde para temporal */
-  border-bottom: 1px solid rgb(22 163 74 / 0.2);
-  border-top: 1px solid rgb(22 163 74 / 0.2);
-  border-radius: 3px 3px 0 0;
+  border-left: 2px solid #16a34a; /* Borde lateral sutil */
 }
 
 .breakdown-category__title {
   margin: 0;
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 0.8rem;
+  font-weight: 500;
 }
 
 .breakdown-category__title--purple {
-  color: #6a1baf; /* Texto púrpura */
+  color: #7e22ce; /* Texto púrpura */
 }
 
 .breakdown-category__title--blue {
-  color: #1a46a8; /* Texto azul */
+  color: #2563eb; /* Texto azul */
 }
 
 .breakdown-category__title--green {
-  color: #107937; /* Texto verde */
+  color: #16a34a; /* Texto verde */
 }
 
 .breakdown-category__description {
-  margin: 0;
-  font-size: 0.8rem;
-}
-
-.breakdown-category__description--purple {
-  color: rgba(147, 51, 234, 1); /* Tono púrpura más suave */
-}
-
-.breakdown-category__description--blue {
-  color: rgb(37 99 235 / 1); /* Tono azul más suave */
-}
-
-.breakdown-category__description--green {
-  color: rgb(22 164 74); /* Tono verde más suave */
+  display: none; /* Ocultar descripción para un diseño más limpio */
 }
 
 /* Opciones de desglose */
 .breakdown-options {
   display: flex;
   flex-direction: column;
-  padding: var(--spacing-sm) 0;
+  padding: 0;
 }
 
 .breakdown-option {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-lg) var(--spacing-lg); /* Más espacio vertical */
-  border: none; /* Eliminamos bordes entre opciones */
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-md); /* Más espacio vertical */
+  border: none;
   background: none;
   text-align: left;
   cursor: pointer;
   transition: background-color var(--transition-fast);
+  font-size: 0.85rem;
 }
 
 .breakdown-option:hover {
   background-color: var(--color-surface-hover);
+  color: var(--color-text-primary);
 }
 
-/* Iconos con fondos de color */
+/* Iconos simplificados sin fondos */
 .breakdown-icon-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
+  width: 20px;
+  height: 20px;
 }
 
 .breakdown-icon-container--purple {
-  background-color: rgba(147, 51, 234, 0.08);
+  background: transparent;
 }
 
 .breakdown-icon-container--blue {
-  background-color: rgba(59, 130, 246, 0.08);
+  background: transparent;
 }
 
 .breakdown-icon-container--green {
-  background-color: rgba(34, 197, 94, 0.08);
+  background: transparent;
 }
 
 .breakdown-icon--purple {
@@ -235,9 +216,9 @@
 
 .breakdown-option__title {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 400;
-  color: var(--color-text-primary);
+  color: var(--color-text-secondary);
 }
 
 .breakdown-dropdown__content {
@@ -256,25 +237,24 @@
   color: var(--color-text-muted);
 }
 
-/* Contenedor de icono con color de categoría */
+/* Contenedor de icono simplificado */
 .breakdown-level__icon-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6px;
-  border-radius: var(--radius-sm);
+  padding: 4px;
 }
 
 .breakdown-level__icon-container--purple {
-  background-color: rgba(147, 51, 234, 0.1);
+  background: transparent;
 }
 
 .breakdown-level__icon-container--blue {
-  background-color: rgba(59, 130, 246, 0.1);
+  background: transparent;
 }
 
 .breakdown-level__icon-container--green {
-  background-color: rgba(34, 197, 94, 0.1);
+  background: transparent;
 }
 
 /* Iconos con colores */
@@ -320,7 +300,7 @@
 }
 
 [data-theme="dark"] .breakdown-search-input {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: transparent;
   border: none;
   color: var(--color-text-primary);
 }
@@ -339,18 +319,18 @@
 
 /* Dark theme para categorías y opciones */
 [data-theme="dark"] .breakdown-category__header--purple {
-  background-color: rgba(147, 51, 234, 0.15);
-  border-bottom-color: rgba(147, 51, 234, 0.3);
+  border-left: 2px solid #c084fc;
+  background-color: transparent;
 }
 
 [data-theme="dark"] .breakdown-category__header--blue {
-  background-color: rgba(59, 130, 246, 0.15);
-  border-bottom-color: rgba(59, 130, 246, 0.3);
+  border-left: 2px solid #60a5fa;
+  background-color: transparent;
 }
 
 [data-theme="dark"] .breakdown-category__header--green {
-  background-color: rgba(34, 197, 94, 0.15);
-  border-bottom-color: rgba(34, 197, 94, 0.3);
+  border-left: 2px solid #4ade80;
+  background-color: transparent;
 }
 
 [data-theme="dark"] .breakdown-category__title--purple {
@@ -378,15 +358,15 @@
 }
 
 [data-theme="dark"] .breakdown-icon-container--purple {
-  background-color: rgba(147, 51, 234, 0.2);
+  background: transparent;
 }
 
 [data-theme="dark"] .breakdown-icon-container--blue {
-  background-color: rgba(59, 130, 246, 0.2);
+  background: transparent;
 }
 
 [data-theme="dark"] .breakdown-icon-container--green {
-  background-color: rgba(34, 197, 94, 0.2);
+  background: transparent;
 }
 
 [data-theme="dark"] .breakdown-icon--purple {
@@ -411,15 +391,15 @@
 
 /* Dark theme para niveles seleccionados - estilos base ahora en config-panel.css */
 [data-theme="dark"] .breakdown-level__icon-container--purple {
-  background-color: rgba(147, 51, 234, 0.2);
+  background: transparent;
 }
 
 [data-theme="dark"] .breakdown-level__icon-container--blue {
-  background-color: rgba(59, 130, 246, 0.2);
+  background: transparent;
 }
 
 [data-theme="dark"] .breakdown-level__icon-container--green {
-  background-color: rgba(34, 197, 94, 0.2);
+  background: transparent;
 }
 
 [data-theme="dark"] .breakdown-level__icon--purple {

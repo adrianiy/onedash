@@ -19,6 +19,20 @@
   border: none !important;
   box-shadow: none !important;
 }
+
+[data-theme="itx"] .empty-placeholder--clickable {
+  margin-top: 0 !important;
+  border: 1px dashed var(--color-border-focus) !important;
+}
+
+[data-theme="itx"] .config-panel__title {
+  font-size: 0.8rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+  opacity: 1;
+}
+
 [data-theme="itx"] .column-item--selected {
   background: none !important;
 }

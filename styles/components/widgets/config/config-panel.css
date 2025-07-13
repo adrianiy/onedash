@@ -403,7 +403,7 @@
 .chart-data-config {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xl);
+  gap: var(--spacing-xxl);
 }
 
 /* Estilos para la configuración del eje X */
