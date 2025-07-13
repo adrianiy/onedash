@@ -262,7 +262,7 @@
   z-index: 0;
   min-height: 0; /* Permite que se expanda según contenido */
   position: relative; /* Para que el placeholder absoluto se posicione correctamente */
-  margin-top: var(--spacing-md);
+  margin: var(--spacing-md) var(--spacing-xs);
 }
 
 /* Dashboard Empty Placeholder - Positioned absolutely in center */
