@@ -54,6 +54,16 @@ const newsItems: NewsItem[] = [
     category: "functional",
   },
   {
+    id: "11",
+    title: "Compartir dashboards",
+    description:
+      "Ahora puedes compartir tus dashboards con otros usuarios mediante un enlace y añadir colaboradores específicos con permisos de edición. Los usuarios también pueden guardar dashboards compartidos en su lista personal.",
+    icon: "link",
+    date: "2025-07-13",
+    read: false,
+    category: "functional",
+  },
+  {
     id: "8",
     title: "Nuevo tema de colores ITX",
     description:
@@ -173,6 +183,7 @@ export const useNewsStore = create<NewsStore>()(
     }),
     {
       name: "onedash-news", // nombre único para localStorage
+      version: 1,
       partialize: (state) => ({
         // Solo persistimos estos campos
         items: state.items.map((item) => ({
