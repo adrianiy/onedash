@@ -72,7 +72,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         description,
         userId: req.user.id,
         visibility,
-        layout: [],
+        layouts: { lg: [], md: [], sm: [] },
         widgets: [],
         defaultVariables: defaultVariables || {},
         collaborators: visibility === "public" ? collaborators : [],
