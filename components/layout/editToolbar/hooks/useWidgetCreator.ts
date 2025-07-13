@@ -2,6 +2,7 @@ import { useGridAndUI, useGridStore } from "@/store/gridStore";
 import { generateId } from "@/utils/helpers";
 import { Widget, WidgetType } from "@/types/widget";
 import { WidgetCreatorHookReturn } from "../types";
+import { findFirstFreePosition } from "@/utils/layoutUtils";
 
 /**
  * Hook que proporciona funciones para crear diferentes tipos de widgets
@@ -40,11 +41,17 @@ export const useWidgetCreator = (): WidgetCreatorHookReturn => {
       updatedAt: new Date(),
     } as Widget; // Cast al final para evitar el error de tipo específico
 
+    const freePosition = findFirstFreePosition(
+      dashboard.layout,
+      layout.w,
+      layout.h
+    );
+
     // Crear layout para el nuevo widget
     const newLayout = {
       i: widgetId,
-      x: 0,
-      y: 0,
+      x: freePosition.x,
+      y: freePosition.y,
       w: layout.w,
       h: layout.h,
     };

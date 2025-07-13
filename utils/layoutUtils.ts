@@ -98,3 +98,51 @@ export const validateAndSanitizeLayout = (
 
   return sanitizeLayoutForGrid(validItems);
 };
+
+// Function to find the first available position in the grid
+export const findFirstFreePosition = (
+  layout: DashboardLayout[],
+  width: number,
+  height: number,
+  gridCols: number = 12
+): { x: number; y: number } => {
+  // Create a grid to track occupied positions
+  const maxRows = Math.max(...layout.map((item) => item.y + item.h), 0);
+  const grid: boolean[][] = Array(maxRows + height)
+    .fill(false)
+    .map(() => Array(gridCols).fill(false));
+
+  // Mark occupied positions
+  layout.forEach((item) => {
+    for (let y = item.y; y < item.y + item.h; y++) {
+      for (let x = item.x; x < item.x + item.w; x++) {
+        if (grid[y] && grid[y][x] !== undefined) {
+          grid[y][x] = true;
+        }
+      }
+    }
+  });
+
+  // Find the first free position
+  for (let y = 0; y < grid.length - height + 1; y++) {
+    for (let x = 0; x <= gridCols - width; x++) {
+      let canPlace = true;
+
+      // Check if the widget can be placed at this position
+      for (let dy = 0; dy < height && canPlace; dy++) {
+        for (let dx = 0; dx < width && canPlace; dx++) {
+          if (grid[y + dy] && grid[y + dy][x + dx]) {
+            canPlace = false;
+          }
+        }
+      }
+
+      if (canPlace) {
+        return { x, y };
+      }
+    }
+  }
+
+  // If no position is found, place at the bottom
+  return { x: 0, y: maxRows };
+};
