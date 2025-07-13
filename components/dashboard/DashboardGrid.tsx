@@ -182,43 +182,49 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
         <DashboardEmptyPlaceholder isEditing={isEditing} />
       )}
       {(dashboard.widgets.length > 0 || isEditing) && (
-        <ResponsiveGridLayout
-          {...gridProps}
-          layouts={layouts}
-          breakpoints={{ lg: 1200, md: 996, sm: 768 }}
-          cols={{ lg: 24, md: 18, sm: 12 }}
-          isDroppable={isEditing}
-          onDrop={(layout, item, e) =>
-            handleWidgetDrop(
-              layout,
-              item,
-              e as unknown as React.DragEvent<HTMLElement>
-            )
-          }
-          onBreakpointChange={handleBreakpointChange}
-          breakpoint={currentBreakpoint}
-          droppingItem={{
-            i: "__dropping-elem__",
-            w: droppingItemSize.w,
-            h: droppingItemSize.h,
-          }}
+        <div
+          className={`breakpoint-guide breakpoint-guide--${currentBreakpoint}`}
         >
-          {dashboard.widgets
-            .filter((widget) => widgets?.[widget])
-            .map((widget) => (
-              <div
-                key={widget}
-                className={`react-grid-item ${
-                  selectedWidgetId === widget ? "react-grid-item-selected" : ""
-                }`}
-              >
-                <WidgetContainer
-                  widget={widgets![widget]}
-                  isSelected={selectedWidgetId === widget}
-                />
-              </div>
-            ))}
-        </ResponsiveGridLayout>
+          <ResponsiveGridLayout
+            {...gridProps}
+            layouts={layouts}
+            breakpoints={{ lg: 1200, md: 996, sm: 768 }}
+            cols={{ lg: 24, md: 18, sm: 8 }}
+            isDroppable={isEditing}
+            onDrop={(layout, item, e) =>
+              handleWidgetDrop(
+                layout,
+                item,
+                e as unknown as React.DragEvent<HTMLElement>
+              )
+            }
+            onBreakpointChange={handleBreakpointChange}
+            breakpoint={currentBreakpoint}
+            droppingItem={{
+              i: "__dropping-elem__",
+              w: droppingItemSize.w,
+              h: droppingItemSize.h,
+            }}
+          >
+            {dashboard.widgets
+              .filter((widget) => widgets?.[widget])
+              .map((widget) => (
+                <div
+                  key={widget}
+                  className={`react-grid-item ${
+                    selectedWidgetId === widget
+                      ? "react-grid-item-selected"
+                      : ""
+                  }`}
+                >
+                  <WidgetContainer
+                    widget={widgets![widget]}
+                    isSelected={selectedWidgetId === widget}
+                  />
+                </div>
+              ))}
+          </ResponsiveGridLayout>
+        </div>
       )}
     </div>
   );

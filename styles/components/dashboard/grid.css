@@ -10,7 +10,6 @@
   background-color: var(--color-surface);
   border: none;
   box-shadow: none;
-  margin: var(--spacing-md);
   overflow: hidden;
 }
 
@@ -205,6 +204,37 @@
   transform: scale(1.05);
 }
 
+/* Breakpoint Guide Styles */
+.editing .breakpoint-guide {
+  position: relative;
+  margin: calc(-1 * var(--spacing-sm));
+  left: 50%;
+  transition: all var(--transition-normal);
+  border: 2px dashed transparent;
+  transform: translateX(-50%);
+  padding: var(--spacing-sm);
+}
+
+/* Quitar límites visuales para desktop */
+.editing .breakpoint-guide--lg {
+  max-width: none; /* Sin límite para desktop */
+  border-color: transparent;
+  left: 0;
+  transform: translateX(0);
+  margin: 0 auto;
+}
+
+/* Límites visuales solo para tablet y móvil */
+.editing .breakpoint-guide--md {
+  max-width: 996px; /* Ancho máximo para tablet */
+  border-color: rgba(var(--color-primary-rgb), 0.2);
+}
+
+.editing .breakpoint-guide--sm {
+  max-width: 768px; /* Ancho máximo para móvil */
+  border-color: rgba(var(--color-primary-rgb), 0.3);
+}
+
 /* Dashboard Grid Container */
 .dashboard-container {
   width: 100%;
@@ -218,7 +248,7 @@
 
 .dashboard-container.editing {
   background-color: var(--color-background-editing);
-  padding-top: 100px; /* 70px header + 95px toolbar */
+  padding-top: 112px; /* 70px header + 95px toolbar */
 }
 
 /* Adjust grid width when sidebar is open */

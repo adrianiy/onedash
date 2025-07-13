@@ -288,6 +288,8 @@
   background: rgba(96, 165, 250, 0.1);
   padding: var(--spacing-md);
   border-radius: var(--radius-xl);
+  min-height: 48px;
+  min-width: 48px;
 }
 
 .widget-placeholder .lucide-chart-column {
@@ -295,6 +297,8 @@
   background: rgba(245, 158, 11, 0.1);
   padding: var(--spacing-md);
   border-radius: var(--radius-xl);
+  min-height: 48px;
+  min-width: 48px;
 }
 
 .widget-placeholder .lucide-target {
@@ -302,6 +306,8 @@
   background: rgba(16, 185, 129, 0.1);
   padding: var(--spacing-md);
   border-radius: var(--radius-xl);
+  min-height: 48px;
+  min-width: 48px;
 }
 
 .widget-placeholder .lucide-square-pen {
@@ -309,6 +315,8 @@
   background: rgba(139, 92, 246, 0.1);
   padding: var(--spacing-md);
   border-radius: var(--radius-xl);
+  min-height: 48px;
+  min-width: 48px;
 }
 
 .placeholder-steps {
@@ -352,7 +360,6 @@
   gap: var(--spacing-sm);
   border-radius: var(--radius-full);
   padding: var(--spacing-md) var(--spacing-lg);
-  white-space: nowrap;
   margin: 0 auto;
 }
 
