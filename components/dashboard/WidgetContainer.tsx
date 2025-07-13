@@ -12,6 +12,7 @@ import {
 } from "@/widgets/render";
 import type { Widget } from "@/types/widget";
 import type { DashboardLayout } from "@/types/dashboard";
+import { generateId } from "@/utils/helpers";
 
 interface WidgetContainerProps {
   widget: Widget;
@@ -116,11 +117,17 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
         title: `${widget.title} (Copy)`,
         config: { ...widget.config },
         dashboardId: dashboard._id,
+        _id: generateId(),
+        ...freePosition,
+      };
+
+      const newLayout = {
+        i: newWidgetData._id,
         ...freePosition,
       };
 
       // Añadir el nuevo widget al store, que automáticamente actualiza el dashboard
-      addWidget(newWidgetData as Widget);
+      addWidget(newWidgetData as Widget, newLayout as DashboardLayout);
     }
   };
 
