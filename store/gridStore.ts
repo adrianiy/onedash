@@ -242,12 +242,6 @@ export const useUndoRedo = () => {
 
   const canUndo = !!pastStates.length;
   const canRedo = !!futureStates.length;
-  console.log(
-    "canUndo",
-    canUndo,
-    JSON.parse(JSON.stringify(pastStates)),
-    JSON.parse(JSON.stringify(futureStates))
-  );
 
   return {
     undo,
