@@ -1,31 +1,37 @@
 import React, { useState } from "react";
-import { useDashboardStore } from "@/store/dashboardStore";
-import { useWidgetStore } from "@/store/widgetStore";
+import { useGridStore } from "@/store/gridStore";
+import { useUIStore } from "@/store/uiStore";
 import { useAuthStore } from "@/store/authStore";
+import { useGridChanges } from "@/hooks/useGridChanges";
+import {
+  useUpdateDashboardMutation,
+  useCreateDashboardMutation,
+} from "@/hooks/queries/dashboards";
+import { useSyncWidgets } from "@/hooks/useSyncWidgets";
 import { ToolbarFileActions } from "./ToolbarFileActions";
 import { ToolbarWidgetActions } from "./ToolbarWidgetActions";
+import { ToolbarUndoActions } from "./ToolbarUndoActions";
 import { ConfigButton } from "./ConfigButton";
 import { ReadonlyDashboardHandler } from "./ReadonlyDashboardHandler";
 import type { Dashboard } from "@/types/dashboard";
-import type { Widget } from "@/types/widget";
 import { SaveResult } from "./types";
 
 /**
  * Componente principal de la barra de herramientas de edición
  */
 export const EditToolbar: React.FC = () => {
-  const {
-    isEditing,
-    toggleEditing,
-    hasUnsavedChanges,
-    saveChanges,
-    discardChanges,
-    createDashboard,
-    isDiscarding,
-    selectedWidgetId,
-    openConfigSidebar,
-  } = useDashboardStore();
-  const { getWidget } = useWidgetStore();
+  // Hooks de stores
+  const { isEditing, toggleEditing, openConfigSidebar } = useUIStore();
+
+  // Hooks de cambios
+  const { hasUnsavedChanges, discardChanges, clearHistory } = useGridChanges();
+
+  // Mutaciones para dashboards
+  const { mutate: updateDashboard } = useUpdateDashboardMutation();
+  const { mutate: createDashboard } = useCreateDashboardMutation();
+
+  // Hook para sincronizar widgets
+  const { syncWidgets } = useSyncWidgets();
 
   const [showReadonlyModal, setShowReadonlyModal] = useState(false);
   const [readonlyDashboard, setReadonlyDashboard] = useState<Dashboard | null>(
@@ -36,82 +42,65 @@ export const EditToolbar: React.FC = () => {
   if (!isEditing) return null;
 
   /**
-   * Función auxiliar para añadir cualquier tipo de widget
-   */
-  const addWidgetToBoard = (
-    widget: Widget,
-    layout: { w: number; h: number }
-  ) => {
-    const {
-      currentDashboard,
-      isEditing,
-      updateDashboard,
-      updateCurrentDashboard,
-      selectWidget,
-      openConfigSidebar,
-    } = useDashboardStore.getState();
-
-    // Add widget to current dashboard
-    if (currentDashboard) {
-      const newLayout = {
-        i: widget._id,
-        x: 0,
-        y: 0,
-        w: layout.w,
-        h: layout.h,
-      };
-
-      const updatedWidgets = [...currentDashboard.widgets, widget._id];
-      const updatedLayout = [...currentDashboard.layout, newLayout];
-
-      if (isEditing) {
-        // En modo edición, actualizar dashboard directamente
-        updateCurrentDashboard({
-          widgets: updatedWidgets,
-          layout: updatedLayout,
-        });
-      } else {
-        // Fuera de modo edición, actualizar directamente
-        updateDashboard(currentDashboard._id, {
-          widgets: updatedWidgets,
-          layout: updatedLayout,
-        });
-      }
-
-      // Seleccionar el widget recién creado
-      selectWidget(widget._id);
-
-      if (widget.type === "text") return;
-
-      // Abrir automáticamente el sidebar de configuración
-      openConfigSidebar();
-    }
-  };
-
-  /**
    * Maneja el guardado de cambios
    */
   const handleSave = async (): Promise<SaveResult | void> => {
     try {
-      const result = await saveChanges();
+      const dashboard = useGridStore.getState().dashboard;
 
-      // Si el resultado tiene la estructura esperada
-      if (result && typeof result === "object") {
-        if (
-          "needsConfirmation" in result &&
-          result.needsConfirmation &&
-          result.dashboard
-        ) {
-          // Mostrar modal de confirmación para dashboard readonly
-          setReadonlyDashboard(result.dashboard);
-          setShowReadonlyModal(true);
-        }
-
-        return result as SaveResult;
+      if (!dashboard) {
+        return { error: "No hay dashboard activo" };
       }
 
-      // Si no hay un resultado con estructura definida
-      return;
+      // Comprobar si el usuario tiene permisos de edición
+      const currentUser = useAuthStore.getState().user;
+      const isOwner = currentUser && dashboard.userId === currentUser._id;
+      const isCollaborator = dashboard.collaborators?.includes(
+        currentUser?._id || ""
+      );
+      const canEdit = isOwner || isCollaborator;
+
+      if (!canEdit) {
+        // Mostrar modal de confirmación para dashboard readonly
+        setReadonlyDashboard(dashboard);
+        setShowReadonlyModal(true);
+        return { needsConfirmation: true, dashboard };
+      }
+
+      try {
+        // Promesa para guardar el dashboard
+        const saveDashboardPromise = new Promise<void>((resolve, reject) => {
+          updateDashboard(
+            {
+              id: dashboard._id,
+              updates: {
+                layout: dashboard.layout,
+                widgets: dashboard.widgets,
+              },
+            },
+            {
+              onSuccess: () => resolve(),
+              onError: (error) => reject(error),
+            }
+          );
+        });
+
+        // Sincronizar widgets en paralelo
+        const syncWidgetsPromise = syncWidgets();
+
+        // Esperar a que se completen ambas operaciones
+        await Promise.all([saveDashboardPromise, syncWidgetsPromise]);
+
+        // Si llegamos aquí, todo se guardó correctamente
+        clearHistory();
+
+        toggleEditing();
+
+        return { needsConfirmation: false };
+      } catch (error) {
+        console.error("Error al guardar dashboard o widgets:", error);
+        return { error: String(error) || "Error al guardar" };
+      }
     } catch (error) {
       console.error("Error saving dashboard:", error);
       return { error: String(error) || "Error al guardar el dashboard" };
@@ -123,10 +112,9 @@ export const EditToolbar: React.FC = () => {
    */
   const handleCloseEditing = async () => {
     if (hasUnsavedChanges) {
-      await discardChanges();
-    } else {
-      toggleEditing();
+      discardChanges();
     }
+    toggleEditing();
   };
 
   /**
@@ -168,9 +156,14 @@ export const EditToolbar: React.FC = () => {
     <>
       <div className="edit-toolbar">
         <div className="edit-toolbar__content">
+          {/* Sección Undo/Redo */}
+          <ToolbarUndoActions />
+
+          <div className="edit-toolbar__separator" />
+
           {/* Sección Archivo */}
           <ToolbarFileActions
-            isDiscarding={isDiscarding}
+            isDiscarding={false}
             hasUnsavedChanges={hasUnsavedChanges}
             onSave={handleSave}
             onCloseEditing={handleCloseEditing}
@@ -179,17 +172,13 @@ export const EditToolbar: React.FC = () => {
           <div className="edit-toolbar__separator" />
 
           {/* Sección Widgets */}
-          <ToolbarWidgetActions addWidgetToBoard={addWidgetToBoard} />
+          <ToolbarWidgetActions />
 
           {/* Espacio flexible para empujar el botón de configuración a la derecha */}
           <div className="edit-toolbar__spacer"></div>
 
           {/* Botón de configuración */}
-          <ConfigButton
-            selectedWidgetId={selectedWidgetId}
-            getWidget={getWidget}
-            openConfigSidebar={openConfigSidebar}
-          />
+          <ConfigButton openConfigSidebar={openConfigSidebar} />
         </div>
       </div>
 

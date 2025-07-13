@@ -1,9 +1,5 @@
-import { useWidgetStore } from "@/store/widgetStore";
-import type {
-  ChartWidget,
-  MetricWidget,
-  TableWidget,
-} from "@/types/widget";
+import { useGridStore } from "@/store/gridStore";
+import type { ChartWidget, MetricWidget, TableWidget } from "@/types/widget";
 
 // Solo widgets que tienen propiedad visualization
 type VisualizationWidget = ChartWidget | MetricWidget | TableWidget;
@@ -24,7 +20,7 @@ export interface VisualizationLogicReturn {
 export const useVisualizationLogic = (
   widget: VisualizationWidget
 ): VisualizationLogicReturn => {
-  const { updateWidget } = useWidgetStore();
+  const { updateWidget } = useGridStore();
 
   // Get current values - safe access since we know these widgets have visualization
   const visualization = widget.config.visualization || {};

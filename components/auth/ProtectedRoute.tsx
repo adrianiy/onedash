@@ -31,8 +31,13 @@ export const ProtectedRoute = ({
       }
     };
 
+    if (isAuthenticated) {
+      setHasCheckedAuth(true);
+      return;
+    }
+
     verifyAuth();
-  }, [hasCheckedAuth, checkAuth]);
+  }, [hasCheckedAuth, checkAuth, isAuthenticated]);
 
   // Redirigir si no está autenticado (solo después de verificar)
   useEffect(() => {
@@ -48,13 +53,11 @@ export const ProtectedRoute = ({
   // Mostrar loading mientras verifica autenticación o está cargando
   if (!hasCheckedAuth || isLoading) {
     return (
-      <div className="auth-page">
-        <div className="auth-page__loader-container">
-          <div className="auth-page__loader-content">
-            <Icon name="loader" className="auth-page__loader-icon" size={48} />
-            <p className="auth-page__loader-text">
-              Verificando autenticación...
-            </p>
+      <div className="page-loader">
+        <div className="page-loader__container">
+          <div className="page-loader__content">
+            <Icon name="loader" className="page-loader__icon" size={48} />
+            <p className="page-loader__text">Verificando autenticación...</p>
           </div>
         </div>
       </div>
@@ -64,11 +67,11 @@ export const ProtectedRoute = ({
   // Si no está autenticado, mostrar loading mientras redirige
   if (!isAuthenticated) {
     return (
-      <div className="auth-page">
-        <div className="auth-page__loader-container">
-          <div className="auth-page__loader-content">
-            <Icon name="loader" className="auth-page__loader-icon" size={48} />
-            <p className="auth-page__loader-text">Redirigiendo...</p>
+      <div className="page-loader">
+        <div className="page-loader__container">
+          <div className="page-loader__content">
+            <Icon name="loader" className="page-loader__icon" size={48} />
+            <p className="page-loader__text">Redirigiendo...</p>
           </div>
         </div>
       </div>

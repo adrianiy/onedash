@@ -1,140 +1,130 @@
-import { useDashboardStore } from "@/store/dashboardStore";
-import { useWidgetStore } from "@/store/widgetStore";
+import { useGridAndUI, useGridStore } from "@/store/gridStore";
+import { generateId } from "@/utils/helpers";
+import { Widget, WidgetType } from "@/types/widget";
 import { WidgetCreatorHookReturn } from "../types";
 
 /**
  * Hook que proporciona funciones para crear diferentes tipos de widgets
  */
 export const useWidgetCreator = (): WidgetCreatorHookReturn => {
+  // Usar nuevos stores
+  const { dashboard } = useGridStore();
+  const { addWidgetAndSelect } = useGridAndUI();
+
   /**
    * Función auxiliar para añadir cualquier tipo de widget
    */
   const addWidgetToBoard = (
-    widget: { _id: string; type: string },
+    widgetData: {
+      type: WidgetType;
+      title: string;
+      config: Record<string, unknown>;
+      isConfigured: boolean;
+    },
     layout: { w: number; h: number }
   ) => {
-    const {
-      currentDashboard,
-      isEditing,
-      updateDashboard,
-      updateCurrentDashboard,
-      selectWidget,
-      openConfigSidebar,
-    } = useDashboardStore.getState();
+    if (!dashboard) return;
 
-    // Add widget to current dashboard
-    if (currentDashboard) {
-      const newLayout = {
-        i: widget._id,
-        x: 0,
-        y: 0,
-        w: layout.w,
-        h: layout.h,
-      };
+    // Generar un ID único para el widget
+    const widgetId = generateId();
 
-      const updatedWidgets = [...currentDashboard.widgets, widget._id];
-      const updatedLayout = [...currentDashboard.layout, newLayout];
+    // Crear widget con los datos proporcionados
+    const newWidget = {
+      _id: widgetId,
+      type: widgetData.type,
+      title: widgetData.title,
+      config: widgetData.config,
+      isConfigured: widgetData.isConfigured,
+      dashboardId: dashboard._id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as Widget; // Cast al final para evitar el error de tipo específico
 
-      if (isEditing) {
-        // En modo edición, actualizar dashboard directamente
-        updateCurrentDashboard({
-          widgets: updatedWidgets,
-          layout: updatedLayout,
-        });
-      } else {
-        // Fuera de modo edición, actualizar directamente
-        updateDashboard(currentDashboard._id, {
-          widgets: updatedWidgets,
-          layout: updatedLayout,
-        });
-      }
+    // Crear layout para el nuevo widget
+    const newLayout = {
+      i: widgetId,
+      x: 0,
+      y: 0,
+      w: layout.w,
+      h: layout.h,
+    };
 
-      // Seleccionar el widget recién creado
-      selectWidget(widget._id);
+    // Añadir widget al store
+    addWidgetAndSelect(newWidget, newLayout);
 
-      // Emitir evento de creación de widget para el wizard
-      document.dispatchEvent(
-        new CustomEvent("widget-create", {
-          detail: { widgetId: widget._id, widgetType: widget.type },
-        })
-      );
-
-      if (widget.type === "text") return;
-
-      // Abrir automáticamente el sidebar de configuración
-      openConfigSidebar();
-    }
+    // Emitir evento de creación de widget para el wizard
+    document.dispatchEvent(
+      new CustomEvent("widget-create", {
+        detail: { widgetId, widgetType: widgetData.type },
+      })
+    );
   };
 
   /**
    * Crea un widget de métrica
    */
   const addMetricWidget = () => {
-    const { addWidget } = useWidgetStore.getState();
-
     // Crear widget de métrica
-    const newMetricWidget = addWidget({
-      type: "metric",
-      title: "Nueva métrica",
-      config: {},
-      isConfigured: false,
-    });
-
-    addWidgetToBoard(newMetricWidget, { w: 4, h: 4 });
+    addWidgetToBoard(
+      {
+        type: "metric" as WidgetType,
+        title: "Nueva métrica",
+        config: {},
+        isConfigured: false,
+      },
+      { w: 4, h: 4 }
+    );
   };
 
   /**
    * Crea un widget de tabla
    */
   const addTableWidget = () => {
-    const { addWidget } = useWidgetStore.getState();
-
     // Crear widget de tabla
-    const newTableWidget = addWidget({
-      type: "table",
-      title: "Nueva tabla",
-      config: {},
-      isConfigured: false,
-    });
-
-    addWidgetToBoard(newTableWidget, { w: 6, h: 6 });
+    addWidgetToBoard(
+      {
+        type: "table" as WidgetType,
+        title: "Nueva tabla",
+        config: {},
+        isConfigured: false,
+      },
+      { w: 6, h: 6 }
+    );
   };
 
   /**
    * Crea un widget de gráfico
    */
   const addChartWidget = () => {
-    const { addWidget } = useWidgetStore.getState();
-
     // Crear widget de gráfico
-    const newChartWidget = addWidget({
-      type: "chart",
-      title: "Nuevo gráfico",
-      config: {
-        chartType: "bar",
-        data: [],
+    addWidgetToBoard(
+      {
+        type: "chart" as WidgetType,
+        title: "Nuevo gráfico",
+        config: {
+          chartType: "bar" as const,
+          data: [],
+        },
+        isConfigured: false,
       },
-      isConfigured: false,
-    });
-
-    addWidgetToBoard(newChartWidget, { w: 6, h: 4 });
+      { w: 6, h: 4 }
+    );
   };
 
   /**
    * Crea un widget de texto
    */
   const addTextWidget = () => {
-    const { addWidget } = useWidgetStore.getState();
-
     // Crear widget de texto
-    const newTextWidget = addWidget({
-      type: "text",
-      title: "",
-      config: {},
-      isConfigured: true,
-    });
-
-    addWidgetToBoard(newTextWidget, { w: 4, h: 3 });
+    addWidgetToBoard(
+      {
+        type: "text" as WidgetType,
+        title: "",
+        config: {},
+        isConfigured: true,
+      },
+      { w: 4, h: 3 }
+    );
   };
 
   return {

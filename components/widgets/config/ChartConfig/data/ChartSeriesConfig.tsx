@@ -1,5 +1,5 @@
 import { GenericMetricListConfig } from "@/components/widgets/config/common/controls/GenericMetricListConfig";
-import { useWidgetStore } from "@/store/widgetStore";
+import { useGridStore } from "@/store/gridStore";
 import type { MetricDefinition } from "@/types/metricConfig";
 import type { ChartWidgetConfig, Widget } from "@/types/widget";
 import React from "react";
@@ -12,7 +12,7 @@ interface ChartSeriesConfigProps {
 export const ChartSeriesConfig: React.FC<ChartSeriesConfigProps> = ({
   widget,
 }) => {
-  const { updateWidget } = useWidgetStore();
+  const { updateWidget } = useGridStore();
 
   // Verificar que es un widget de chart y obtener las series
   const chartConfig = widget.type === "chart" ? widget.config : { series: [] };

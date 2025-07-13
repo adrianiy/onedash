@@ -5,7 +5,7 @@ import {
   VisualizationToggleButton,
 } from "@/config/common";
 import { ConditionalFormatsControl } from "@/config/common/controls/ConditionalFormatsControl";
-import { useWidgetStore } from "@/store/widgetStore";
+import { useGridStore } from "@/store/gridStore";
 import type { TableWidget, Widget } from "@/types/widget";
 import React from "react";
 import {
@@ -24,7 +24,7 @@ interface VisualizationConfigProps {
 export const VisualizationConfig: React.FC<VisualizationConfigProps> = ({
   widget,
 }) => {
-  const { updateWidget } = useWidgetStore();
+  const { updateWidget } = useGridStore();
 
   // Type guard and early return for non-table widgets
   if (widget.type !== "table") {

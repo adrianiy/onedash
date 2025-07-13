@@ -3,7 +3,8 @@ import { CustomMultiSelect } from "@/common/CustomMultiSelect";
 import { DateRangePicker } from "@/common/DateRangePicker";
 import { Icon } from "@/common/Icon";
 import { useVariableStore } from "@/store/variableStore";
-import { useDashboardStore } from "@/store/dashboardStore";
+import { useUIStore } from "@/store/uiStore";
+import { useNewsStore } from "@/store/newsStore";
 
 interface FilterBarProps {
   className?: string;
@@ -24,13 +25,23 @@ const SECTION_OPTIONS = [
 
 export const FilterBar: React.FC<FilterBarProps> = ({ className = "" }) => {
   const { variables, setVariable } = useVariableStore();
-  const { isEditing } = useDashboardStore();
+  const { isEditing } = useUIStore();
+  const { hasUnreadNews, bannerDismissed } = useNewsStore();
+
+  // Determinar si el banner está visible
+  const isBannerVisible = hasUnreadNews() && !bannerDismissed;
 
   // Extraer variables de filtro
   const dateStart = variables.dateStart || null;
   const dateEnd = variables.dateEnd || null;
-  const selectedProducts = variables.selectedProducts || [];
-  const selectedSections = variables.selectedSections || [];
+  const selectedProducts = useMemo(
+    () => variables.selectedProducts || [],
+    [variables.selectedProducts]
+  );
+  const selectedSections = useMemo(
+    () => variables.selectedSections || [],
+    [variables.selectedSections]
+  );
 
   // Función auxiliar para formatear fechas preservando la fecha local
   const formatLocalDate = (date: Date) => {
@@ -86,7 +97,11 @@ export const FilterBar: React.FC<FilterBarProps> = ({ className = "" }) => {
     isDateFilterActive || isProductFilterActive || isSectionFilterActive;
 
   return (
-    <div className={`filter-bar ${isEditing ? "editing" : ""} ${className}`}>
+    <div
+      className={`filter-bar ${isEditing ? "editing" : ""} ${
+        isBannerVisible ? "with-banner" : ""
+      } ${className}`}
+    >
       <div className="filter-bar__container">
         <div className="filter-bar__filters">
           <div className="filter-bar__filter-item">

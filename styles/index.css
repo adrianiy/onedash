@@ -25,10 +25,14 @@
 /* Common components */
 @import "./components/common/modal.css";
 @import "./components/common/delete-confirm-modal.css";
+@import "./components/common/guides-modal.css";
+@import "./components/common/whats-new-modal.css";
+@import "./components/common/news-banner.css";
 @import "./components/common/user-avatar.css";
 @import "./components/common/custom-color-picker.css";
 @import "./components/common/text-interpolation-input.css";
 @import "./components/common/collaborator-selector.css";
+@import "./components/common/page-status.css";
 
 /* Widget configuration */
 @import "./components/widgets/config/config-panel.css";

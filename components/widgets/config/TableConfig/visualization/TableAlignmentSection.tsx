@@ -1,7 +1,7 @@
 import React from "react";
 import { VisualizationToggleButton } from "../../common/controls/VisualizationToggleButton";
 import type { TableWidget } from "@/types/widget";
-import { useWidgetStore } from "@/store/widgetStore";
+import { useGridStore } from "@/store/gridStore";
 
 interface TableAlignmentSectionProps {
   widget: TableWidget;
@@ -12,7 +12,7 @@ export const TableAlignmentSection: React.FC<TableAlignmentSectionProps> = ({
   widget,
   textAlign,
 }) => {
-  const { updateWidget } = useWidgetStore();
+  const { updateWidget } = useGridStore();
 
   const handleChangeAlignment = (alignment: "left" | "center" | "right") => {
     const visualization = widget.config.visualization || {};

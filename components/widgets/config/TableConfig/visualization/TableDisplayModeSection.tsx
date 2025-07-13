@@ -1,7 +1,7 @@
 import React from "react";
 import { VisualizationToggleButton } from "../../common/controls/VisualizationToggleButton";
 import type { TableWidget } from "@/types/widget";
-import { useWidgetStore } from "@/store/widgetStore";
+import { useGridStore } from "@/store/gridStore";
 
 interface TableDisplayModeSectionProps {
   widget: TableWidget;
@@ -11,7 +11,7 @@ interface TableDisplayModeSectionProps {
 export const TableDisplayModeSection: React.FC<
   TableDisplayModeSectionProps
 > = ({ widget, isCompact }) => {
-  const { updateWidget } = useWidgetStore();
+  const { updateWidget } = useGridStore();
 
   const handleToggleCompact = (compact: boolean) => {
     const visualization = widget.config.visualization || {};

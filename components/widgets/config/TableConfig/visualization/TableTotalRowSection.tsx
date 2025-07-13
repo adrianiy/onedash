@@ -1,7 +1,7 @@
 import React from "react";
 import { VisualizationToggleButton } from "../../common/controls/VisualizationToggleButton";
 import type { TableWidget } from "@/types/widget";
-import { useWidgetStore } from "@/store/widgetStore";
+import { useGridStore } from "@/store/gridStore";
 
 interface TableTotalRowSectionProps {
   widget: TableWidget;
@@ -12,7 +12,7 @@ export const TableTotalRowSection: React.FC<TableTotalRowSectionProps> = ({
   widget,
   totalRow,
 }) => {
-  const { updateWidget } = useWidgetStore();
+  const { updateWidget } = useGridStore();
 
   const handleChangeTotalRow = (position: "top" | "bottom" | "none") => {
     const visualization = widget.config.visualization || {};

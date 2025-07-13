@@ -2,8 +2,9 @@ import { Icon } from "@/common/Icon";
 import { ChartConfig } from "@/config/ChartConfig";
 import { MetricConfig } from "@/config/MetricConfig";
 import { TableConfig } from "@/config/TableConfig";
-import { useDashboardStore } from "@/store/dashboardStore";
-import { useWidgetStore } from "@/store/widgetStore";
+import { useUIStore } from "@/store/uiStore";
+import { useGridStore } from "@/store/gridStore";
+import type { MetricWidgetConfig, TableWidgetConfig } from "@/types/widget";
 import type { KeyboardEvent } from "react";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -13,8 +14,8 @@ export const WidgetConfigSidebar: React.FC = () => {
     isEditing,
     isConfigSidebarOpen,
     closeConfigSidebar,
-  } = useDashboardStore();
-  const { getWidget, updateWidget } = useWidgetStore();
+  } = useUIStore();
+  const { widgets, updateWidget } = useGridStore();
 
   // Estados para la edición del título
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -23,20 +24,17 @@ export const WidgetConfigSidebar: React.FC = () => {
 
   // Usar useEffect antes de cualquier return condicional
   useEffect(() => {
-    if (selectedWidgetId) {
-      const currentWidget = getWidget(selectedWidgetId);
-      if (currentWidget) {
-        setEditableTitle(currentWidget.title || "");
-      }
+    if (selectedWidgetId && widgets && widgets[selectedWidgetId]) {
+      setEditableTitle(widgets[selectedWidgetId].title || "");
     }
-  }, [selectedWidgetId, getWidget]);
+  }, [selectedWidgetId, widgets]);
 
   // Solo mostrar el sidebar si hay un widget seleccionado, estamos en modo edición y el sidebar debe estar abierto
-  if (!selectedWidgetId || !isEditing || !isConfigSidebarOpen) {
+  if (!selectedWidgetId || !isEditing || !isConfigSidebarOpen || !widgets) {
     return null;
   }
 
-  const widget = getWidget(selectedWidgetId);
+  const widget = widgets[selectedWidgetId];
   if (!widget) {
     return null;
   }
@@ -111,13 +109,15 @@ export const WidgetConfigSidebar: React.FC = () => {
   const isWidgetConfigValid = () => {
     if (widget.type === "metric") {
       // Para widgets de métrica: debe tener al menos la métrica principal
-      return Boolean(widget.config.primaryMetric);
+      const metricConfig = widget.config as MetricWidgetConfig;
+      return Boolean(metricConfig.primaryMetric);
     }
 
     if (widget.type === "table") {
       // Para widgets de tabla: debe tener columnas Y niveles de desglose
-      const columns = widget.config.columns || [];
-      const breakdownLevels = widget.config.breakdownLevels || [];
+      const tableConfig = widget.config as TableWidgetConfig;
+      const columns = tableConfig.columns || [];
+      const breakdownLevels = tableConfig.breakdownLevels || [];
       return columns.length > 0 && breakdownLevels.length > 0;
     }
 

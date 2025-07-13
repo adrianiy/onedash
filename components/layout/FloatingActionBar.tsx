@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Tooltip } from "react-tooltip";
-import { useDashboardStore } from "@/store/dashboardStore";
+import { useUIStore } from "@/store/uiStore";
 import { Icon } from "@/common/Icon";
+import { useGridStore } from "@/store/gridStore";
 
 interface FloatingActionBarProps {
   onToggleSidebar: () => void;
@@ -12,11 +13,18 @@ export const FloatingActionBar: React.FC<FloatingActionBarProps> = ({
   onToggleSidebar,
   isSidebarOpen,
 }) => {
-  const { isEditing, toggleEditing } = useDashboardStore();
+  const { isEditing, toggleEditing } = useUIStore();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const toggleCollapsed = () => {
     setIsCollapsed(!isCollapsed);
+  };
+
+  const handleEdit = () => {
+    if (!isEditing) {
+      useGridStore.temporal.getState().clear();
+    }
+    toggleEditing();
   };
 
   return (
@@ -30,7 +38,7 @@ export const FloatingActionBar: React.FC<FloatingActionBarProps> = ({
           className={`floating-action-bar__button ${
             isEditing ? "floating-action-bar__button--active" : ""
           }`}
-          onClick={toggleEditing}
+          onClick={handleEdit}
           data-tooltip-id="edit-tooltip"
         >
           <Icon name="edit" size={20} />

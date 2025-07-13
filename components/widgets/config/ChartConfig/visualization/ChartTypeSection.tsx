@@ -1,7 +1,7 @@
-import { useWidgetStore } from "@/store/widgetStore";
+import React from "react";
+import { useGridStore } from "@/store/gridStore";
 import type { ChartWidget } from "@/types/widget";
 import { VisualizationToggleButton } from "@/widgets/config/common/controls/VisualizationToggleButton";
-import React from "react";
 
 interface ChartTypeSectionProps {
   widget: ChartWidget;
@@ -12,7 +12,7 @@ export const ChartTypeSection: React.FC<ChartTypeSectionProps> = ({
   widget,
   chartOrientation,
 }) => {
-  const { updateWidget } = useWidgetStore();
+  const { updateWidget } = useGridStore();
 
   const handleChangeOrientation = (orientation: "horizontal" | "vertical") => {
     const visualization = widget.config.visualization || {};

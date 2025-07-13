@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useWizardStore } from "@/store/wizardStore";
-import { useDashboardStore } from "@/store/dashboardStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Icon } from "@/common/Icon";
 import { Tooltip } from "react-tooltip";
+import { useUIStore } from "@/store/uiStore";
 
 export const AppWizard: React.FC = () => {
   const {
     isVisible,
     isMinimized,
+    showToggleButton,
     steps,
     setVisible,
+    setShowToggleButton,
     toggleMinimized,
     markStepAsCompleted,
   } = useWizardStore();
@@ -18,7 +20,7 @@ export const AppWizard: React.FC = () => {
   // Estado local para manejar qué paso está expandido
   const [expandedStepId, setExpandedStepId] = useState<string | null>(null);
 
-  const { isEditing } = useDashboardStore();
+  const { isEditing } = useUIStore();
   const { theme } = useThemeStore();
 
   // Separar el paso "welcome" del resto de pasos
@@ -151,18 +153,26 @@ export const AppWizard: React.FC = () => {
   // Calcular si todos los pasos (excepto welcome) están completados
   const allStepsCompleted = completedSteps === totalSteps;
 
+  // Función para cerrar completamente el wizard (incluido el botón toggle)
+  const handleCloseWizard = () => {
+    setVisible(false);
+    setShowToggleButton(false);
+  };
+
   return (
     <>
-      {/* Botón de toggle siempre visible */}
-      <button
-        className="app-wizard__toggle-btn app-wizard__toggle-btn--fixed"
-        onClick={() => setVisible(!isVisible)}
-        aria-label={
-          isVisible ? "Cerrar guía de OneDash" : "Abrir guía de OneDash"
-        }
-      >
-        <Icon name={isVisible ? "x" : "list-todo"} size={20} />
-      </button>
+      {/* Botón de toggle, visible solo si showToggleButton es true */}
+      {showToggleButton && (
+        <button
+          className="app-wizard__toggle-btn app-wizard__toggle-btn--fixed"
+          onClick={() => setVisible(!isVisible)}
+          aria-label={
+            isVisible ? "Cerrar guía de OneDash" : "Abrir guía de OneDash"
+          }
+        >
+          <Icon name={isVisible ? "x" : "list-todo"} size={20} />
+        </button>
+      )}
 
       {isVisible && (
         <div className="app-wizard app-wizard--accordion">
@@ -385,6 +395,14 @@ export const AppWizard: React.FC = () => {
                 <Icon name="check" size={16} />
                 ¡Has completado todos los pasos!
               </div>
+              {/* Botón para cerrar completamente la guía */}
+              <button
+                className="app-wizard__close-btn"
+                onClick={handleCloseWizard}
+              >
+                <Icon name="x" size={16} />
+                Cerrar guía
+              </button>
             </div>
           )}
         </div>

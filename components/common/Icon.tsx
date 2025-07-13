@@ -100,6 +100,7 @@ import {
   AlignJustify,
   MoreHorizontal,
   ListTodo,
+  Bell,
   type LucideIcon,
 } from "lucide-react";
 
@@ -148,6 +149,7 @@ const lucideIconMap = {
   "log-out": LogOut,
   "user-plus": UserPlus,
   mail: Mail,
+  bell: Bell,
   "chevron-up": ChevronUp,
   "chevron-down": ChevronDown,
   "chevron-right": ChevronRight,

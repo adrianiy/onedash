@@ -4,7 +4,7 @@ import { Tooltip } from "react-tooltip";
 import { ConfigDropdown } from "../ui/ConfigDropdown";
 import { CustomMultiSelect } from "@/common/CustomMultiSelect";
 import { DateRangeDropdown } from "@/common/DateRangeDropdown";
-import { useWidgetStore } from "@/store/widgetStore";
+import { useGridStore } from "@/store/gridStore";
 import type {
   Widget,
   TableWidgetConfig,
@@ -101,7 +101,7 @@ export const WidgetFiltersConfig: React.FC<WidgetFiltersConfigProps> = ({
       | ChartWidgetConfig["widgetFilters"]
     >
   ) => {
-    useWidgetStore.getState().updateWidget(widget._id, {
+    useGridStore.getState().updateWidget(widget._id, {
       config: {
         ...widget.config,
         widgetFilters: {

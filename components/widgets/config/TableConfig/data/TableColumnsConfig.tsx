@@ -1,5 +1,5 @@
 import { GenericMetricListConfig } from "@/components/widgets/config/common/controls/GenericMetricListConfig";
-import { useWidgetStore } from "@/store/widgetStore";
+import { useGridStore } from "@/store/gridStore";
 import type { MetricDefinition } from "@/types/metricConfig";
 import type { TableWidgetConfig, Widget } from "@/types/widget";
 import React from "react";
@@ -12,7 +12,7 @@ interface TableColumnsConfigProps {
 export const TableColumnsConfig: React.FC<TableColumnsConfigProps> = ({
   widget,
 }) => {
-  const { updateWidget } = useWidgetStore();
+  const { updateWidget } = useGridStore();
 
   // Verificar que es un widget de table y obtener las columnas
   const tableConfig = widget.type === "table" ? widget.config : { columns: [] };

@@ -23,3 +23,28 @@ export {
   type TableData,
   type ApiTableResponse,
 } from "./useTableDataQuery";
+
+// Exportar hooks de dashboards
+export {
+  useDashboardsQuery,
+  useDashboardByIdQuery,
+  useCreateDashboardMutation,
+  useUpdateDashboardMutation,
+  useDeleteDashboardMutation,
+  type DashboardApiResponse,
+  type DashboardsListApiResponse,
+  type DashboardQueryFilters,
+} from "./dashboards";
+
+// Exportar hooks de widgets
+export {
+  useWidgetsQuery,
+  useWidgetsByDashboardIdQuery,
+  useWidgetByIdQuery,
+  useCreateWidgetMutation,
+  useUpdateWidgetMutation,
+  useDeleteWidgetMutation,
+  type WidgetApiResponse,
+  type WidgetsListApiResponse,
+  type WidgetQueryFilters,
+} from "./widgets";

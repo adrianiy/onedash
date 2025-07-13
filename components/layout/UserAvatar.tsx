@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
+import { useNewsStore } from "@/store/newsStore";
 import { Icon } from "@/common/Icon";
+import { GuidesModal } from "@/common/GuidesModal";
+import { WhatsNewModal } from "@/common/WhatsNewModal";
 import {
   useFloating,
   offset,
@@ -28,8 +31,14 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   email,
 }) => {
   const { logout, user } = useAuthStore();
+  const { hasUnreadNews } = useNewsStore();
   const [isOpen, setIsOpen] = useState(false);
+  const [isGuidesModalOpen, setIsGuidesModalOpen] = useState(false);
+  const [isWhatsNewModalOpen, setIsWhatsNewModalOpen] = useState(false);
   const arrowRef = useRef(null);
+
+  // Verificar si hay novedades no leídas
+  const hasUnread = hasUnreadNews();
 
   // Obtener iniciales del nombre
   const getInitials = (fullName: string) => {
@@ -116,6 +125,33 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 
           <div className="user-avatar__panel-menu">
             <button
+              className="user-avatar__panel-item"
+              onClick={() => {
+                setIsWhatsNewModalOpen(true);
+                setIsOpen(false);
+              }}
+            >
+              <div className="user-avatar__panel-item-icon">
+                <Icon name="bell" size={16} />
+                {hasUnread && (
+                  <div className="user-avatar__notification-badge"></div>
+                )}
+              </div>
+              <span>Últimas novedades</span>
+            </button>
+
+            <button
+              className="user-avatar__panel-item"
+              onClick={() => {
+                setIsGuidesModalOpen(true);
+                setIsOpen(false);
+              }}
+            >
+              <Icon name="list-todo" size={16} />
+              <span>Ver guías</span>
+            </button>
+
+            <button
               className="user-avatar__panel-item user-avatar__panel-item--danger"
               onClick={() => {
                 logout();
@@ -128,6 +164,18 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
           </div>
         </div>
       )}
+
+      {/* Modal de guías */}
+      <GuidesModal
+        isOpen={isGuidesModalOpen}
+        onClose={() => setIsGuidesModalOpen(false)}
+      />
+
+      {/* Modal de novedades */}
+      <WhatsNewModal
+        isOpen={isWhatsNewModalOpen}
+        onClose={() => setIsWhatsNewModalOpen(false)}
+      />
     </div>
   );
 };

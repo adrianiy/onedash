@@ -209,7 +209,7 @@
 .dashboard-container {
   width: 100%;
   padding: var(--spacing-xl) var(--spacing-4xl);
-  padding-top: 70px; /* Space for fixed header */
+  padding-top: 0px; /* Space for fixed header */
   min-height: 100vh;
   transition: all var(--transition-normal);
   display: flex;
@@ -218,7 +218,7 @@
 
 .dashboard-container.editing {
   background-color: var(--color-background-editing);
-  padding-top: 170px; /* 70px header + 95px toolbar */
+  padding-top: 100px; /* 70px header + 95px toolbar */
 }
 
 /* Adjust grid width when sidebar is open */

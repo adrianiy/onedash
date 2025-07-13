@@ -15,7 +15,7 @@ import {
 } from "@floating-ui/react";
 
 interface ConfigDropdownProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   triggerElement: (props: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ref: React.Ref<any>;

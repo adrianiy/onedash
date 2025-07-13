@@ -35,6 +35,11 @@
   gap: var(--spacing-sm);
 }
 
+.edit-toolbar__section-buttons--column {
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
 .edit-toolbar__section-title {
   font-size: 0.55rem;
   color: var(--color-text-secondary);
@@ -163,6 +168,22 @@
 .edit-toolbar__button--config:active {
   background-color: var(--color-primary-light);
   transform: scale(0.98);
+}
+
+/* Botones pequeños para undo/redo */
+.edit-toolbar__button--small {
+  min-width: 32px;
+  min-height: 32px;
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-sm);
+}
+
+.edit-toolbar__button--small:hover {
+  transform: translateY(-1px);
+}
+
+.edit-toolbar__button--small:active {
+  transform: translateY(0);
 }
 
 .edit-toolbar__separator {

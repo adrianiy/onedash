@@ -19,10 +19,10 @@ export const ColumnsConfigDropdown: React.FC<ColumnsConfigDropdownProps> = ({
   onAddColumns,
   onClose,
 }) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   const [activeTab, setActiveTab] = useState<string>("indicators");
   const [showSidebar, setShowSidebar] = useState<boolean>(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   // Estado para las selecciones en cada pestaña

@@ -1,6 +1,6 @@
 import { useEffect, useCallback, useRef } from "react";
 import { useVariableStore } from "@/store/variableStore";
-import { useDashboardStore } from "@/store/dashboardStore";
+import { useGridStore } from "@/store/gridStore";
 import { useVariableOperations } from "./useVariableOperations";
 
 /**
@@ -9,6 +9,7 @@ import { useVariableOperations } from "./useVariableOperations";
  */
 export const useVariableLoader = (dashboardId: string | null) => {
   const {
+    currentDashboardId,
     setDashboardVariables,
     setCurrentDashboard,
     clearDashboardVariables,
@@ -16,7 +17,7 @@ export const useVariableLoader = (dashboardId: string | null) => {
     setLoading,
   } = useVariableStore();
 
-  const { currentDashboard } = useDashboardStore();
+  const { dashboard } = useGridStore();
   const loadingRef = useRef<string | null>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -50,12 +51,8 @@ export const useVariableLoader = (dashboardId: string | null) => {
 
         // Obtener defaults del dashboard - asegurar que esté disponible
         let dashboardDefaults = {};
-        if (
-          currentDashboard &&
-          currentDashboard._id === id &&
-          currentDashboard.defaultVariables
-        ) {
-          dashboardDefaults = currentDashboard.defaultVariables;
+        if (dashboard && dashboard._id === id && dashboard.defaultVariables) {
+          dashboardDefaults = dashboard.defaultVariables;
           console.log(
             `🔄 Applying dashboard defaults for ${id}:`,
             dashboardDefaults
@@ -82,12 +79,8 @@ export const useVariableLoader = (dashboardId: string | null) => {
 
         // En caso de error, usar defaults (base + dashboard si está disponible)
         let dashboardDefaults = {};
-        if (
-          currentDashboard &&
-          currentDashboard._id === id &&
-          currentDashboard.defaultVariables
-        ) {
-          dashboardDefaults = currentDashboard.defaultVariables;
+        if (dashboard && dashboard._id === id && dashboard.defaultVariables) {
+          dashboardDefaults = dashboard.defaultVariables;
         }
 
         const defaultVars = {
@@ -101,7 +94,7 @@ export const useVariableLoader = (dashboardId: string | null) => {
       }
     },
     [
-      currentDashboard,
+      dashboard,
       getDefaultVariables,
       setDashboardVariables,
       setLoading,
@@ -111,6 +104,9 @@ export const useVariableLoader = (dashboardId: string | null) => {
 
   // Cargar variables con debouncing cuando cambia el dashboardId
   useEffect(() => {
+    if (dashboardId === currentDashboardId) {
+      return;
+    }
     // Limpiar timeout anterior
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
@@ -144,19 +140,16 @@ export const useVariableLoader = (dashboardId: string | null) => {
     setCurrentDashboard,
     clearDashboardVariables,
     loadDashboardVariables,
+    currentDashboardId,
   ]);
 
   // Recargar variables cuando el dashboard cambia (para aplicar defaultVariables)
   useEffect(() => {
-    if (
-      dashboardId &&
-      currentDashboard &&
-      currentDashboard._id === dashboardId
-    ) {
+    if (dashboardId && dashboard && dashboard._id === dashboardId) {
       // Si el dashboard ya está cargado y tiene defaultVariables, recargar variables
       if (
-        currentDashboard.defaultVariables &&
-        Object.keys(currentDashboard.defaultVariables).length > 0
+        dashboard.defaultVariables &&
+        Object.keys(dashboard.defaultVariables).length > 0
       ) {
         console.log(
           `🔄 Dashboard loaded with defaults, reloading variables for ${dashboardId}`
@@ -169,10 +162,11 @@ export const useVariableLoader = (dashboardId: string | null) => {
       }
     }
   }, [
-    currentDashboard?.defaultVariables,
+    dashboard?.defaultVariables,
     dashboardId,
-    currentDashboard?._id,
+    dashboard?._id,
     loadDashboardVariables,
+    dashboard,
   ]);
 
   return {

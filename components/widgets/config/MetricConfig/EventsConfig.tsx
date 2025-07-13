@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Icon } from "@/common/Icon";
-import { useWidgetStore } from "@/store/widgetStore";
+import { useGridStore } from "@/store/gridStore";
 import { useVariableStore } from "@/store/variableStore";
-import { useDashboardStore } from "@/store/dashboardStore";
 import type { MetricWidget, WidgetEvent } from "@/types/widget";
 import type { MetricDefinition } from "@/types/metricConfig";
 import { ModifiersMetadata } from "@/types/metricConfig";
@@ -20,7 +19,7 @@ interface VariableMapping {
 }
 
 export const EventsConfig: React.FC<EventsConfigProps> = ({ widget }) => {
-  const updateWidget = useWidgetStore((state) => state.updateWidget);
+  const updateWidget = useGridStore((state) => state.updateWidget);
 
   const [isClickEventEnabled, setIsClickEventEnabled] = useState(false);
   const [variableMappings, setVariableMappings] = useState<VariableMapping[]>(
@@ -134,12 +133,12 @@ export const EventsConfig: React.FC<EventsConfigProps> = ({ widget }) => {
           // **NUEVA LÓGICA: Establecer defaults cuando se selecciona una variable**
           if (newMapping.isSelected) {
             const { getVariable } = useVariableStore.getState();
-            const { setDefaultVariable } = useDashboardStore.getState();
+            const { updateDashboard } = useGridStore.getState();
             const currentValue = getVariable(mapping.variableId);
 
             // Si no hay valor actual en el store, establecer como default del dashboard
             if (currentValue === null || currentValue === undefined) {
-              setDefaultVariable(mapping.variableId, mapping.value);
+              updateDashboard({ [mapping.variableId]: mapping.value });
             }
           }
 

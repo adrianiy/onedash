@@ -2,22 +2,20 @@ import React from "react";
 import { Icon } from "@/common/Icon";
 import { ConfigButtonProps } from "./types";
 import { Tooltip } from "react-tooltip";
+import { useUIStore } from "@/store/uiStore";
+import { useGridStore } from "@/store/gridStore";
 
 /**
  * Botón de configuración que aparece cuando hay un widget seleccionado
  */
 export const ConfigButton: React.FC<ConfigButtonProps> = ({
-  selectedWidgetId,
-  getWidget,
   openConfigSidebar,
 }) => {
-  // Solo mostrar el botón si hay un widget seleccionado
-  if (!selectedWidgetId) {
-    return null;
-  }
+  const { selectedWidgetId } = useUIStore();
+  const { widgets } = useGridStore();
 
-  const widget = getWidget(selectedWidgetId);
-  if (!widget) {
+  // Solo mostrar el botón si hay un widget seleccionado
+  if (!selectedWidgetId || !widgets) {
     return null;
   }
 
@@ -64,6 +62,10 @@ export const ConfigButton: React.FC<ConfigButtonProps> = ({
     openConfigSidebar();
   };
 
+  if (!selectedWidgetId || !widgets[selectedWidgetId]) {
+    return null;
+  }
+
   return (
     <div className="edit-toolbar__section edit-toolbar__section--config">
       <button
@@ -71,8 +73,10 @@ export const ConfigButton: React.FC<ConfigButtonProps> = ({
         onClick={handleConfigClick}
         data-tooltip-id="config-tooltip"
       >
-        <Icon name={getWidgetIcon(widget.type)} size={20} />
-        <span>Configurar {getWidgetTypeName(widget.type)}</span>
+        <Icon name={getWidgetIcon(widgets[selectedWidgetId].type)} size={20} />
+        <span>
+          Configurar {getWidgetTypeName(widgets[selectedWidgetId].type)}
+        </span>
       </button>
 
       {/* Tooltip */}

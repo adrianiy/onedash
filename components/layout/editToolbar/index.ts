@@ -4,3 +4,4 @@ export { ReadonlyDashboardHandler } from "./ReadonlyDashboardHandler";
 export { SaveButton } from "./SaveButton";
 export { ToolbarFileActions } from "./ToolbarFileActions";
 export { ToolbarWidgetActions } from "./ToolbarWidgetActions";
+export { ToolbarUndoActions } from "./ToolbarUndoActions";

@@ -1,5 +1,5 @@
 import { Icon } from "@/common/Icon";
-import { useWidgetStore } from "@/store/widgetStore";
+import { useGridStore } from "@/store/gridStore";
 import type { MetricDefinition } from "@/types/metricConfig";
 import type {
   ChartWidget,
@@ -20,7 +20,7 @@ interface ConditionalFormatsControlProps {
 export const ConditionalFormatsControl: React.FC<
   ConditionalFormatsControlProps
 > = ({ widget, columns, conditionalFormats }) => {
-  const { updateWidget } = useWidgetStore();
+  const { updateWidget } = useGridStore();
   const [editingFormat, setEditingFormat] =
     useState<ConditionalFormatRule | null>(null);
   const setDropdownOpenRef = useRef<((isOpen: boolean) => void) | null>(null);

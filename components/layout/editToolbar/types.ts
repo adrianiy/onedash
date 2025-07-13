@@ -1,5 +1,4 @@
 import type { Dashboard } from "@/types/dashboard";
-import type { Widget } from "@/types/widget";
 
 export type SaveState = "idle" | "saving" | "success" | "error";
 
@@ -22,13 +21,9 @@ export interface ToolbarFileActionsProps {
   onCloseEditing: () => Promise<void>;
 }
 
-export interface ToolbarWidgetActionsProps {
-  addWidgetToBoard: (widget: Widget, layout: { w: number; h: number }) => void;
-}
+export type ToolbarWidgetActionsProps = Record<string, never>;
 
 export interface ConfigButtonProps {
-  selectedWidgetId: string | null;
-  getWidget: (id: string) => Widget | undefined;
   openConfigSidebar: () => void;
 }
 

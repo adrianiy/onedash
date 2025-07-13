@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Icon } from "@/common/Icon";
 import { Tooltip } from "react-tooltip";
 import type { ChartWidget } from "@/types/widget";
-import { useWidgetStore } from "@/store/widgetStore";
+import { useGridStore } from "@/store/gridStore";
 
 interface LegendAccordionSectionProps {
   widget: ChartWidget;
@@ -20,7 +20,7 @@ export const LegendAccordionSection: React.FC<LegendAccordionSectionProps> = ({
   showLegend,
   legendPosition,
 }) => {
-  const { updateWidget } = useWidgetStore();
+  const { updateWidget } = useGridStore();
   const [isExpanded, setIsExpanded] = useState(false);
 
   const visualization = widget.config.visualization || {};

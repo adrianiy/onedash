@@ -1,7 +1,7 @@
 import { useConditionalFormatting } from "@/hooks";
 import { useMetricDataQuery } from "@/hooks/queries";
 import { useVariableOperations } from "@/hooks/useVariableOperations";
-import { useDashboardStore } from "@/store/dashboardStore";
+import { useGridStore } from "@/store/gridStore";
 import { useVariableStore } from "@/store/variableStore";
 import { resolveMetricDefinition } from "@/utils/variableResolver";
 import type { MetricWidget as MetricWidgetType } from "@/types/widget";
@@ -15,9 +15,9 @@ interface MetricWidgetProps {
 }
 
 export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
-  const { currentDashboard } = useDashboardStore();
+  const { dashboard } = useGridStore();
   const { persistMultiple } = useVariableOperations({
-    dashboardId: currentDashboard?._id || null,
+    dashboardId: dashboard?._id || null,
     enablePersistence: true,
   });
   const [isClicked, setIsClicked] = useState(false);

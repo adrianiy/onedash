@@ -1,6 +1,6 @@
 import React from "react";
-import { useDashboardStore } from "@/store/dashboardStore";
 import { DragAndDropHookReturn } from "../types";
+import { useUIStore } from "@/store/uiStore";
 
 /**
  * Hook que proporciona las funciones de drag and drop para los widgets
@@ -41,10 +41,11 @@ export const useDragAndDrop = (): DragAndDropHookReturn => {
     config: Record<string, unknown> = {},
     isConfigured: boolean = false
   ) => {
-    const { setDroppingItemSize } = useDashboardStore.getState();
+    const { setDroppingItemSize, setLockChanges } = useUIStore.getState();
 
     // Establecer el tamaño del elemento mientras se arrastra
     setDroppingItemSize(size);
+    setLockChanges(true);
 
     // Crear elemento invisible para el arrastre
     const { element, cleanup } = createInvisibleDragElement();

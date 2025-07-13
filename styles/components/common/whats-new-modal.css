@@ -1,0 +1,274 @@
+/* WhatsNewModal component styles */
+.whats-new-modal__overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(3px);
+}
+
+.whats-new-modal {
+  width: 90%;
+  max-width: 600px;
+  height: 80vh;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slide-up var(--transition-normal);
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.whats-new-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.whats-new-modal__title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin: 0;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  font-size: 1.25rem;
+}
+
+.whats-new-modal__close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.whats-new-modal__close-btn:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+.whats-new-modal__content {
+  padding: var(--spacing-lg);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  scrollbar-width: thin;
+}
+
+/* Sección */
+.whats-new-modal__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.whats-new-modal__section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  color: var(--color-info);
+  font-weight: 500;
+  margin: 0;
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Color específico para títulos de sección técnica */
+.whats-new-modal__section--technical .whats-new-modal__section-title {
+  color: var(--color-success);
+}
+
+.whats-new-modal__items-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* Items */
+.whats-new-modal__item {
+  display: flex;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md) 0;
+  border-bottom: 1px solid rgba(var(--color-border-rgb), 0.3);
+}
+
+.whats-new-modal__item:last-child {
+  border-bottom: none;
+}
+
+.whats-new-modal__item-icon {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  color: var(--color-info);
+  background-color: rgba(var(--color-info-rgb), 0.1);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-sm);
+  height: fit-content;
+}
+
+/* Sección funcional - Estilo por defecto azul */
+.whats-new-modal__section:not(.whats-new-modal__section--technical)
+  .whats-new-modal__accordion-header:hover {
+  background-color: rgba(var(--color-info-rgb), 0.05);
+}
+
+.whats-new-modal__section:not(.whats-new-modal__section--technical)
+  .whats-new-modal__accordion-header--open {
+  color: var(--color-info);
+  border-bottom-color: rgba(var(--color-info-rgb), 0.3);
+}
+
+.whats-new-modal__section:not(.whats-new-modal__section--technical)
+  .whats-new-modal__badge {
+  background-color: rgba(var(--color-info-rgb), 0.1);
+  color: var(--color-info);
+}
+
+.whats-new-modal__item-content {
+  flex: 1;
+}
+
+.whats-new-modal__item-title {
+  margin: 0 0 var(--spacing-xs) 0;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.whats-new-modal__item-description {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* Acordeón para sección técnica */
+.whats-new-modal__accordion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  width: 100%;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  text-align: left;
+}
+
+.whats-new-modal__section--technical .whats-new-modal__accordion-header:hover {
+  background-color: rgba(var(--color-success-rgb), 0.05);
+}
+
+.whats-new-modal__section--technical .whats-new-modal__accordion-header--open {
+  color: var(--color-success);
+  border-bottom-color: rgba(var(--color-success-rgb), 0.3);
+}
+
+.whats-new-modal__accordion-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.whats-new-modal__badge {
+  background-color: var(--color-surface-tertiary);
+  color: var(--color-text-secondary);
+  padding: 0 var(--spacing-xs);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: var(--spacing-xs);
+}
+
+.whats-new-modal__accordion-icon {
+  transition: transform var(--transition-fast);
+}
+
+.whats-new-modal__accordion-header--open .whats-new-modal__accordion-icon {
+  transform: rotate(180deg);
+}
+
+.whats-new-modal__accordion-content {
+  padding: var(--spacing-md) 0 0;
+  animation: fadeIn var(--transition-normal);
+}
+
+/* Personalización para elementos técnicos */
+.whats-new-modal__section--technical
+  .whats-new-modal__accordion-content
+  .whats-new-modal__item-icon {
+  background-color: rgba(var(--color-success-rgb), 0.1);
+  color: var(--color-success);
+}
+
+/* Badge de la sección técnica */
+.whats-new-modal__section--technical
+  .whats-new-modal__accordion-header
+  .whats-new-modal__badge {
+  background-color: rgba(var(--color-success-rgb), 0.1);
+  color: var(--color-success);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Adaptación a tema oscuro - automático con variables CSS */
+[data-theme="dark"] .whats-new-modal__item-icon {
+  background-color: rgba(var(--color-info-rgb), 0.15);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .whats-new-modal {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .whats-new-modal__item {
+    gap: var(--spacing-md);
+  }
+}

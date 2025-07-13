@@ -1,11 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
-import { useDashboardStore } from "@/store/dashboardStore";
+import { useGridStore } from "@/store/gridStore";
 import { useAuthStore } from "@/store/authStore";
 import { Icon } from "@/common/Icon";
 import { DashboardFormModal } from "@/components/dashboard/DashboardFormModal";
 import { DeleteConfirmModal } from "@/common/DeleteConfirmModal";
 import type { Dashboard } from "@/types/dashboard";
+import {
+  useDashboardsQuery,
+  useCreateDashboardMutation,
+  useUpdateDashboardMutation,
+  useDeleteDashboardMutation,
+} from "@/hooks/queries";
 
 interface DashboardSidebarProps {
   isOpen: boolean;
@@ -16,17 +22,33 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   isOpen,
   onClose,
 }) => {
-  const {
-    dashboards,
-    currentDashboard,
-    createDashboard,
-    updateDashboard,
-    setCurrentDashboard,
-    deleteDashboard,
-    isLoading,
-    deletingDashboardId,
-  } = useDashboardStore();
+  const router = useRouter();
 
+  // Hooks de React Query para datos y mutaciones
+  const { data: dashboards = [], isLoading: isLoadingDashboards } =
+    useDashboardsQuery();
+  const {
+    mutate: createDashboard,
+    isPending: isCreating,
+    isSuccess: isCreateSuccess,
+    data: newCreatedDashboard,
+  } = useCreateDashboardMutation();
+  const {
+    mutate: updateDashboard,
+    isPending: isUpdating,
+    isSuccess: isUpdateSuccess,
+  } = useUpdateDashboardMutation();
+  const {
+    mutate: deleteDashboard,
+    isPending: isDeleting,
+    isSuccess: isDeleteSuccess,
+    variables: deletingDashboardId,
+  } = useDeleteDashboardMutation();
+
+  // Estado del dashboard actual desde gridStore
+  const { dashboard: currentDashboard, setDashboard } = useGridStore();
+
+  // Estados locales
   const [searchTerm, setSearchTerm] = useState("");
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [dashboardToEdit, setDashboardToEdit] = useState<Dashboard | undefined>(
@@ -37,9 +59,58 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     null
   );
 
+  const processedCreation = useRef(false);
+  const processedUpdate = useRef(false);
+
+  // Filtrar dashboards según la búsqueda
   const filteredDashboards = dashboards.filter((dashboard) =>
     dashboard.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Efectos para manejar resultados de mutaciones
+
+  // Efecto para manejar la creación exitosa de dashboard
+  useEffect(() => {
+    if (isCreateSuccess && newCreatedDashboard && !processedCreation.current) {
+      processedCreation.current = true;
+      setIsFormModalOpen(false);
+      // setDashboard(newCreatedDashboard);
+      router.push(`/dashboard/${newCreatedDashboard._id}`);
+      onClose();
+    }
+  }, [isCreateSuccess, newCreatedDashboard, setDashboard, router, onClose]);
+
+  // Efecto para manejar la actualización exitosa de dashboard
+  useEffect(() => {
+    if (isUpdateSuccess && !processedUpdate.current) {
+      processedUpdate.current = true;
+      setIsFormModalOpen(false);
+    }
+  }, [isUpdateSuccess]);
+
+  // Efecto para manejar la eliminación exitosa de dashboard
+  useEffect(() => {
+    if (!isDeleting && isDeleteSuccess && dashboardToDelete) {
+      setIsDeleteModalOpen(false);
+      setDashboardToDelete(null);
+
+      // Si el dashboard eliminado era el actual, limpiar el estado
+      if (currentDashboard && currentDashboard._id === dashboardToDelete._id) {
+        setDashboard(dashboards[0]);
+        router.push(`/dashboard/${dashboards[0]._id}`);
+      }
+    }
+  }, [
+    isDeleting,
+    isDeleteSuccess,
+    dashboardToDelete,
+    currentDashboard,
+    setDashboard,
+    router,
+    dashboards,
+  ]);
+
+  // Handlers
 
   const handleOpenCreateModal = () => {
     setDashboardToEdit(undefined);
@@ -52,38 +123,32 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     setIsFormModalOpen(true);
   };
 
-  const router = useRouter();
-
-  const handleSaveDashboard = async (dashboardData: Partial<Dashboard>) => {
+  const handleSaveDashboard = (dashboardData: Partial<Dashboard>) => {
     // Si estamos editando un dashboard existente
     if (dashboardToEdit) {
-      const success = await updateDashboard(dashboardToEdit._id, dashboardData);
-      if (success) {
-        setIsFormModalOpen(false);
-        // La store ya actualiza los dashboards, no necesitamos hacer nada más
-      }
+      processedUpdate.current = false;
+      updateDashboard({
+        id: dashboardToEdit._id,
+        updates: dashboardData,
+      });
     }
     // Si estamos creando un nuevo dashboard
     else {
+      processedCreation.current = false;
+
       // Obtener el ID del usuario actual
       const currentUser = useAuthStore.getState().user;
-      console.log(currentUser);
 
-      const newDashboard = await createDashboard({
+      createDashboard({
         name: dashboardData.name || `Dashboard ${dashboards.length + 1}`,
         description: dashboardData.description || "",
         visibility: dashboardData.visibility || "private",
+        userId: currentUser?._id || "",
+        // Inicializar con arrays vacíos
         layout: [],
         widgets: [],
-        userId: currentUser?._id || "", // Usar el ID del usuario actual
+        collaborators: [],
       });
-
-      if (newDashboard) {
-        setIsFormModalOpen(false);
-        setCurrentDashboard(newDashboard);
-        router.push(`/dashboard/${newDashboard._id}`);
-        onClose(); // Cerrar sidebar automáticamente
-      }
     }
   };
 
@@ -98,20 +163,14 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = () => {
     if (!dashboardToDelete) return;
 
-    const success = await deleteDashboard(dashboardToDelete._id);
-    if (success) {
-      setIsDeleteModalOpen(false);
-      setDashboardToDelete(null);
-    }
-    // Si falla, el modal se cerrará cuando termine el loading
-    // pero se podría manejar el error aquí si es necesario
+    deleteDashboard(dashboardToDelete._id);
   };
 
   const handleCloseDeleteModal = () => {
-    if (deletingDashboardId) return; // No cerrar si está eliminando
+    if (isDeleting) return; // No cerrar si está eliminando
     setIsDeleteModalOpen(false);
     setDashboardToDelete(null);
   };
@@ -161,7 +220,12 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
           </button>
 
           <div className="dashboard-list">
-            {filteredDashboards.length === 0 ? (
+            {isLoadingDashboards ? (
+              <div className="loading-state">
+                <Icon name="loader" size={24} className="animate-spin" />
+                <p>Cargando dashboards...</p>
+              </div>
+            ) : filteredDashboards.length === 0 ? (
               <div className="empty-state">
                 <Icon name="grid" size={48} />
                 <p>No se encontraron dashboards</p>
@@ -252,7 +316,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
         onClose={() => setIsFormModalOpen(false)}
         onSave={handleSaveDashboard}
         dashboard={dashboardToEdit}
-        isLoading={isLoading}
+        isLoading={isCreating || isUpdating}
       />
 
       {/* Modal de confirmación de eliminación */}
@@ -262,7 +326,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
         onConfirm={handleConfirmDelete}
         title="Eliminar Dashboard"
         message={`¿Estás seguro de que quieres eliminar "${dashboardToDelete?.name}"? Se eliminarán todos los widgets y configuraciones asociados.`}
-        isLoading={!!deletingDashboardId}
+        isLoading={isDeleting}
       />
     </>
   );

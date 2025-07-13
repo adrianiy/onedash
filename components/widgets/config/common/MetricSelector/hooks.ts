@@ -1,12 +1,8 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import type { MetricDefinition } from "@/types/metricConfig";
-import {
-  IndicatorMetadata,
-  ModifiersMetadata,
-} from "@/types/metricConfig";
+import { IndicatorMetadata, ModifiersMetadata } from "@/types/metricConfig";
 import { useMetricGeneration } from "@/hooks/useMetricGeneration";
-import { useDashboardStore } from "@/store/dashboardStore";
-import { useWidgetStore } from "@/store/widgetStore";
+import { useGridStore } from "@/store/gridStore";
 import {
   MODIFIER_TO_VARIABLE_TYPE_MAP,
   SELECTOR_TO_VARIABLE_TYPE_MAP,
@@ -440,8 +436,7 @@ export const useMetricSelector = (
   const isButtonEnabled = allIndicatorsMeetRequirements();
 
   // Obtener datos del dashboard y widgets
-  const { currentDashboard } = useDashboardStore();
-  const { widgets: allWidgets } = useWidgetStore();
+  const { dashboard, widgets: allWidgets } = useGridStore();
 
   // Función para obtener variables que pueden ser seteadas por widgets del dashboard
   const getSetteableVariables = useCallback((widgets: Widget[]): string[] => {
@@ -463,19 +458,19 @@ export const useMetricSelector = (
   // Obtener widgets del dashboard actual y detectar variables seteables
   const setteableVariables = useMemo(() => {
     // Usar siempre currentDashboard
-    const activeDashboard = currentDashboard;
+    const activeDashboard = dashboard;
 
     if (!activeDashboard || !activeDashboard.widgets) {
       return [];
     }
 
     // Filtrar solo los widgets que pertenecen al dashboard activo
-    const dashboardWidgets = allWidgets.filter((widget) =>
+    const dashboardWidgets = Object.values(allWidgets || {}).filter((widget) =>
       activeDashboard.widgets?.includes(widget._id)
     );
 
     return getSetteableVariables(dashboardWidgets);
-  }, [currentDashboard, allWidgets, getSetteableVariables]);
+  }, [dashboard, allWidgets, getSetteableVariables]);
 
   // Verificar si una variable específica puede ser seteada por algún widget
   const isVariableSetteable = useCallback(

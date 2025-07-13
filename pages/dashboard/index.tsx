@@ -1,54 +1,34 @@
-import { Icon } from "@/common/Icon";
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import { useDashboardStore } from "@/store/dashboardStore";
-import Head from "next/head";
+import { ErrorPage, LoaderPage } from "@/components/common";
+import { useDashboardsQuery } from "@/hooks/queries/dashboards";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
 export default function DashboardIndex() {
   const router = useRouter();
-  const { dashboards, fetchDashboards } = useDashboardStore();
+  // Usar React Query para obtener los dashboards en lugar del store
+  const { data: dashboards, isLoading, error } = useDashboardsQuery();
 
   useEffect(() => {
-    const init = async () => {
-      await fetchDashboards();
-    };
-
-    init();
-  }, [fetchDashboards]);
-
-  useEffect(() => {
-    if (dashboards.length > 0) {
-      // Redirigir al primer dashboard o al dashboard "default" si existe
-      const defaultDashboard =
-        dashboards.find((d) => d.name === "default") || dashboards[0];
-      router.push(`/dashboard/${defaultDashboard._id}`);
-    } else {
-      // Si no hay dashboards, redirigir a la página de creación
-      router.push("/dashboard/create");
+    // Si hay datos de dashboards y no estamos cargando
+    if (dashboards && !isLoading) {
+      if (dashboards.length > 0) {
+        // Redirigir al primer dashboard o al dashboard "default" si existe
+        const defaultDashboard = dashboards[0];
+        router.push(`/dashboard/${defaultDashboard._id}`);
+      } else {
+        // Si no hay dashboards, redirigir a la página de creación
+        router.push("/dashboard/create");
+      }
     }
-  }, [dashboards, router]);
+  }, [dashboards, router, isLoading]);
+
+  // Mostrar mensaje de error si ocurre algún problema
+  if (error) {
+    return (
+      <ErrorPage message={`Error al cargar los dashboards: ${error.message}`} />
+    );
+  }
 
   // Mostrar loading mientras se carga
-  return (
-    <>
-      <Head>
-        <title>ONE - Dashboards</title>
-      </Head>
-      <ProtectedRoute>
-        <div className="auth-page">
-          <div className="auth-page__loader-container">
-            <div className="auth-page__loader-content">
-              <Icon
-                name="loader"
-                className="auth-page__loader-icon"
-                size={48}
-              />
-              <p className="auth-page__loader-text">Cargando dashboard...</p>
-            </div>
-          </div>
-        </div>
-      </ProtectedRoute>
-    </>
-  );
+  return <LoaderPage title="ONE - Dashboards" />;
 }

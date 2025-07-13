@@ -1,7 +1,7 @@
 import { Icon } from "@/common/Icon";
 import { ConfigDropdown } from "@/components/widgets/config/common/ui/ConfigDropdown";
 import { EmptyPlaceholder } from "@/components/widgets/config/common/ui/EmptyPlaceholder";
-import { useWidgetStore } from "@/store/widgetStore";
+import { useGridStore } from "@/store/gridStore";
 import { breakdownCategories } from "@/types/breakdownLevels";
 import type { ChartWidgetConfig, Widget } from "@/types/widget";
 import React, { useRef, useState } from "react";
@@ -38,7 +38,7 @@ export const XAxisConfig: React.FC<XAxisConfigProps> = ({ widget }) => {
 
   const handleRemoveDimension = () => {
     if (widget.type === "chart") {
-      useWidgetStore.getState().updateWidget(widget._id, {
+      useGridStore.getState().updateWidget(widget._id, {
         config: {
           ...widget.config,
           xAxisDimension: undefined,
@@ -62,7 +62,7 @@ export const XAxisConfig: React.FC<XAxisConfigProps> = ({ widget }) => {
 
   const handleSelectOption = (option: { id: string }) => {
     if (widget.type === "chart") {
-      useWidgetStore.getState().updateWidget(widget._id, {
+      useGridStore.getState().updateWidget(widget._id, {
         config: {
           ...widget.config,
           xAxisDimension: option.id as

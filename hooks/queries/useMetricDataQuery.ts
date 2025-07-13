@@ -45,7 +45,6 @@ export function useMetricDataQuery(
       end: variables.dateEnd || null,
     },
   };
-  console.log(combinedFilters);
   // Determinar si podemos procesar la métrica y preparar los datos
   const isValidMetric = Boolean(metricDefinition && metricDefinition.indicator);
 

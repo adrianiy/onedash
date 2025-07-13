@@ -9,7 +9,7 @@ export interface Dashboard {
   layout: DashboardLayout[];
   widgets: string[];
   userId: string; // Puede ser solo el ID o el objeto usuario completo
-  variables?: string[]; // IDs de variables del dashboard
+  variables?: Record<string, unknown>; // Variables del dashboard como objeto clave-valor
   visibility?: "public" | "private"; // Visibilidad del dashboard
   collaborators?: string[]; // IDs de usuarios con permisos de edición
   isReadonly?: boolean; // Mantenerlo por ahora para compatibilidad con código existente

@@ -1,7 +1,7 @@
 import { Icon } from "@/common/Icon";
 import { ConfigDropdown } from "@/components/widgets/config/common/ui/ConfigDropdown";
 import { EmptyPlaceholder } from "@/components/widgets/config/common/ui/EmptyPlaceholder";
-import { useWidgetStore } from "@/store/widgetStore";
+import { useGridStore } from "@/store/gridStore";
 import { breakdownCategories } from "@/types/breakdownLevels";
 import type { TableWidgetConfig, Widget } from "@/types/widget";
 import {
@@ -63,7 +63,7 @@ export const BreakdownLevelConfig: React.FC<BreakdownLevelConfigProps> = ({
     if (widget.type === "table") {
       const updatedLevels = breakdownLevels.filter((id) => id !== levelId);
 
-      useWidgetStore.getState().updateWidget(widget._id, {
+      useGridStore.getState().updateWidget(widget._id, {
         config: {
           ...widget.config,
           breakdownLevels: updatedLevels,
@@ -86,7 +86,7 @@ export const BreakdownLevelConfig: React.FC<BreakdownLevelConfigProps> = ({
 
       // Actualizar el widget
       if (widget.type === "table") {
-        useWidgetStore.getState().updateWidget(widget._id, {
+        useGridStore.getState().updateWidget(widget._id, {
           config: {
             ...widget.config,
             breakdownLevels: newOrderLevels,
@@ -133,7 +133,7 @@ export const BreakdownLevelConfig: React.FC<BreakdownLevelConfigProps> = ({
 
       if (widget.type === "table") {
         // Actualizar el widget asegurándose que tiene todas las propiedades requeridas
-        useWidgetStore.getState().updateWidget(widget._id, {
+        useGridStore.getState().updateWidget(widget._id, {
           config: {
             ...widget.config,
             breakdownLevels: updatedLevels,

@@ -1,21 +1,27 @@
 import { useCallback } from "react";
 import type { Layout, ReactGridLayoutProps } from "react-grid-layout";
-import { useDashboardStore } from "@/store/dashboardStore";
+import { useGridStore } from "@/store/gridStore";
+import { useUIStore } from "@/store/uiStore";
 
 export const useGridLayout = () => {
-  const { settings, updateLayout, isEditing } = useDashboardStore();
+  const { updateDashboardLayout, dashboard } = useGridStore();
+  const { settings, isEditing, lockChanges, setLockChanges } = useUIStore();
 
   const handleLayoutChange = useCallback(
     (layout: Layout[]) => {
-      if (isEditing) {
+      const sameLayout =
+        JSON.stringify(layout) === JSON.stringify(dashboard?.layout);
+      if (isEditing && !lockChanges && !sameLayout) {
         // Log layout changes for debugging
         if (process.env.NODE_ENV === "development") {
-          console.log("📐 Layout changed:", layout);
+          console.log("📐 Layout changed:", layout, lockChanges);
         }
-        updateLayout(layout);
+        updateDashboardLayout(layout);
+      } else {
+        setLockChanges(false);
       }
     },
-    [isEditing, updateLayout]
+    [isEditing, lockChanges, dashboard, updateDashboardLayout, setLockChanges]
   );
 
   const generateLayout = useCallback(

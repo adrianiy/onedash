@@ -219,6 +219,8 @@ export const CollaboratorSelector: React.FC<CollaboratorSelectorProps> = ({
           menuIsOpen={menuIsOpen}
           onMenuOpen={() => setMenuIsOpen(true)}
           onMenuClose={() => setMenuIsOpen(false)}
+          menuPortalTarget={document.body}
+          menuPosition="fixed"
           components={{
             Option,
             Menu,
@@ -259,6 +261,11 @@ export const CollaboratorSelector: React.FC<CollaboratorSelectorProps> = ({
                 position: "relative",
               };
             },
+            // Estilos para el portal del menú
+            menuPortal: (base) => ({
+              ...base,
+              zIndex: 9999, // Asegurar que esté por encima de todos los elementos
+            }),
           }}
           noOptionsMessage={() => null}
           value={selectedOptions}

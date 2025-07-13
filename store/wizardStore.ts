@@ -17,6 +17,7 @@ export interface WizardStep {
 interface WizardState {
   isVisible: boolean;
   isMinimized: boolean;
+  showToggleButton: boolean;
   steps: WizardStep[];
   currentStepIndex: number;
 
@@ -25,6 +26,7 @@ interface WizardState {
   toggleVisibility: () => void;
   setMinimized: (minimized: boolean) => void;
   toggleMinimized: () => void;
+  setShowToggleButton: (show: boolean) => void;
   markStepAsCompleted: (stepId: string) => void;
   nextStep: () => void;
   prevStep: () => void;
@@ -105,6 +107,7 @@ export const useWizardStore = create<WizardState>()(
       (set) => ({
         isVisible: true, // Inicialmente visible para nuevos usuarios
         isMinimized: false,
+        showToggleButton: true, // Inicialmente visible
         steps: initialSteps,
         currentStepIndex: 0,
 
@@ -117,6 +120,8 @@ export const useWizardStore = create<WizardState>()(
 
         toggleMinimized: () =>
           set((state) => ({ isMinimized: !state.isMinimized })),
+
+        setShowToggleButton: (show) => set({ showToggleButton: show }),
 
         markStepAsCompleted: (stepId) =>
           set((state) => ({

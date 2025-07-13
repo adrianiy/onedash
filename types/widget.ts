@@ -151,6 +151,7 @@ export interface TextWidgetConfig {
 
 export interface BaseWidget {
   _id: string;
+  type: WidgetType;
   title: string;
   description?: string;
   dashboardId?: string; // ID del dashboard al que pertenece el widget
@@ -159,6 +160,8 @@ export interface BaseWidget {
   isConfigured?: boolean;
   events?: WidgetEvent[];
   persisted?: boolean; // Indica si el widget ya está guardado en la base de datos
+  x?: number; // Posición en píxeles
+  y?: number; // Posición en píxeles
 }
 
 export interface ChartWidget extends BaseWidget {

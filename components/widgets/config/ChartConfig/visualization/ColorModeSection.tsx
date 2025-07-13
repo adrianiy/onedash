@@ -1,7 +1,7 @@
-import { Icon } from "@/common/Icon";
-import { useWidgetStore } from "@/store/widgetStore";
-import type { ChartWidget } from "@/types/widget";
 import React from "react";
+import { Icon } from "@/common/Icon";
+import { useGridStore } from "@/store/gridStore";
+import type { ChartWidget } from "@/types/widget";
 import { Tooltip } from "react-tooltip";
 import { VisualizationToggleButton } from "../../common/controls/VisualizationToggleButton";
 import { SeriesColorChip } from "./SeriesColorChip";
@@ -19,7 +19,7 @@ export const ColorModeSection: React.FC<ColorModeSectionProps> = ({
   colorPalette,
   seriesColors,
 }) => {
-  const { updateWidget } = useWidgetStore();
+  const { updateWidget } = useGridStore();
 
   const visualization = widget.config.visualization || {};
 

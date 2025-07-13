@@ -1,13 +1,86 @@
 {
-  "extends": ["next/core-web-vitals", "@typescript-eslint/recommended"],
+  "extends": [
+    "next/core-web-vitals",
+    "@typescript-eslint/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript"
+  ],
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"],
+  "plugins": ["@typescript-eslint", "import"],
   "rules": {
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/no-unused-vars": "warn",
     "react/no-unescaped-entities": "warn",
     "react-hooks/exhaustive-deps": "warn",
-    "import/no-anonymous-default-export": "warn"
+    "import/no-anonymous-default-export": "warn",
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          ["parent", "sibling"],
+          "index",
+          "object",
+          "type"
+        ],
+        "pathGroups": [
+          {
+            "pattern": "react",
+            "group": "builtin",
+            "position": "before"
+          },
+          {
+            "pattern": "next/**",
+            "group": "builtin",
+            "position": "after"
+          },
+          {
+            "pattern": "components/**",
+            "group": "internal",
+            "position": "before"
+          },
+          {
+            "pattern": "hooks/**",
+            "group": "internal",
+            "position": "before"
+          },
+          {
+            "pattern": "store/**",
+            "group": "internal",
+            "position": "before"
+          },
+          {
+            "pattern": "types/**",
+            "group": "type",
+            "position": "before"
+          },
+          {
+            "pattern": "utils/**",
+            "group": "internal",
+            "position": "after"
+          },
+          {
+            "pattern": "**/*.css",
+            "group": "index",
+            "position": "after"
+          }
+        ],
+        "pathGroupsExcludedImportTypes": ["react", "next"],
+        "newlines-between": "always",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ]
   },
-  "ignorePatterns": ["node_modules/**", ".next/**", "out/**"]
+  "ignorePatterns": ["node_modules/**", ".next/**", "out/**"],
+  "settings": {
+    "import/resolver": {
+      "typescript": {}
+    }
+  }
 }

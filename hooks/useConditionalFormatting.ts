@@ -34,7 +34,7 @@ export const useConditionalFormatting = (
               }
               break;
             case "equals":
-              // eslint-disable-next-line eqeqeq
+               
               conditionMet = value == format.value;
               break;
             case "contains":

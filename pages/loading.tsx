@@ -1,14 +1,11 @@
-import { Icon } from "@/common/Icon";
+import { LoaderPage } from "@/components/common";
 import { useAuthStore } from "@/store/authStore";
-import { useDashboardStore } from "@/store/dashboardStore";
-import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 
 export default function Loading() {
   const router = useRouter();
   const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
-  const { fetchDashboards } = useDashboardStore();
   const [hasInitialized, setHasInitialized] = useState(false);
   const isProcessing = useRef(false);
 
@@ -35,43 +32,17 @@ export default function Loading() {
         return;
       }
 
-      // Si está autenticado, cargar dashboards y redirigir
-      try {
-        await fetchDashboards();
-
-        // Obtener dashboards actualizados del store
-        const { dashboards: currentDashboards } = useDashboardStore.getState();
-
-        if (currentDashboards && currentDashboards.length > 0) {
-          const defaultDashboard =
-            currentDashboards.find((d) => d.name === "default") ||
-            currentDashboards[0];
-          router.push(`/dashboard/${defaultDashboard._id}`);
-        } else {
-          router.push("/dashboard");
-        }
-      } catch (error) {
-        console.error("Error loading dashboards:", error);
-        router.push("/dashboard");
-      }
+      router.push("/dashboard");
     };
 
     handleRedirect();
-  }, [hasInitialized, isAuthenticated, isLoading, router, fetchDashboards]);
+  }, [hasInitialized, isAuthenticated, isLoading, router]);
 
   return (
-    <>
-      <Head>
-        <title>ONE - Cargando</title>
-      </Head>
-      <div className="auth-page">
-        <div className="auth-page__loader-container">
-          <div className="auth-page__loader-content">
-            <Icon name="loader" className="auth-page__loader-icon" size={48} />
-            <p className="auth-page__loader-text">Iniciando sesión...</p>
-          </div>
-        </div>
-      </div>
-    </>
+    <LoaderPage
+      title="ONE - Cargando"
+      message="Iniciando sesión..."
+      requiresAuth={false}
+    />
   );
 }

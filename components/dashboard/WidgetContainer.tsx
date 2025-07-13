@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useDashboardStore } from "@/store/dashboardStore";
-import { useWidgetStore } from "@/store/widgetStore";
+import { useUIStore } from "@/store/uiStore";
+import { useGridStore } from "@/store/gridStore";
 import { Tooltip } from "react-tooltip";
 import { Icon } from "@/common/Icon";
 import {
@@ -70,16 +70,9 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
   widget,
   isSelected = false,
 }) => {
-  const {
-    isEditing,
-    selectWidget,
-    openConfigSidebar,
-    currentDashboard,
-    updateCurrentDashboard,
-    updateDashboard,
-    clearSelection,
-  } = useDashboardStore();
-  const { deleteWidget, addWidget } = useWidgetStore();
+  const { isEditing, selectWidget, openConfigSidebar, clearSelection } =
+    useUIStore();
+  const { dashboard, addWidget, removeWidget } = useGridStore();
   const [showFloatingHeader, setShowFloatingHeader] = useState(false);
   const [isHiding, setIsHiding] = useState(false);
   const [isPinned, setIsPinned] = useState(true); // Pinned por defecto
@@ -87,30 +80,9 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
   const hideTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const handleDelete = () => {
-    if (currentDashboard) {
-      const updatedWidgets = currentDashboard.widgets.filter(
-        (id: string) => id !== widget._id
-      );
-      const updatedLayout = currentDashboard.layout.filter(
-        (item: DashboardLayout) => item.i !== widget._id
-      );
-
-      if (isEditing) {
-        // En modo edición, actualizar dashboard directamente
-        updateCurrentDashboard({
-          widgets: updatedWidgets,
-          layout: updatedLayout,
-        });
-      } else {
-        // Fuera de modo edición, persistir directamente
-        updateDashboard(currentDashboard._id, {
-          widgets: updatedWidgets,
-          layout: updatedLayout,
-        });
-
-        // También eliminar del store de widgets si no estamos en modo edición
-        deleteWidget(widget._id);
-      }
+    if (dashboard) {
+      // Eliminar el widget del GridStore (automáticamente actualiza layout y lista de widgets)
+      removeWidget(widget._id);
     }
 
     // Limpiar la selección si el widget eliminado está seleccionado
@@ -118,24 +90,9 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
   };
 
   const handleCopy = () => {
-    const newWidget = addWidget({
-      type: widget.type,
-      title: `${widget.title} (Copy)`,
-      config: { ...widget.config },
-    });
-
-    // Add to current dashboard
-    const {
-      currentDashboard,
-      isEditing,
-      updateDashboard,
-      updateCurrentDashboard,
-      settings,
-    } = useDashboardStore.getState();
-
-    if (currentDashboard) {
+    if (dashboard) {
       // Find the original widget in the layout to get its size
-      const originalLayout = currentDashboard.layout.find(
+      const originalLayout = dashboard.layout.find(
         (item: DashboardLayout) => item.i === widget._id
       );
 
@@ -145,33 +102,25 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
 
       // Find the first free position for the copied widget
       const freePosition = findFirstFreePosition(
-        currentDashboard.layout,
+        dashboard.layout,
         widgetWidth,
         widgetHeight,
-        settings.gridCols
+        12 // Usar un valor por defecto para gridCols
       );
 
-      const newLayout = {
-        i: newWidget._id,
-        x: freePosition.x,
-        y: freePosition.y,
-        w: widgetWidth,
-        h: widgetHeight,
+      // Crear una copia del widget con el nuevo store
+      // El layout no se pasa directamente al widget, sino que se actualizará
+      // a través del dashboard en el gridStore
+      const newWidgetData = {
+        type: widget.type,
+        title: `${widget.title} (Copy)`,
+        config: { ...widget.config },
+        dashboardId: dashboard._id,
+        ...freePosition,
       };
 
-      if (isEditing) {
-        // En modo edición, actualizar dashboard directamente
-        updateCurrentDashboard({
-          widgets: [...currentDashboard.widgets, newWidget._id],
-          layout: [...currentDashboard.layout, newLayout],
-        });
-      } else {
-        // Fuera del modo edición, persistir directamente
-        updateDashboard(currentDashboard._id, {
-          widgets: [...currentDashboard.widgets, newWidget._id],
-          layout: [...currentDashboard.layout, newLayout],
-        });
-      }
+      // Añadir el nuevo widget al store, que automáticamente actualiza el dashboard
+      addWidget(newWidgetData as Widget);
     }
   };
 
@@ -278,7 +227,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
       } else if (visualization.filterDisplayMode === undefined) {
         // Si no está configurado, usar "badges" por defecto
         filterDisplayMode = "badges";
-      } else {
+      } else if (visualization) {
         // Usar el valor configurado (badges o info)
         filterDisplayMode = visualization.filterDisplayMode;
       }

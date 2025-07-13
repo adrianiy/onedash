@@ -1,34 +1,82 @@
+import { ErrorPage, LoaderPage } from "@/components/common";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { DashboardGrid } from "@/components/dashboard/DashboardGrid";
 import { AppWizard } from "@/components/wizard/AppWizard";
+import {
+  useDashboardByIdQuery,
+  useWidgetsByDashboardIdQuery,
+} from "@/hooks/queries";
 import { useVariableLoader } from "@/hooks/useVariableLoader";
 import { DashboardSidebar } from "@/layout/DashboardSidebar";
 import { FilterBar } from "@/layout/FilterBar";
 import { FloatingActionBar } from "@/layout/FloatingActionBar";
 import { Header } from "@/layout/Header";
 import { WidgetConfigSidebar } from "@/layout/WidgetConfigSidebar";
-import { useDashboardStore } from "@/store/dashboardStore";
-import { useWidgetStore } from "@/store/widgetStore";
+import { useGridStore } from "@/store/gridStore";
+import { useUIStore } from "@/store/uiStore";
+import type { Dashboard } from "@/types/dashboard";
+import type { Widget } from "@/types/widget";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 
 export default function Dashboard() {
   const router = useRouter();
-  const { dashboardId } = router.query;
-  const {
-    isEditing,
-    dashboards,
-    setCurrentDashboard,
-    currentDashboard,
-    discardChanges,
-  } = useDashboardStore();
-  const { fetchWidgetsByDashboardId } = useWidgetStore();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { dashboardId } = router.query;
+  const dashboardIdString =
+    typeof dashboardId === "string" ? dashboardId : null;
+
+  // Crear una referencia para rastrear el dashboardId anterior
+  const previousDashboardIdRef = useRef<string | null>(null);
+
+  // Usar los nuevos stores
+  const { isEditing } = useUIStore();
+  const { setDashboard, setWidgets } = useGridStore();
+
+  // Usar React Query para obtener el dashboard por ID sin callback onSuccess
+  const {
+    data: dashboard,
+    isLoading: isLoadingDashboard,
+    error: dashboardError,
+  } = useDashboardByIdQuery(dashboardIdString);
+
+  // Usar useEffect para actualizar el gridStore cuando cambian los datos del dashboard
+  useEffect(() => {
+    if (dashboard) {
+      // Actualizar el dashboard en el gridStore
+      setDashboard(dashboard);
+
+      // Actualizar la referencia al dashboardId actual
+      previousDashboardIdRef.current = dashboardIdString;
+    }
+  }, [dashboard, dashboardIdString, setDashboard]);
+
+  // Usar React Query para obtener widgets por dashboard ID sin callback onSuccess
+  const {
+    data: widgetsData,
+    isLoading: isLoadingWidgets,
+    error: widgetsError,
+  } = useWidgetsByDashboardIdQuery(dashboardIdString);
+
+  // Usar useEffect para actualizar el gridStore cuando cambian los datos de widgets
+  useEffect(() => {
+    if (widgetsData && widgetsData.length > 0) {
+      // Convertir array de widgets a un objeto indexado por ID
+      const widgetsById = widgetsData.reduce((acc, widget) => {
+        acc[widget._id] = widget;
+        return acc;
+      }, {} as Record<string, Widget>);
+
+      // Actualizar el gridStore con los widgets
+      setWidgets(widgetsById);
+    }
+  }, [widgetsData, setWidgets]);
 
   // Usar el hook para cargar variables automáticamente
-  useVariableLoader(typeof dashboardId === "string" ? dashboardId : null);
+  useVariableLoader(dashboardIdString);
 
+  // Reemplazar las funciones de manejo del sidebar con los métodos de uiStore
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
     // Emitir evento para el wizard
@@ -39,62 +87,7 @@ export default function Dashboard() {
     setIsSidebarOpen(false);
   };
 
-  // Crear una referencia para rastrear el dashboardId anterior
-  const previousDashboardIdRef = useRef<string | null>(null);
-
-  // Cambiar el dashboard actual según el parámetro de la URL y gestionar el modo edición
-  useEffect(() => {
-    if (dashboardId && dashboards.length > 0) {
-      const dashIdStr = typeof dashboardId === "string" ? dashboardId : null;
-      const found = dashboards.find((d) => d._id === dashIdStr);
-
-      if (found) {
-        // Verificar si realmente estamos cambiando de dashboard
-        const isDashboardChanging =
-          previousDashboardIdRef.current !== null &&
-          previousDashboardIdRef.current !== dashIdStr;
-
-        // Si estamos cambiando de dashboard y en modo edición, salir del modo edición
-        if (isDashboardChanging && isEditing) {
-          discardChanges();
-        }
-
-        // Establecer el dashboard actual
-        setCurrentDashboard(found);
-
-        // Actualizar la referencia al dashboardId actual
-        previousDashboardIdRef.current = dashIdStr;
-
-        console.log(
-          currentDashboard?._id,
-          previousDashboardIdRef.current,
-          found._id
-        );
-        // Cargar widgets solo si realmente cambiamos de dashboard
-        if (
-          !currentDashboard ||
-          (currentDashboard?._id !== previousDashboardIdRef.current &&
-            found &&
-            /^[0-9a-f]{24}$/.test(found._id))
-        ) {
-          fetchWidgetsByDashboardId(found._id);
-        }
-      } else {
-        // Si el dashboardId no es válido, redirigir al primero
-        router.push(`/dashboard/${dashboards[0]._id}`);
-      }
-    }
-  }, [
-    dashboardId,
-    dashboards,
-    currentDashboard?._id,
-    setCurrentDashboard,
-    router,
-    isEditing,
-    discardChanges,
-    fetchWidgetsByDashboardId,
-  ]);
-
+  // UseEffect para gestionar la clase CSS 'editing' del body
   useEffect(() => {
     if (isEditing) {
       document.body.classList.add("editing");
@@ -108,10 +101,26 @@ export default function Dashboard() {
     };
   }, [isEditing]);
 
+  // Combinar errores de dashboard y widgets
+  const error = dashboardError || widgetsError;
+
+  // Mostrar mensaje de error si ocurre algún problema
+  if (error) {
+    return (
+      <ErrorPage message={`Error al cargar el dashboard: ${error.message}`} />
+    );
+  }
+
+  // Mostrar estado de carga para dashboard y widgets
+  const isLoading = isLoadingDashboard || isLoadingWidgets;
+  if (isLoading || !dashboard) {
+    return <LoaderPage />;
+  }
+
   return (
     <>
       <Head>
-        <title>ONE - {currentDashboard?.name || "Dashboard"}</title>
+        <title>ONE - {(dashboard as Dashboard)?.name || "Dashboard"}</title>
       </Head>
       <ProtectedRoute>
         <Header />

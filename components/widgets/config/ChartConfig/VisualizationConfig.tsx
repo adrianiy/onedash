@@ -4,7 +4,7 @@ import {
   VisualizationToggleButton,
 } from "@/config/common";
 import { useVisualizationLogic } from "@/config/hooks/useVisualizationLogic";
-import { useWidgetStore } from "@/store/widgetStore";
+import { useGridStore } from "@/store/gridStore";
 import type { ChartWidget } from "@/types/widget";
 import React from "react";
 import {
@@ -22,7 +22,7 @@ interface VisualizationConfigProps {
 export const VisualizationConfig: React.FC<VisualizationConfigProps> = ({
   widget,
 }) => {
-  const { updateWidget } = useWidgetStore();
+  const { updateWidget } = useGridStore();
 
   // Usar hook de lógica común
   const vizLogic = useVisualizationLogic(widget);

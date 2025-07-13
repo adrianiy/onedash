@@ -8,8 +8,8 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Icon } from "@/common/Icon";
 import type { TextWidget as TextWidgetType } from "@/types/widget";
-import { useWidgetStore } from "@/store/widgetStore";
 import { useThemeStore } from "@/store/themeStore";
+import { useGridStore } from "@/store/gridStore";
 
 // Import BlockNote styles
 import "@blocknote/core/fonts/inter.css";
@@ -24,8 +24,8 @@ export const TextWidget: React.FC<TextWidgetProps> = ({
   widget,
   isTextEditing = false,
 }) => {
-  const { updateWidget } = useWidgetStore();
   const { theme } = useThemeStore();
+  const { updateWidget } = useGridStore();
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Initialize BlockNote editor
@@ -50,9 +50,10 @@ export const TextWidget: React.FC<TextWidgetProps> = ({
   const handleEditorChange = async () => {
     const blocks = editor.document;
     const markdown = await editor.blocksToMarkdownLossy(blocks);
+
+    // Actualizar el estado local inmediatamente para mejor UX
     updateWidget(widget._id, {
       config: {
-        ...widget.config,
         content: markdown.trim(),
         blockNoteContent: blocks,
       },

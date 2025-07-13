@@ -176,40 +176,5 @@
   }
 }
 
-/* Estilos para la página de carga/loading */
-.auth-page__loader-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  min-height: 200px;
-}
-
-.auth-page__loader-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-md);
-}
-
-.auth-page__loader-icon {
-  color: var(--color-primary);
-  animation: spin 1.5s linear infinite;
-  stroke-width: 1.1px; /* Bordes finos según las reglas */
-}
-
-.auth-page__loader-text {
-  color: var(--color-text-primary);
-  font-size: 1rem;
-  font-weight: 400;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
+/* Nota: Las clases relacionadas con los estados de carga (loader)
+   se han movido al archivo styles/components/common/page-status.css */

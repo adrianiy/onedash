@@ -41,6 +41,11 @@
 [data-theme="itx"] .editing .react-grid-item:hover {
   border: 1px dashed #2563eb !important;
 }
+[data-theme="itx"] .react-grid-placeholder {
+  background-color: var(--color-surface-hover) !important;
+  border-width: 1px !important;
+  border-color: #2563eb !important;
+}
 
 /* Botones de acción con tono azul acentuado en el tema ITX */
 [data-theme="itx"] .viz-add-button,

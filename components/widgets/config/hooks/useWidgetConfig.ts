@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useWidgetStore } from "@/store/widgetStore";
+import { useGridStore } from "@/store/gridStore";
 import type {
   Widget,
   ChartWidget,
@@ -12,7 +12,7 @@ type WidgetWithVisualization = ChartWidget | MetricWidget | TableWidget;
 
 export const useWidgetConfig = (options: UseWidgetConfigOptions) => {
   const { widget, onUpdate } = options;
-  const { updateWidget } = useWidgetStore();
+  const { updateWidget } = useGridStore();
 
   const handleUpdateWidget = useCallback(
     (updates: Partial<Widget>) => {

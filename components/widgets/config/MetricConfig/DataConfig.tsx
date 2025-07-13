@@ -3,7 +3,7 @@ import { WidgetFiltersConfig } from "@/config/common/controls/WidgetFiltersConfi
 import MetricSelector from "@/config/common/MetricSelector/MetricSelector";
 import { ConfigDropdown } from "@/config/common/ui/ConfigDropdown";
 import { EmptyPlaceholder } from "@/config/common/ui/EmptyPlaceholder";
-import { useWidgetStore } from "@/store/widgetStore";
+import { useGridStore } from "@/store/gridStore";
 import type { MetricDefinition } from "@/types/metricConfig";
 import type { MetricWidget } from "@/types/widget";
 import {
@@ -28,7 +28,7 @@ interface DataConfigProps {
 }
 
 export const DataConfig: React.FC<DataConfigProps> = ({ widget }) => {
-  const { updateWidget } = useWidgetStore();
+  const { updateWidget } = useGridStore();
   const setDropdownOpenRef = useRef<((isOpen: boolean) => void) | null>(null);
   const [editingType, setEditingType] = useState<
     "primary" | "secondary" | null
