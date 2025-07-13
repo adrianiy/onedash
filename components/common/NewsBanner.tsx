@@ -20,6 +20,11 @@ export const NewsBanner: React.FC<NewsBannerProps> = ({ onOpenNewsModal }) => {
 
   if (!firstUnreadFunctionalNews) return null;
 
+  const handleOpenBanner = () => {
+    onOpenNewsModal();
+    dismissBanner();
+  };
+
   return (
     <div className="news-banner">
       <div className="news-banner__icon">
@@ -31,7 +36,7 @@ export const NewsBanner: React.FC<NewsBannerProps> = ({ onOpenNewsModal }) => {
         </span>
         <button
           className="news-banner__action"
-          onClick={onOpenNewsModal}
+          onClick={handleOpenBanner}
           type="button"
         >
           <span>Ver Novedades</span>

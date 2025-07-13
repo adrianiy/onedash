@@ -5,6 +5,9 @@ export { useDashboardByIdQuery } from "./useDashboardByIdQuery";
 export { useCreateDashboardMutation } from "./useCreateDashboardMutation";
 export { useUpdateDashboardMutation } from "./useUpdateDashboardMutation";
 export { useDeleteDashboardMutation } from "./useDeleteDashboardMutation";
+export { useSavedDashboardsQuery } from "./useSavedDashboardsQuery";
+export { useSaveDashboardMutation } from "./useSaveDashboardMutation";
+export { useUnsaveDashboardMutation } from "./useUnsaveDashboardMutation";
 
 // Tipos comunes para las respuestas
 export type {

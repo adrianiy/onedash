@@ -5,9 +5,11 @@ import { useAuthStore } from "@/store/authStore";
 import { Icon } from "@/common/Icon";
 import { DashboardFormModal } from "@/components/dashboard/DashboardFormModal";
 import { DeleteConfirmModal } from "@/common/DeleteConfirmModal";
+import { DashboardTabs } from "@/components/dashboard/DashboardTabs";
 import type { Dashboard } from "@/types/dashboard";
 import {
   useDashboardsQuery,
+  useSavedDashboardsQuery,
   useCreateDashboardMutation,
   useUpdateDashboardMutation,
   useDeleteDashboardMutation,
@@ -25,8 +27,21 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   const router = useRouter();
 
   // Hooks de React Query para datos y mutaciones
-  const { data: dashboards = [], isLoading: isLoadingDashboards } =
+  const { data: allDashboards = [], isLoading: isLoadingDashboards } =
     useDashboardsQuery();
+
+  const { data: savedDashboards = [], isLoading: isLoadingSavedDashboards } =
+    useSavedDashboardsQuery();
+
+  // Estado para almacenar dashboards filtrados
+  const [dashboards, setDashboards] = useState<Dashboard[]>([]);
+
+  // Al cargar los dashboards, inicializar con todos
+  useEffect(() => {
+    if (allDashboards) {
+      setDashboards(allDashboards);
+    }
+  }, [allDashboards]);
   const {
     mutate: createDashboard,
     isPending: isCreating,
@@ -208,6 +223,15 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
           />
+
+          {/* Pestañas para filtrar dashboards */}
+          <DashboardTabs
+            dashboards={allDashboards}
+            savedDashboards={savedDashboards}
+            isLoading={isLoadingDashboards || isLoadingSavedDashboards}
+            onTabChange={setDashboards}
+            className="dashboard-sidebar-tabs"
+          />
         </div>
 
         <div className="sidebar-content">
@@ -220,7 +244,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
           </button>
 
           <div className="dashboard-list">
-            {isLoadingDashboards ? (
+            {isLoadingDashboards || isLoadingSavedDashboards ? (
               <div className="loading-state">
                 <Icon name="loader" size={24} className="animate-spin" />
                 <p>Cargando dashboards...</p>
@@ -247,8 +271,37 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                   } ${deletingDashboardId === dashboard._id ? "deleting" : ""}`}
                   onClick={() => handleSelectDashboard(dashboard)}
                 >
-                  <div className="dashboard-info">
+                  <div className="dashboard-item__header">
                     <h3 className="dashboard-name">{dashboard.name}</h3>
+                    {isOwner(dashboard) && (
+                      <div className="dashboard-actions">
+                        <button
+                          className="dashboard-action-btn edit"
+                          onClick={(e) => handleOpenEditModal(e, dashboard)}
+                          title="Editar dashboard"
+                        >
+                          <Icon name="edit" size={14} />
+                        </button>
+                        <button
+                          className="dashboard-action-btn delete"
+                          onClick={(e) => handleOpenDeleteModal(e, dashboard)}
+                          title="Eliminar dashboard"
+                          disabled={deletingDashboardId === dashboard._id}
+                        >
+                          {deletingDashboardId === dashboard._id ? (
+                            <Icon
+                              name="loader"
+                              size={14}
+                              className="animate-spin"
+                            />
+                          ) : (
+                            <Icon name="trash" size={14} />
+                          )}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <div className="dashboard-info">
                     <p className="dashboard-description">
                       {dashboard.description || "Sin descripción"}
                     </p>
@@ -273,35 +326,6 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                         {formatDate(dashboard.updatedAt)}
                       </span>
                     </div>
-                  </div>
-                  <div className="dashboard-actions">
-                    {isOwner(dashboard) && (
-                      <button
-                        className="dashboard-action-btn edit"
-                        onClick={(e) => handleOpenEditModal(e, dashboard)}
-                        title="Editar dashboard"
-                      >
-                        <Icon name="edit" size={14} />
-                      </button>
-                    )}
-                    {isOwner(dashboard) && (
-                      <button
-                        className="dashboard-action-btn delete"
-                        onClick={(e) => handleOpenDeleteModal(e, dashboard)}
-                        title="Eliminar dashboard"
-                        disabled={deletingDashboardId === dashboard._id}
-                      >
-                        {deletingDashboardId === dashboard._id ? (
-                          <Icon
-                            name="loader"
-                            size={14}
-                            className="animate-spin"
-                          />
-                        ) : (
-                          <Icon name="trash" size={14} />
-                        )}
-                      </button>
-                    )}
                   </div>
                 </div>
               ))

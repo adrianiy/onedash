@@ -12,6 +12,7 @@ export interface IUser {
     provider: string;
     providerAccountId: string;
   }[];
+  savedDashboards?: string[]; // Array of saved dashboard IDs
   createdAt: Date;
   updatedAt: Date;
 }
@@ -62,6 +63,12 @@ const UserSchema = new Schema<IUser>(
       type: [String],
       default: [],
     },
+    savedDashboards: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Dashboard",
+      },
+    ],
   },
   {
     timestamps: true, // Agrega automáticamente createdAt y updatedAt

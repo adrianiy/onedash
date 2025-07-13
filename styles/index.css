@@ -9,6 +9,7 @@
 @import "./components/layout/header.css";
 @import "./components/layout/edit-toolbar.css";
 @import "./components/layout/widget-config-sidebar.css";
+@import "./components/layout/dashboard-sidebar.css";
 @import "./components/layout/filter-bar.css";
 @import "./components/layout/floating-bar.css";
 @import "./components/layout/theme-selector.css";
@@ -23,6 +24,7 @@
 @import "./components/dashboard/dashboard-form.css";
 @import "./components/dashboard/share-section.css";
 @import "./components/dashboard/shared-indicator.css";
+@import "./components/dashboard/dashboard-tabs.css";
 
 /* Common components */
 @import "./components/common/modal.css";
