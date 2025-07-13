@@ -101,9 +101,21 @@ export const CollaboratorSelector: React.FC<CollaboratorSelectorProps> = ({
       return;
     }
 
+    // Verificar si se está añadiendo un nuevo colaborador
+    const previousIds = collaborators.map((user) => user._id);
+    const newSelected = selected.filter(
+      (option) => !previousIds.includes(option.value)
+    );
+
     // Convertir las opciones seleccionadas de vuelta a usuarios
     const selectedUsers = selected.map((option) => option.user);
     onCollaboratorsChange(selectedUsers);
+
+    // Si se añadió al menos un nuevo colaborador, disparar el evento
+    if (newSelected.length > 0) {
+      const event = new CustomEvent("dashboard-collaborator-added");
+      document.dispatchEvent(event);
+    }
   };
 
   // Función para eliminar un colaborador

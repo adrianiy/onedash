@@ -137,6 +137,7 @@
 /* Contenedor de pasos en acordeón */
 .app-wizard__steps-container {
   padding: 0;
+  padding-bottom: var(--spacing-lg);
 }
 
 /* Cada paso individual del acordeón */
@@ -256,6 +257,29 @@
   font-weight: 400;
 }
 
+/* Estilos para el contenido Markdown dentro de la descripción */
+.app-wizard__step-description p {
+  margin-bottom: var(--spacing-md);
+}
+
+.app-wizard__step-description p:last-child {
+  margin-bottom: 0;
+}
+
+.app-wizard__step-description ul,
+.app-wizard__step-description ol {
+  margin: var(--spacing-sm) 0;
+  padding-left: var(--spacing-lg);
+}
+
+.app-wizard__step-description li {
+  margin-bottom: var(--spacing-xs);
+}
+
+.app-wizard__step-description li:last-child {
+  margin-bottom: 0;
+}
+
 /* Mensaje de advertencia para modo edición */
 .app-wizard__edit-mode-warning {
   display: flex;
@@ -314,6 +338,24 @@
   color: var(--color-text-secondary);
   transform: none;
   box-shadow: none;
+}
+
+/* Contenedor para la acción de completar */
+.app-wizard__complete-action {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+/* Texto de estado de completado */
+.app-wizard__complete-text {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.app-wizard__step--completed .app-wizard__complete-text {
+  color: var(--color-success);
 }
 
 .app-wizard__complete-btn {

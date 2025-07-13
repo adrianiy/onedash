@@ -14,10 +14,14 @@ export interface WizardStep {
   position?: "top" | "right" | "bottom" | "left"; // Posición del indicador
 }
 
+// Definición de guías disponibles
+export type GuideType = "welcome" | "share-dashboard";
+
 interface WizardState {
   isVisible: boolean;
   isMinimized: boolean;
   showToggleButton: boolean;
+  activeGuide: GuideType;
   steps: WizardStep[];
   currentStepIndex: number;
 
@@ -32,10 +36,12 @@ interface WizardState {
   prevStep: () => void;
   goToStep: (index: number) => void;
   resetWizard: () => void;
+  setActiveGuide: (guideType: GuideType) => void;
 }
 
-// Pasos predefinidos para el wizard
-const initialSteps: WizardStep[] = [
+// Pasos predefinidos para el wizard de bienvenida
+// Pasos para las distintas guías
+const welcomeGuideSteps: WizardStep[] = [
   {
     id: "welcome",
     title: "Bienvenido a OneDash",
@@ -101,6 +107,74 @@ const initialSteps: WizardStep[] = [
   },
 ];
 
+// Pasos para la guía de compartir dashboards
+const shareDashboardGuideSteps: WizardStep[] = [
+  {
+    id: "share-intro",
+    title: "Comparte tus dashboards",
+    description:
+      "Aprende a compartir tus dashboards con otros usuarios y colaboradores. Esta guía te explicará paso a paso cómo crear, configurar y compartir un dashboard.",
+    icon: "link",
+    isCompleted: false,
+    completionCriteria: "manual",
+  },
+  {
+    id: "create-private",
+    title: "Crear dashboard privado",
+    description:
+      "Para comenzar, necesitas crear un dashboard privado:\n\n* Menú **Dashboards** > **Crear Nuevo Dashboard**\n* Completa **nombre** y **descripción**\n* Asegúrate que **'Privado'** esté seleccionado\n* Haz clic en el botón **'Crear'**",
+    icon: "plus",
+    isCompleted: false,
+    completionCriteria: "dashboard-private-created",
+  },
+  {
+    id: "edit-dashboard",
+    title: "Acceder a opciones de edición",
+    description:
+      "Con el dashboard ya creado:\n\n* Menú **Dashboards** > Pasa el cursor sobre el dashboard deseado\n* Haz clic en el **botón de edición** (icono de lápiz ✏️) que aparece\n* Se abrirá el **modal de edición** del dashboard",
+    icon: "edit",
+    isCompleted: false,
+    completionCriteria: "dashboard-edit-opened",
+  },
+  {
+    id: "activate-share",
+    title: "Activar compartir",
+    description:
+      "En el modal de edición:\n\n* Busca la sección **'Visibilidad'**\n* Activa el toggle **'Compartir con enlace'**\n* Verás que aparecen opciones adicionales para gestionar colaboradores",
+    icon: "check",
+    isCompleted: false,
+    completionCriteria: "dashboard-share-toggled",
+  },
+  {
+    id: "add-collaborators",
+    title: "Añadir colaboradores",
+    description:
+      "Para permitir que otros usuarios editen tu dashboard:\n\n* En la sección **'Añade usuarios que pueden editar este dashboard'**\n* Haz clic en el **campo de búsqueda**\n* Busca usuarios por **nombre** o **email**\n* Selecciona los usuarios que quieres añadir de la lista",
+    icon: "user-plus",
+    isCompleted: false,
+    completionCriteria: "dashboard-collaborator-added",
+  },
+  {
+    id: "copy-link",
+    title: "Compartir enlace",
+    description:
+      "Para finalizar y compartir:\n\n* Haz clic en **'Copiar enlace'** (botón en la parte inferior)\n* El enlace se copiará automáticamente al portapapeles\n* Haz clic en **'Guardar'** para confirmar todos los cambios\n* Comparte el enlace con quien desees. **Recuerda**: solo los colaboradores añadidos podrán **editar** el dashboard",
+    icon: "copy",
+    isCompleted: false,
+    completionCriteria: "dashboard-link-copied",
+  },
+];
+
+// Guía inicial por defecto
+const initialGuide: GuideType = "welcome";
+const initialSteps = welcomeGuideSteps;
+
+// Mapa de guías disponibles
+const guidesMap = {
+  welcome: welcomeGuideSteps,
+  "share-dashboard": shareDashboardGuideSteps,
+};
+
 export const useWizardStore = create<WizardState>()(
   devtools(
     persist(
@@ -108,6 +182,7 @@ export const useWizardStore = create<WizardState>()(
         isVisible: true, // Inicialmente visible para nuevos usuarios
         isMinimized: false,
         showToggleButton: true, // Inicialmente visible
+        activeGuide: initialGuide,
         steps: initialSteps,
         currentStepIndex: 0,
 
@@ -158,7 +233,17 @@ export const useWizardStore = create<WizardState>()(
         resetWizard: () =>
           set({
             currentStepIndex: 0,
-            steps: initialSteps.map((step) => ({
+            steps: guidesMap[initialGuide].map((step) => ({
+              ...step,
+              isCompleted: false,
+            })),
+          }),
+
+        setActiveGuide: (guideType) =>
+          set({
+            activeGuide: guideType,
+            currentStepIndex: 0,
+            steps: guidesMap[guideType].map((step) => ({
               ...step,
               isCompleted: false,
             })),
@@ -166,6 +251,7 @@ export const useWizardStore = create<WizardState>()(
       }),
       {
         name: "wizard-storage", // nombre para persistencia local
+        version: 1,
       }
     ),
     {

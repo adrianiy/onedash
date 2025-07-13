@@ -26,7 +26,14 @@ export const ShareDashboardSection: React.FC<ShareDashboardSectionProps> = ({
 }) => {
   // Manejar el cambio en el estado de compartido
   const handleShareToggle = () => {
-    onShareStatusChange(!isShared);
+    const newIsShared = !isShared;
+    onShareStatusChange(newIsShared);
+
+    // Si se está activando el toggle, disparar el evento para la guía
+    if (newIsShared) {
+      const event = new CustomEvent("dashboard-share-toggled");
+      document.dispatchEvent(event);
+    }
   };
 
   return (

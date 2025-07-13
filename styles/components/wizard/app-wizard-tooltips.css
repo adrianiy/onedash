@@ -1,6 +1,5 @@
 /* Tooltips personalizados para el asistente */
 .wizard-tooltip {
-  background-color: var(--color-primary) !important;
   color: var(--color-text-inverse) !important;
   border-radius: var(--radius-md) !important;
   font-size: 0.85rem !important;

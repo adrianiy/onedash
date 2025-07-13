@@ -138,6 +138,20 @@ export const DashboardFormModal: React.FC<DashboardFormModalProps> = ({
             : [],
         isShared: visibility === "private" ? isShared : false, // Solo aplica a dashboards privados
       });
+
+      // Disparar evento para la guía si estamos creando un dashboard privado
+      if (!dashboard && visibility === "private") {
+        // Crear y disparar un evento personalizado
+        const event = new CustomEvent("dashboard-private-created");
+        document.dispatchEvent(event);
+      }
+
+      // Disparar evento para la guía si estamos editando un dashboard
+      if (dashboard) {
+        // Evento de edición de dashboard
+        const event = new CustomEvent("dashboard-edit-opened");
+        document.dispatchEvent(event);
+      }
     }
   };
 
@@ -307,6 +321,10 @@ export const DashboardFormModal: React.FC<DashboardFormModalProps> = ({
                     navigator.clipboard.writeText(shareUrl).then(() => {
                       setCopied(true);
                       setTimeout(() => setCopied(false), 2000); // Resetear después de 2 segundos
+
+                      // Disparar evento para la guía cuando se copia el enlace
+                      const event = new CustomEvent("dashboard-link-copied");
+                      document.dispatchEvent(event);
                     });
                   }
                 }}

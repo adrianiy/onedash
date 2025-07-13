@@ -4,6 +4,8 @@ import { useThemeStore } from "@/store/themeStore";
 import { Icon } from "@/common/Icon";
 import { Tooltip } from "react-tooltip";
 import { useUIStore } from "@/store/uiStore";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 export const AppWizard: React.FC = () => {
   const {
@@ -11,6 +13,7 @@ export const AppWizard: React.FC = () => {
     isMinimized,
     showToggleButton,
     steps,
+    activeGuide,
     setVisible,
     setShowToggleButton,
     toggleMinimized,
@@ -23,9 +26,9 @@ export const AppWizard: React.FC = () => {
   const { isEditing } = useUIStore();
   const { theme } = useThemeStore();
 
-  // Separar el paso "welcome" del resto de pasos
-  const welcomeStep = steps.find((step) => step.id === "welcome");
-  const tutorialSteps = steps.filter((step) => step.id !== "welcome");
+  // Separar el paso introductorio (primer paso) del resto de pasos
+  const introStep = steps.length > 0 ? steps[0] : null;
+  const guideSteps = steps.length > 0 ? steps.slice(1) : [];
 
   const toggleStep = (stepId: string) => {
     setExpandedStepId(expandedStepId === stepId ? null : stepId);
@@ -106,11 +109,65 @@ export const AppWizard: React.FC = () => {
       }
     };
 
+    // Handlers para la guía de compartir dashboards
+    const handlePrivateDashboardCreated = () => {
+      const createPrivateStep = steps.find((s) => s.id === "create-private");
+      if (createPrivateStep && !createPrivateStep.isCompleted) {
+        markStepAsCompleted("create-private");
+      }
+    };
+
+    const handleDashboardEditOpened = () => {
+      const editDashboardStep = steps.find((s) => s.id === "edit-dashboard");
+      if (editDashboardStep && !editDashboardStep.isCompleted) {
+        markStepAsCompleted("edit-dashboard");
+      }
+    };
+
+    const handleShareToggled = () => {
+      const activateShareStep = steps.find((s) => s.id === "activate-share");
+      if (activateShareStep && !activateShareStep.isCompleted) {
+        markStepAsCompleted("activate-share");
+      }
+    };
+
+    const handleCollaboratorAdded = () => {
+      const addCollaboratorsStep = steps.find(
+        (s) => s.id === "add-collaborators"
+      );
+      if (addCollaboratorsStep && !addCollaboratorsStep.isCompleted) {
+        markStepAsCompleted("add-collaborators");
+      }
+    };
+
+    const handleLinkCopied = () => {
+      const copyLinkStep = steps.find((s) => s.id === "copy-link");
+      if (copyLinkStep && !copyLinkStep.isCompleted) {
+        markStepAsCompleted("copy-link");
+      }
+    };
+
     // Añadir listeners de eventos
     document.addEventListener("sidebar-toggle", handleSidebarToggle);
     document.addEventListener("dashboard-save", handleSaveClick);
     document.addEventListener("widget-create", handleWidgetCreation);
     document.addEventListener("theme-changed", handleThemeChange);
+
+    // Listeners para la guía de compartir dashboards
+    document.addEventListener(
+      "dashboard-private-created",
+      handlePrivateDashboardCreated
+    );
+    document.addEventListener(
+      "dashboard-edit-opened",
+      handleDashboardEditOpened
+    );
+    document.addEventListener("dashboard-share-toggled", handleShareToggled);
+    document.addEventListener(
+      "dashboard-collaborator-added",
+      handleCollaboratorAdded
+    );
+    document.addEventListener("dashboard-link-copied", handleLinkCopied);
 
     // Limpiar eventos al desmontar
     return () => {
@@ -118,6 +175,25 @@ export const AppWizard: React.FC = () => {
       document.removeEventListener("dashboard-save", handleSaveClick);
       document.removeEventListener("widget-create", handleWidgetCreation);
       document.removeEventListener("theme-changed", handleThemeChange);
+
+      // Remover listeners para la guía de compartir dashboards
+      document.removeEventListener(
+        "dashboard-private-created",
+        handlePrivateDashboardCreated
+      );
+      document.removeEventListener(
+        "dashboard-edit-opened",
+        handleDashboardEditOpened
+      );
+      document.removeEventListener(
+        "dashboard-share-toggled",
+        handleShareToggled
+      );
+      document.removeEventListener(
+        "dashboard-collaborator-added",
+        handleCollaboratorAdded
+      );
+      document.removeEventListener("dashboard-link-copied", handleLinkCopied);
     };
   }, [steps, markStepAsCompleted]);
 
@@ -128,29 +204,32 @@ export const AppWizard: React.FC = () => {
         <button
           className="app-wizard__toggle-btn"
           onClick={toggleMinimized}
-          aria-label="Expandir guía de OneDash"
+          aria-label={`Expandir guía de ${
+            activeGuide === "welcome" ? "OneDash" : "compartir"
+          }`}
         >
           <Icon name="info" size={20} />
           <span className="app-wizard__toggle-badge">
             {
-              steps.filter((step) => step.isCompleted && step.id !== "welcome")
-                .length
+              steps.filter(
+                (step) => step.isCompleted && step.id !== introStep?.id
+              ).length
             }
-            /{tutorialSteps.length}
+            /{guideSteps.length}
           </span>
         </button>
       </div>
     );
   }
 
-  // Calcular el progreso excluyendo el paso welcome
+  // Calcular el progreso excluyendo el paso introductorio
   const completedSteps = steps.filter(
-    (step) => step.isCompleted && step.id !== "welcome"
+    (step) => step.isCompleted && step.id !== introStep?.id
   ).length;
-  const totalSteps = tutorialSteps.length;
+  const totalSteps = guideSteps.length;
   const progress = totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
 
-  // Calcular si todos los pasos (excepto welcome) están completados
+  // Calcular si todos los pasos (excepto el introductorio) están completados
   const allStepsCompleted = completedSteps === totalSteps;
 
   // Función para cerrar completamente el wizard (incluido el botón toggle)
@@ -167,7 +246,13 @@ export const AppWizard: React.FC = () => {
           className="app-wizard__toggle-btn app-wizard__toggle-btn--fixed"
           onClick={() => setVisible(!isVisible)}
           aria-label={
-            isVisible ? "Cerrar guía de OneDash" : "Abrir guía de OneDash"
+            isVisible
+              ? `Cerrar guía de ${
+                  activeGuide === "welcome" ? "OneDash" : "compartir"
+                }`
+              : `Abrir guía de ${
+                  activeGuide === "welcome" ? "OneDash" : "compartir"
+                }`
           }
         >
           <Icon name={isVisible ? "x" : "list-todo"} size={20} />
@@ -176,12 +261,12 @@ export const AppWizard: React.FC = () => {
 
       {isVisible && (
         <div className="app-wizard app-wizard--accordion">
-          {/* Cabecera con la información del paso "welcome" */}
-          {welcomeStep && (
+          {/* Cabecera con la información del paso introductorio */}
+          {introStep && (
             <div className="app-wizard__intro">
-              <h3 className="app-wizard__intro-title">{welcomeStep.title}</h3>
+              <h3 className="app-wizard__intro-title">{introStep.title}</h3>
               <p className="app-wizard__intro-description">
-                {welcomeStep.description}
+                {introStep.description}
               </p>
             </div>
           )}
@@ -203,9 +288,9 @@ export const AppWizard: React.FC = () => {
             />
           </div>
 
-          {/* Contenedor de acordeón con los pasos (excluyendo el welcome) */}
+          {/* Contenedor de acordeón con los pasos (excluyendo el paso introductorio) */}
           <div className="app-wizard__steps-container">
-            {tutorialSteps.map((step, index) => (
+            {guideSteps.map((step, index) => (
               <div
                 key={step.id}
                 className={`app-wizard__step ${
@@ -245,8 +330,10 @@ export const AppWizard: React.FC = () => {
 
                 {/* Panel de contenido expandible */}
                 <div className="app-wizard__step-content">
-                  <p className="app-wizard__step-description">
-                    {step.description}
+                  <div className="app-wizard__step-description">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {step.description}
+                    </ReactMarkdown>
                     {(step.id === "widgets" || step.id === "saving") &&
                       !isEditing && (
                         <span className="app-wizard__edit-mode-warning">
@@ -255,7 +342,7 @@ export const AppWizard: React.FC = () => {
                           funcionalidad.
                         </span>
                       )}
-                  </p>
+                  </div>
 
                   <div className="app-wizard__step-actions">
                     {!step.isCompleted && (
@@ -362,24 +449,34 @@ export const AppWizard: React.FC = () => {
                           </button>
                         )}
 
-                        <button
-                          className="app-wizard__complete-btn app-wizard__element-interactive"
-                          onClick={() => markStepAsCompleted(step.id)}
-                          data-tooltip-id="complete-step-tooltip"
-                          data-tooltip-variant="success"
-                          data-tooltip-class="wizard-tooltip"
-                          disabled={
-                            (step.id === "widgets" || step.id === "saving") &&
-                            !isEditing
-                          }
-                        >
-                          <Icon name="square" size={18} />
-                          {step.isCompleted && (
-                            <span className="app-wizard__complete-check">
-                              <Icon name="check" size={14} />
-                            </span>
-                          )}
-                        </button>
+                        <div className="app-wizard__complete-action">
+                          <button
+                            className="app-wizard__complete-btn app-wizard__element-interactive"
+                            onClick={() => markStepAsCompleted(step.id)}
+                            data-tooltip-id="complete-step-tooltip"
+                            data-tooltip-variant="success"
+                            data-tooltip-class="wizard-tooltip"
+                            disabled={
+                              (step.id === "widgets" || step.id === "saving") &&
+                              !isEditing
+                            }
+                          >
+                            <Icon name="square" size={18} />
+                            {step.isCompleted && (
+                              <span className="app-wizard__complete-check">
+                                <Icon name="check" size={14} />
+                              </span>
+                            )}
+                          </button>
+                          {!step.elementSelector &&
+                            activeGuide === "share-dashboard" && (
+                              <span className="app-wizard__complete-text">
+                                {step.isCompleted
+                                  ? "Completado"
+                                  : "Marcar completado"}
+                              </span>
+                            )}
+                        </div>
                       </>
                     )}
                   </div>
@@ -416,7 +513,7 @@ export const AppWizard: React.FC = () => {
         className="wizard-tooltip"
       />
 
-      {tutorialSteps.map((step) => (
+      {guideSteps.map((step) => (
         <Tooltip
           key={`view-element-tooltip-${step.id}`}
           id={`view-element-tooltip-${step.id}`}
