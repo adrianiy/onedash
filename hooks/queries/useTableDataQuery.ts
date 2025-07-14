@@ -39,6 +39,7 @@ export function useTableDataQuery(
   const combinedFilters = {
     products: filters?.products || variables.selectedProducts || [],
     sections: filters?.sections || variables.selectedSections || [],
+    scope: variables.scope,
     dateRange: filters?.dateRange || {
       start: variables.dateStart || null,
       end: variables.dateEnd || null,
@@ -105,6 +106,10 @@ export function useTableDataQuery(
       if (combinedFilters.dateRange) {
         apiFilters.dateStart = combinedFilters.dateRange.start;
         apiFilters.dateEnd = combinedFilters.dateRange.end;
+      }
+
+      if (combinedFilters.scope) {
+        apiFilters.scope = combinedFilters.scope;
       }
 
       const response = await fetch(`/api/widget-data/${finalDatasource}`, {

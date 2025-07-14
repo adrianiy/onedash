@@ -32,10 +32,10 @@ const getDefaultVariables = (): Record<string, VariableValue> => {
     saleType: null,
     timeframe: null,
     comparison: null,
-    scope: null,
     // Filter variables
     dateStart: today,
     dateEnd: today,
+    scope: "tttt",
     selectedProducts: [],
     selectedSections: [],
   };

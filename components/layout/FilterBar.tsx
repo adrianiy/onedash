@@ -5,6 +5,7 @@ import { Icon } from "@/common/Icon";
 import { useVariableStore } from "@/store/variableStore";
 import { useUIStore } from "@/store/uiStore";
 import { useNewsStore } from "@/store/newsStore";
+import { CustomSelect } from "../common/CustomSelect";
 
 interface FilterBarProps {
   className?: string;
@@ -21,6 +22,11 @@ const SECTION_OPTIONS = [
   { value: "Señora", label: "Señora" },
   { value: "Caballero", label: "Caballero" },
   { value: "Niño", label: "Niño" },
+];
+
+const SCOPE_OPTIONS = [
+  { value: "tttt", label: "Total tiendas" },
+  { value: "sstt", label: "Mismas tiendas" },
 ];
 
 export const FilterBar: React.FC<FilterBarProps> = ({ className = "" }) => {
@@ -42,6 +48,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ className = "" }) => {
     () => variables.selectedSections || [],
     [variables.selectedSections]
   );
+  const selectedScope = variables.scope || "tttt";
 
   // Función auxiliar para formatear fechas preservando la fecha local
   const formatLocalDate = (date: Date) => {
@@ -82,6 +89,10 @@ export const FilterBar: React.FC<FilterBarProps> = ({ className = "" }) => {
     setVariable("selectedSections", sections);
   };
 
+  const handleScopeChange = (scope: string) => {
+    setVariable("scope", scope);
+  };
+
   const handleClearAll = () => {
     // Obtener la fecha actual (hoy) como valor predeterminado para las fechas
     const today = formatLocalDate(new Date());
@@ -112,6 +123,16 @@ export const FilterBar: React.FC<FilterBarProps> = ({ className = "" }) => {
               placeholder="Fecha"
               className="filter-bar__filter-control"
               isActive={isDateFilterActive}
+            />
+          </div>
+
+          <div className="filter-bar__filter-item">
+            <CustomSelect
+              options={SCOPE_OPTIONS}
+              value={selectedScope}
+              onChange={handleScopeChange}
+              placeholder="Tiendas"
+              className="filter-bar__filter-control"
             />
           </div>
 

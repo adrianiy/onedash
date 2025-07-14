@@ -10,6 +10,7 @@
 export interface DataFilters {
   dateStart?: string | null;
   dateEnd?: string | null;
+  scope?: string;
   selectedProducts?: string[];
   selectedSections?: string[];
 }

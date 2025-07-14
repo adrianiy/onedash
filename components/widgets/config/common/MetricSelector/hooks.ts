@@ -535,7 +535,7 @@ export const useMetricSelector = (
   // Determinar si el panel debe ser visible
   const isPanelVisible = useMemo(() => {
     if (activeTab === "indicators" && selectedIndicators.length > 0) {
-      const compatibleModifierTypes = ["saleType", "scope"];
+      const compatibleModifierTypes = ["saleType"];
       return compatibleModifierTypes.some(isCompatibleModifier);
     }
 
