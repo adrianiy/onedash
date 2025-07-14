@@ -8,6 +8,7 @@ import { useGridStore } from "@/store/gridStore";
 import type { ChartWidget } from "@/types/widget";
 import React from "react";
 import {
+  BarStyleSection,
   ChartControlsContainer,
   ChartPreviewContainer,
   ChartTypeSection,
@@ -196,6 +197,9 @@ export const VisualizationConfig: React.FC<VisualizationConfigProps> = ({
           filterDisplayMode={filterDisplayMode}
           onFilterDisplayModeChange={handleFilterDisplayMode}
         />
+
+        {/* Sección de estilo de columnas (solo para gráficos de tipo bar y orientación vertical) */}
+        <BarStyleSection widget={widget} />
 
         {/* Sección de colores usando ColorModeSection */}
         <ColorModeSection

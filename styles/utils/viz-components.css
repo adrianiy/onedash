@@ -205,6 +205,87 @@
   background-color: rgba(var(--color-primary-rgb), 0.3);
 }
 
+/* Estilos para el control de estilo de barras */
+.viz-bar-style-control {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) 0;
+}
+
+.viz-style-label {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  font-weight: 400;
+}
+
+.viz-control-with-icons {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  color: var(--color-text-secondary);
+}
+
+.viz-bar-style-slider {
+  flex: 1;
+  height: 4px;
+  appearance: none;
+  background: var(--color-surface-tertiary);
+  border-radius: var(--radius-full);
+  outline: none;
+  transition: var(--transition-fast);
+}
+
+.viz-bar-style-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  cursor: pointer;
+}
+
+.viz-bar-style-value {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  text-align: right;
+  font-weight: 400;
+}
+
+/* Mantener compatibilidad con los estilos antiguos */
+.viz-bar-width-control {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) 0;
+}
+
+.viz-bar-width-slider {
+  flex: 1;
+  height: 4px;
+  appearance: none;
+  background: var(--color-surface-tertiary);
+  border-radius: var(--radius-full);
+  outline: none;
+  transition: var(--transition-fast);
+}
+
+.viz-bar-width-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  cursor: pointer;
+}
+
+.viz-bar-width-value {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  text-align: center;
+  font-weight: 400;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .viz-control-group--horizontal {

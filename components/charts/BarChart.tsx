@@ -26,6 +26,8 @@ interface BarChartProps {
   showXAxis?: boolean;
   showYAxis?: boolean;
   rotateXLabels?: boolean;
+  barWidth?: number; // Ancho relativo de las barras (0.1 - 0.9)
+  barGap?: number; // Espacio entre columnas (0 - 0.5)
   legendPosition?:
     | {
         vertical: "top" | "center" | "bottom";
@@ -55,6 +57,8 @@ export const BarChart: React.FC<BarChartProps> = ({
   showXAxis = true,
   showYAxis = true,
   rotateXLabels = false,
+  barWidth = 0.06, // Valor por defecto para el ancho relativo
+  barGap = 2, // Valor por defecto para el espacio entre columnas
   legendPosition = "bottom",
   legendOrientation = "horizontal",
   colorPalette = "default",
@@ -325,8 +329,8 @@ export const BarChart: React.FC<BarChartProps> = ({
       name: series.name,
       type: "bar" as const,
       data: series.data,
-      barWidth: 5, // Ancho fijo de barras/columnas a 5px
-      barGap: 2, // Espaciado entre categorías
+      barWidth: `${barWidth * 100}%`, // Convertir el valor relativo a porcentaje
+      barGap: `${barGap}px`,
       label: {
         show: showValues,
         position: horizontal ? "right" : "top",

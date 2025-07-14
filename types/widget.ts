@@ -50,6 +50,8 @@ export interface ChartWidgetConfig {
     showYAxis?: boolean;
     rotateXLabels?: boolean;
     chartOrientation?: "horizontal" | "vertical";
+    barWidth?: number; // Ancho relativo de las barras (0.1 - 0.9)
+    barGap?: number; // Espacio entre columnas (0 - 0.5)
     legendPosition?:
       | {
           vertical: "top" | "center" | "bottom";

@@ -139,6 +139,8 @@ export const ChartWidget: React.FC<ChartWidgetProps> = ({ widget }) => {
             }
           }
           legendOrientation={visualization.legendOrientation}
+          barWidth={visualization.barWidth ?? 0.06}
+          barGap={visualization.barGap ?? 2}
           colorPalette={visualization.colorPalette || "default"}
           colorMode={visualization.colorMode || "default"}
           seriesColors={mappedSeriesColors}
