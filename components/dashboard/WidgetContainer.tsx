@@ -10,6 +10,7 @@ import {
   TextWidget,
   ErrorWidget,
 } from "@/widgets/render";
+import { WidgetFiltersDisplay } from "@/widgets/config/common";
 import type { Widget } from "@/types/widget";
 import type { DashboardLayout } from "@/types/dashboard";
 import { generateId } from "@/utils/helpers";
@@ -169,10 +170,15 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
 
   // Función para renderizar filtros de widget si existen
   const renderWidgetFilters = () => {
-    // Solo tabla tiene filtros de widget por ahora
-    if (widget.type === "table" && widget.config.widgetFilters) {
+    // Para widgets de tipo "table" o "chart"
+    if (
+      (widget.type === "table" || widget.type === "chart") &&
+      widget.config.widgetFilters
+    ) {
       const widgetFilters = widget.config.widgetFilters;
-      // Indicador de que el widget tiene filtros propios
+      const visualization = widget.config.visualization || {};
+
+      // Verificar si hay filtros configurados
       const hasWidgetFilters =
         widgetFilters &&
         ((widgetFilters.products && widgetFilters.products.length > 0) ||
@@ -182,8 +188,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
 
       if (!hasWidgetFilters) return null;
 
-      const visualization = widget.config.visualization || {};
-      // Tratamiento para el valor "hidden" y establecer "badges" por defecto
+      // Determinar el modo de visualización de filtros
       let filterDisplayMode: "badges" | "info" | undefined;
 
       if (visualization.filterDisplayMode === "hidden") {
@@ -192,7 +197,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
       } else if (visualization.filterDisplayMode === undefined) {
         // Si no está configurado, usar "badges" por defecto
         filterDisplayMode = "badges";
-      } else if (visualization) {
+      } else {
         // Usar el valor configurado (badges o info)
         filterDisplayMode = visualization.filterDisplayMode;
       }
@@ -200,90 +205,22 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
       if (!filterDisplayMode) return null;
 
       return (
-        <div className="widget-filters-container">
-          {filterDisplayMode === "info" && (
-            <div
-              className="widget-filter-indicator"
-              data-tooltip-id="widget-filters-tooltip"
-              data-tooltip-content={`${
-                widgetFilters?.products?.length
-                  ? `Productos: ${widgetFilters.products.join(", ")}\n`
-                  : ""
-              }${
-                widgetFilters?.sections?.length
-                  ? `Secciones: ${widgetFilters.sections.join(", ")}\n`
-                  : ""
-              }${
-                widgetFilters?.dateRange?.start || widgetFilters?.dateRange?.end
-                  ? `Fechas: ${widgetFilters.dateRange.start || ""} - ${
-                      widgetFilters.dateRange.end || ""
-                    }`
-                  : ""
-              }`}
-            >
-              <Icon name="filter" size={12} />
-            </div>
-          )}
-
-          {filterDisplayMode === "badges" && (
-            <div className="widget-filter-badges">
-              {widgetFilters?.dateRange?.start ||
-              widgetFilters?.dateRange?.end ? (
-                <span
-                  className="widget-filter-badge widget-filter-badge--date"
-                  data-tooltip-id="filter-date-tooltip"
-                  data-tooltip-content={`Fechas: ${
-                    widgetFilters.dateRange.start || ""
-                  } - ${widgetFilters.dateRange.end || ""}`}
-                >
-                  <span>Fecha</span>
-                </span>
-              ) : null}
-
-              {widgetFilters?.products && widgetFilters.products.length > 0 && (
-                <span
-                  className="widget-filter-badge widget-filter-badge--product"
-                  data-tooltip-id="filter-products-tooltip"
-                  data-tooltip-content={`Productos: ${widgetFilters.products.join(
-                    ", "
-                  )}`}
-                >
-                  <span>
-                    {widgetFilters.products.length === 1
-                      ? widgetFilters.products[0]
-                      : `${widgetFilters.products.length} Productos`}
-                  </span>
-                </span>
-              )}
-
-              {widgetFilters?.sections && widgetFilters.sections.length > 0 && (
-                <span
-                  className="widget-filter-badge widget-filter-badge--section"
-                  data-tooltip-id="filter-sections-tooltip"
-                  data-tooltip-content={`Secciones: ${widgetFilters.sections.join(
-                    ", "
-                  )}`}
-                >
-                  <span>
-                    {widgetFilters.sections.length === 1
-                      ? widgetFilters.sections[0]
-                      : `${widgetFilters.sections.length} Secciones`}
-                  </span>
-                </span>
-              )}
-            </div>
-          )}
-
-          {/* Tooltips para filtros */}
-          <Tooltip
-            id="widget-filters-tooltip"
-            place="top"
-            style={{ whiteSpace: "pre-line" }}
-          />
-          <Tooltip id="filter-date-tooltip" place="top" />
-          <Tooltip id="filter-products-tooltip" place="top" />
-          <Tooltip id="filter-sections-tooltip" place="top" />
-        </div>
+        <WidgetFiltersDisplay
+          filters={{
+            products: widgetFilters.products,
+            sections: widgetFilters.sections,
+            dateRange: widgetFilters.dateRange
+              ? {
+                  start: widgetFilters.dateRange.start || undefined,
+                  end: widgetFilters.dateRange.end || undefined,
+                }
+              : undefined,
+          }}
+          mode={filterDisplayMode}
+          widgetId={widget._id}
+          className="widget-filters-container"
+          widgetType={widget.type}
+        />
       );
     }
     return null;
@@ -451,12 +388,21 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
         if (widget.type === "chart") {
           const visualization = widget.config.visualization || {};
           const showTitle = visualization.showTitle !== false;
+          const filters = renderWidgetFilters();
+          const hasFilters =
+            !!filters && widget.config.visualization?.filterDisplayMode;
 
-          return widget.title && showTitle ? (
-            <div className="widget-header-container">
-              <h4 className="widget-title">{widget.title}</h4>
-            </div>
-          ) : null;
+          if ((widget.title && showTitle) || hasFilters) {
+            return (
+              <div className="widget-header-container">
+                {widget.title && showTitle && (
+                  <h4 className="widget-title">{widget.title}</h4>
+                )}
+                {hasFilters && filters}
+              </div>
+            );
+          }
+          return null;
         }
 
         // Para otros tipos de widgets, mostrar el título si existe

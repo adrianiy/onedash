@@ -156,6 +156,7 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
           }}
           mode={filterDisplayMode}
           widgetId={widget._id}
+          widgetType="metric"
         />
         {/* Valor principal arriba en grande */}
         <div
