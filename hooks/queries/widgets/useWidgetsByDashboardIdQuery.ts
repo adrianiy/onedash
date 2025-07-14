@@ -36,6 +36,7 @@ export function useWidgetsByDashboardIdQuery(
       // Convertir fechas de string a Date
       return (response.data || []).map((widget) => ({
         ...widget,
+        config: widget.config || {},
         createdAt: new Date(widget.createdAt),
         updatedAt: new Date(widget.updatedAt),
       })) as Widget[];

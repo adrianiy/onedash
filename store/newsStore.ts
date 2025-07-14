@@ -54,6 +54,16 @@ const newsItems: NewsItem[] = [
     category: "functional",
   },
   {
+    id: "12",
+    title: "Diseño responsive con selector de breakpoints",
+    description:
+      "Ahora puedes previsualizar y editar tus dashboards en diferentes tamaños de pantalla (escritorio, tablet y móvil) utilizando el nuevo selector de breakpoints en la barra de edición. Esta función te permite diseñar dashboards adaptados a cualquier dispositivo.",
+    icon: "smartphone",
+    date: "2025-07-14",
+    read: false,
+    category: "functional",
+  },
+  {
     id: "11",
     title: "Compartir dashboards",
     description:

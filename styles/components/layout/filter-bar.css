@@ -18,11 +18,6 @@
   top: calc(var(--header-height) + var(--edit-toolbar-height));
 }
 
-/* Combinación de edición y banner visible */
-.filter-bar.editing.with-banner {
-  top: calc(var(--header-height) + var(--edit-toolbar-height) + 48px);
-}
-
 .filter-bar__container {
   display: flex;
   align-items: center;

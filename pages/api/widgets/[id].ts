@@ -36,34 +36,8 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       });
     }
 
-    // Verificar si el usuario tiene acceso al dashboard que contiene el widget
-    if (widget.dashboardId) {
-      const Dashboard = (await import("../../../lib/models/Dashboard")).default;
-      const dashboard = await Dashboard.findById(widget.dashboardId);
-
-      if (!dashboard) {
-        return res.status(404).json({
-          success: false,
-          error: "Dashboard asociado no encontrado",
-        });
-      }
-
-      // Verificar permisos: propietario, público, compartido o colaborador
-      const isOwner = dashboard.userId.toString() === req.user!.id;
-      const isPublic = dashboard.visibility === "public";
-      const isShared = dashboard.isShared === true;
-      const isCollaborator = dashboard.collaborators?.some(
-        (collaboratorId: string) => collaboratorId.toString() === req.user!.id
-      );
-
-      const hasAccess = isOwner || isPublic || isShared || isCollaborator;
-
-      if (!hasAccess) {
-        return res.status(403).json({
-          success: false,
-          error: "No tienes permiso para acceder a este widget",
-        });
-      }
+    if (!widget.config) {
+      widget.config = {};
     }
 
     // GET - Obtener widget por ID

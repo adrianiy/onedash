@@ -22,12 +22,12 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({ widget }) => {
   });
   const [isClicked, setIsClicked] = useState(false);
 
-  const size = widget.config.size || "medium";
-  const alignment = widget.config.alignment || "center";
+  const size = widget.config?.size || "medium";
+  const alignment = widget.config?.alignment || "center";
   const conditionalFormats =
-    widget.config.visualization?.conditionalFormats || [];
-  const filterDisplayMode = widget.config.visualization?.filterDisplayMode;
-  const widgetFilters = widget.config.widgetFilters || {};
+    widget.config?.visualization?.conditionalFormats || [];
+  const filterDisplayMode = widget.config?.visualization?.filterDisplayMode;
+  const widgetFilters = widget.config?.widgetFilters || {};
 
   // Verificar si hay filtros configurados para mostrar
   const hasFilters =

@@ -36,7 +36,7 @@ export const useWidgetCreator = (): WidgetCreatorHookReturn => {
       _id: widgetId,
       type: widgetData.type,
       title: widgetData.title,
-      config: widgetData.config,
+      config: widgetData.config || {},
       isConfigured: widgetData.isConfigured,
       dashboardId: dashboard._id,
       createdAt: new Date(),
@@ -81,7 +81,7 @@ export const useWidgetCreator = (): WidgetCreatorHookReturn => {
         config: {},
         isConfigured: false,
       },
-      { w: 4, h: 4 }
+      { w: 12, h: 4 }
     );
   };
 
@@ -97,7 +97,7 @@ export const useWidgetCreator = (): WidgetCreatorHookReturn => {
         config: {},
         isConfigured: false,
       },
-      { w: 6, h: 6 }
+      { w: 16, h: 6 }
     );
   };
 
@@ -116,7 +116,7 @@ export const useWidgetCreator = (): WidgetCreatorHookReturn => {
         },
         isConfigured: false,
       },
-      { w: 6, h: 4 }
+      { w: 16, h: 6 }
     );
   };
 
@@ -132,7 +132,7 @@ export const useWidgetCreator = (): WidgetCreatorHookReturn => {
         config: {},
         isConfigured: true,
       },
-      { w: 4, h: 3 }
+      { w: 12, h: 3 }
     );
   };
 

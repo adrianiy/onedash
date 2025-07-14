@@ -5,7 +5,7 @@ import type { Dashboard } from "@/types/dashboard";
 interface ReadonlyConfirmModalProps {
   isOpen: boolean;
   dashboard: Dashboard;
-  onConfirm: (newName: string) => void;
+  onConfirm: (newName: string) => Promise<void>;
   onCancel: () => void;
 }
 
@@ -19,13 +19,13 @@ export const ReadonlyConfirmModal: React.FC<ReadonlyConfirmModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleConfirm = () => {
-    onConfirm(newName.trim() || `${dashboard.name} - Copia`);
+  const handleConfirm = async () => {
+    await onConfirm(newName.trim() || `${dashboard.name} - Copia`);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = async (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
-      handleConfirm();
+      await handleConfirm();
     } else if (e.key === "Escape") {
       onCancel();
     }

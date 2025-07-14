@@ -30,7 +30,7 @@ export interface ConfigButtonProps {
 export interface ReadonlyDashboardHandlerProps {
   isOpen: boolean;
   dashboard: Dashboard | null;
-  onConfirm: (newName: string) => void;
+  onConfirm: (newName: string) => Promise<void>;
   onCancel: () => void;
 }
 

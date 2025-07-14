@@ -1,13 +1,12 @@
 import React, { useState } from "react";
+import { useRouter } from "next/router";
 import { useGridStore } from "@/store/gridStore";
 import { useUIStore } from "@/store/uiStore";
 import { useAuthStore } from "@/store/authStore";
 import { useGridChanges } from "@/hooks/useGridChanges";
-import {
-  useUpdateDashboardMutation,
-  useCreateDashboardMutation,
-} from "@/hooks/queries/dashboards";
+import { useUpdateDashboardMutation } from "@/hooks/queries/dashboards";
 import { useSyncWidgets } from "@/hooks/useSyncWidgets";
+import { useDashboardCopy } from "./hooks/useDashboardCopy";
 import { ToolbarFileActions } from "./ToolbarFileActions";
 import { ToolbarWidgetActions } from "./ToolbarWidgetActions";
 import { ToolbarUndoActions } from "./ToolbarUndoActions";
@@ -21,6 +20,9 @@ import { SaveResult } from "./types";
  * Componente principal de la barra de herramientas de edición
  */
 export const EditToolbar: React.FC = () => {
+  // Router de Next.js para redirección
+  const router = useRouter();
+
   // Hooks de stores
   const { isEditing, toggleEditing, openConfigSidebar } = useUIStore();
 
@@ -29,10 +31,10 @@ export const EditToolbar: React.FC = () => {
 
   // Mutaciones para dashboards
   const { mutate: updateDashboard } = useUpdateDashboardMutation();
-  const { mutate: createDashboard } = useCreateDashboardMutation();
 
-  // Hook para sincronizar widgets
+  // Hooks para sincronizar y copiar widgets
   const { syncWidgets } = useSyncWidgets();
+  const { copyDashboard } = useDashboardCopy();
 
   const [showReadonlyModal, setShowReadonlyModal] = useState(false);
   const [readonlyDashboard, setReadonlyDashboard] = useState<Dashboard | null>(
@@ -121,27 +123,24 @@ export const EditToolbar: React.FC = () => {
   /**
    * Maneja la confirmación de copia del dashboard
    */
-  const handleConfirmCopy = (newName: string) => {
+  const handleConfirmCopy = async (newName: string) => {
     if (readonlyDashboard) {
-      // Crear nueva copia del dashboard con todas las propiedades necesarias
-      createDashboard({
-        name: newName,
-        description: readonlyDashboard.description,
-        layouts: readonlyDashboard.layouts, // Actualizado: usamos layouts en lugar de solo layout
-        widgets: readonlyDashboard.widgets,
-        variables: readonlyDashboard.variables,
-        visibility: "private", // Por defecto privado
-        collaborators: readonlyDashboard.collaborators,
-        userId: useAuthStore.getState().user?._id || "", // Usuario actual como propietario
-        originalId: readonlyDashboard._id, // Referencia al dashboard original
-      });
+      try {
+        // Usar el hook para copiar el dashboard y sus widgets
+        const newDashboardId = await copyDashboard(readonlyDashboard, newName);
 
-      // Cerrar modal y modo edición
-      setShowReadonlyModal(false);
-      setReadonlyDashboard(null);
-      toggleEditing();
+        // Cerrar modal y modo edición
+        setShowReadonlyModal(false);
+        setReadonlyDashboard(null);
+        toggleEditing();
 
-      console.log(`Dashboard copiado como: ${newName}`);
+        // Redirigir al nuevo dashboard si tenemos un ID
+        if (newDashboardId) {
+          router.push(`/dashboard/${newDashboardId}`);
+        }
+      } catch (error) {
+        console.error("Error al copiar el dashboard:", error);
+      }
     }
   };
 

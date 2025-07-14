@@ -434,7 +434,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
 
         // Para widgets de métrica, verificar la configuración de visualización
         if (widget.type === "metric") {
-          const visualization = widget.config.visualization || {};
+          const visualization = widget.config?.visualization || {};
           const showTitle =
             visualization.showTitle !== undefined
               ? visualization.showTitle

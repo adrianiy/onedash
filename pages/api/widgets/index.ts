@@ -26,34 +26,6 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         });
       }
 
-      // Verificar que el usuario tenga acceso al dashboard
-      const Dashboard = (await import("../../../lib/models/Dashboard")).default;
-      const dashboard = await Dashboard.findById(dashboardId);
-
-      if (!dashboard) {
-        return res.status(404).json({
-          success: false,
-          error: "Dashboard no encontrado",
-        });
-      }
-
-      // Verificar permisos: propietario, público, compartido o colaborador
-      const isOwner = dashboard.userId.toString() === req.user!.id;
-      const isPublic = dashboard.visibility === "public";
-      const isShared = dashboard.isShared === true;
-      const isCollaborator = dashboard.collaborators?.some(
-        (collaboratorId: string) => collaboratorId.toString() === req.user!.id
-      );
-
-      const hasAccess = isOwner || isPublic || isShared || isCollaborator;
-
-      if (!hasAccess) {
-        return res.status(403).json({
-          success: false,
-          error: "No tienes permisos para acceder a este dashboard",
-        });
-      }
-
       // Obtener widgets del dashboard
       const widgets = await Widget.find({ dashboardId });
 

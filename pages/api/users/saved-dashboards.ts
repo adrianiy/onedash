@@ -33,10 +33,12 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         });
       }
 
-      // Obtener los dashboards completos
+      // Obtener los dashboards completos ordenados por fecha de creación (ascendente)
       const savedDashboards = await Dashboard.find({
         _id: { $in: typedUser.savedDashboards },
-      }).lean();
+      })
+        .sort({ createdAt: 1 })
+        .lean();
 
       return res.status(200).json({
         success: true,

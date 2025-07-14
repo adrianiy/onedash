@@ -16,17 +16,24 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   // GET - Obtener todos los dashboards del usuario
   if (req.method === "GET") {
     try {
-      // Obtener dashboards propios del usuario
-      const ownDashboards = await Dashboard.find({ userId: req.user.id });
+      // Obtener dashboards propios del usuario ordenados por fecha de creación (ascendente)
+      const ownDashboards = await Dashboard.find({ userId: req.user.id }).sort({
+        createdAt: 1,
+      });
 
-      // Obtener dashboards públicos de otros usuarios
+      // Obtener dashboards públicos de otros usuarios ordenados por fecha de creación (ascendente)
       const publicDashboards = await Dashboard.find({
         userId: { $ne: req.user.id },
         visibility: "public",
-      }).populate("userId", "name email");
+      })
+        .populate("userId", "name email")
+        .sort({ createdAt: 1 });
 
-      // Combinar ambos conjuntos
-      const dashboards = [...ownDashboards, ...publicDashboards];
+      // Combinar ambos conjuntos y ordenar por fecha de creación
+      const dashboards = [...ownDashboards, ...publicDashboards].sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      );
 
       return res.status(200).json({
         success: true,
@@ -48,6 +55,8 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       const {
         name,
         description,
+        layouts,
+        widgets,
         visibility = "private",
         defaultVariables,
         collaborators = [],
@@ -72,8 +81,8 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         description,
         userId: req.user.id,
         visibility,
-        layouts: { lg: [], md: [], sm: [] },
-        widgets: [],
+        layouts: layouts || { lg: [], md: [], sm: [] },
+        widgets: widgets || [],
         defaultVariables: defaultVariables || {},
         collaborators: visibility === "public" ? collaborators : [],
         isShared,

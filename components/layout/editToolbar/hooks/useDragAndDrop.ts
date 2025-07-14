@@ -70,14 +70,14 @@ export const useDragAndDrop = (): DragAndDropHookReturn => {
    * Maneja el inicio del arrastre para widgets de métrica
    */
   const handleMetricDragStart = (e: React.DragEvent) => {
-    setupDragData(e, "metric", "Nueva métrica", { w: 4, h: 4 }, {}, false);
+    setupDragData(e, "metric", "Nueva métrica", { w: 12, h: 4 }, {}, false);
   };
 
   /**
    * Maneja el inicio del arrastre para widgets de tabla
    */
   const handleTableDragStart = (e: React.DragEvent) => {
-    setupDragData(e, "table", "Nueva tabla", { w: 6, h: 6 }, {}, false);
+    setupDragData(e, "table", "Nueva tabla", { w: 16, h: 6 }, {}, false);
   };
 
   /**
@@ -88,7 +88,7 @@ export const useDragAndDrop = (): DragAndDropHookReturn => {
       e,
       "chart",
       "Nuevo gráfico",
-      { w: 6, h: 4 },
+      { w: 16, h: 4 },
       { chartType: "bar", data: [] },
       false
     );
@@ -98,7 +98,7 @@ export const useDragAndDrop = (): DragAndDropHookReturn => {
    * Maneja el inicio del arrastre para widgets de texto
    */
   const handleTextDragStart = (e: React.DragEvent) => {
-    setupDragData(e, "text", "", { w: 4, h: 3 }, {}, true);
+    setupDragData(e, "text", "", { w: 12, h: 3 }, {}, true);
   };
 
   return {
