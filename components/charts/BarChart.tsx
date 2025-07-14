@@ -246,7 +246,7 @@ export const BarChart: React.FC<BarChartProps> = ({
     xAxis: horizontal
       ? {
           type: "value",
-          show: showXAxis,
+          show: showXAxis || showGrid,
           axisLine: { show: showXAxis },
           axisTick: { show: showXAxis },
           axisLabel: {
@@ -308,7 +308,7 @@ export const BarChart: React.FC<BarChartProps> = ({
         }
       : {
           type: "value",
-          show: showYAxis,
+          show: showYAxis || showGrid,
           axisLine: { show: showYAxis },
           axisTick: { show: showYAxis },
           axisLabel: {
