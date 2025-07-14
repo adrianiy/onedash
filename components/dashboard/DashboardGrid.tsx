@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import { useGridStore, useGridAndUI } from "@/store/gridStore";
 import { useUIStore } from "@/store/uiStore";
@@ -66,6 +66,16 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
 
   const { getGridProps } = useGridLayout();
   const { addWidgetAndSelect } = useGridAndUI();
+
+  useEffect(() => {
+    if (window.innerWidth >= 1200) {
+      setCurrentBreakpoint("lg");
+    } else if (window.innerWidth >= 996) {
+      setCurrentBreakpoint("md");
+    } else {
+      setCurrentBreakpoint("sm");
+    }
+  }, []);
 
   if (!dashboard) {
     return (

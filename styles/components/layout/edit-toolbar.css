@@ -1,6 +1,6 @@
 /* Edit Toolbar Styles */
 .edit-toolbar {
-  position: fixed;
+  position: sticky;
   top: 70px;
   left: 0;
   right: 0;

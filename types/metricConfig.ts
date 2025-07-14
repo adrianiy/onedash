@@ -9,7 +9,6 @@ export type VariableBinding = {
 // Tipos de valores estáticos para indicadores y modificadores
 export type IndicatorValue = "importe" | "unidades" | "pedidos";
 export type SaleValue = "bruto" | "neto" | "devos";
-export type ScopeValue = "mismas_tiendas" | "total_tiendas";
 export type TimeframeValue = "hoy" | "ayer" | "semana" | "mes" | "año";
 export type ComparisonValue =
   | "actual"
@@ -22,7 +21,6 @@ export type CalculationValue = "valor" | "crecimiento" | "peso";
 
 export type IndicatorType = IndicatorValue | VariableBinding;
 export type SaleType = SaleValue | VariableBinding;
-export type ScopeType = ScopeValue | VariableBinding;
 export type TimeframeType = TimeframeValue | VariableBinding;
 export type ComparisonType = ComparisonValue | VariableBinding;
 export type CalculationType = CalculationValue | VariableBinding;
@@ -32,7 +30,6 @@ export type CalculationType = CalculationValue | VariableBinding;
 // Interfaz para los modificadores de una métrica
 export interface MetricModifiers {
   saleType?: SaleType;
-  scope?: ScopeType;
   timeframe?: TimeframeType;
   comparison?: ComparisonType;
   calculation?: CalculationType;
@@ -66,24 +63,12 @@ export const IndicatorMetadata: Record<
 > = {
   importe: {
     name: "Importe",
-    compatibleModifiers: [
-      "saleType",
-      "scope",
-      "timeframe",
-      "calculation",
-      "comparison",
-    ],
+    compatibleModifiers: ["saleType", "timeframe", "calculation", "comparison"],
     requiredModifiers: ["saleType", "calculation"],
   },
   unidades: {
     name: "Unidades",
-    compatibleModifiers: [
-      "saleType",
-      "scope",
-      "timeframe",
-      "calculation",
-      "comparison",
-    ],
+    compatibleModifiers: ["saleType", "timeframe", "calculation", "comparison"],
     requiredModifiers: ["saleType", "calculation"],
   },
   pedidos: {
@@ -108,13 +93,6 @@ export const ModifiersMetadata: Record<
       { value: "bruto", label: "Bruto" },
       { value: "neto", label: "Neto" },
       { value: "devos", label: "Devoluciones" },
-    ],
-  },
-  scope: {
-    name: "Tiendas",
-    options: [
-      { value: "mismas_tiendas", label: "Mismas Tiendas" },
-      { value: "total_tiendas", label: "Total Tiendas" },
     ],
   },
   timeframe: {

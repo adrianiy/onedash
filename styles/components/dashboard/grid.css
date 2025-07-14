@@ -248,7 +248,7 @@
 
 .dashboard-container.editing {
   background-color: var(--color-background-editing);
-  padding-top: 112px; /* 70px header + 95px toolbar */
+  padding-top: 4px;
 }
 
 /* Adjust grid width when sidebar is open */
@@ -319,7 +319,6 @@
 @media (max-width: 768px) {
   .dashboard-container {
     padding: var(--spacing-md);
-    padding-top: 60px; /* Mobile header height */
   }
 
   .dashboard-container.editing {

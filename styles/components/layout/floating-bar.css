@@ -18,6 +18,20 @@
     height var(--transition-normal);
 }
 
+@media (max-width: 768px) {
+  .floating-action-bar {
+    top: auto;
+    bottom: 12px;
+    flex-direction: row;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+  }
+  .floating-action-bar--collapsed {
+    width: 42px;
+  }
+}
+
 .floating-action-bar--collapsed {
   height: 42px; /* Solo altura suficiente para el botón toggle */
 }
@@ -40,6 +54,12 @@
 
 .floating-action-bar__button:hover {
   background-color: var(--color-surface-hover);
+}
+
+@media (max-width: 768px) {
+  .floating-action-bar__button:first-child {
+    display: none;
+  }
 }
 
 .floating-action-bar__separator {

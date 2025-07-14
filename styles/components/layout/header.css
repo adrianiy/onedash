@@ -12,6 +12,11 @@
   z-index: 1000;
   transition: all var(--transition-normal);
 }
+@media (max-width: 768px) {
+  .app-header {
+    padding: 0 var(--spacing-md);
+  }
+}
 
 .app-header-content {
   width: 100%;

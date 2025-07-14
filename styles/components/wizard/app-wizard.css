@@ -54,6 +54,11 @@
   bottom: var(--spacing-lg);
   right: var(--spacing-3xl);
 }
+@media (max-width: 768px) {
+  .app-wizard__toggle-btn {
+    display: none;
+  }
+}
 
 /* Estado minimizado */
 .app-wizard--minimized {
