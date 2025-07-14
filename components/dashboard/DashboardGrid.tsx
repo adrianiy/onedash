@@ -188,7 +188,7 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
           <ResponsiveGridLayout
             {...gridProps}
             layouts={layouts}
-            breakpoints={{ lg: 1200, md: 996, sm: 768 }}
+            breakpoints={{ lg: 1200, md: 996, sm: 468 }}
             cols={{ lg: 24, md: 18, sm: 8 }}
             isDroppable={isEditing}
             onDrop={(layout, item, e) =>

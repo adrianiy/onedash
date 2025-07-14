@@ -231,7 +231,7 @@
 }
 
 .editing .breakpoint-guide--sm {
-  max-width: 768px; /* Ancho máximo para móvil */
+  max-width: 468px; /* Ancho máximo para móvil */
   border-color: rgba(var(--color-primary-rgb), 0.3);
 }
 
