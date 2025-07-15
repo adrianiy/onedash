@@ -11,6 +11,7 @@
     "export": "next export"
   },
   "dependencies": {
+    "@azure/msal-node": "^3.6.3",
     "@blocknote/core": "^0.33.0",
     "@blocknote/mantine": "^0.33.0",
     "@blocknote/react": "^0.33.0",
@@ -21,6 +22,7 @@
     "@tabler/icons-react": "^3.34.0",
     "@tanstack/react-query": "^5.83.0",
     "@types/react-select": "^5.0.1",
+    "axios": "^1.10.0",
     "bcryptjs": "^3.0.2",
     "cookie": "^1.0.2",
     "cookies-next": "^6.0.0",

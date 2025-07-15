@@ -15,7 +15,8 @@
 [data-theme="itx"] .config-panel,
 [data-theme="itx"] .config-panel__header {
   padding: 0 !important;
-  background: transparent !important;
+  padding-bottom: var(--spacing-sm) !important;
+  background: var(--color-background);
   border: none !important;
   box-shadow: none !important;
 }

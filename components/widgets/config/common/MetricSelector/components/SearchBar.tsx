@@ -1,6 +1,7 @@
 import React from "react";
 import { Icon } from "@/common/Icon";
 import SearchResults from "./SearchResults";
+import type { MetricDefinition } from "@/types/metricConfig";
 
 interface SearchBarProps {
   searchQuery: string;
@@ -10,6 +11,8 @@ interface SearchBarProps {
     resultType: string,
     options?: Record<string, unknown>
   ) => void;
+  onSelectAllResults?: (columns: MetricDefinition[]) => void;
+  mode: "single" | "multiple";
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({
@@ -17,6 +20,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   setSearchQuery,
   placeholder = "Usa la IA para elegir tus métricas",
   onSelectSearchResult,
+  onSelectAllResults,
+  mode,
 }) => {
   const handleClearSearch = () => {
     setSearchQuery("");
@@ -49,6 +54,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         <SearchResults
           searchQuery={searchQuery}
           onSelectResult={onSelectSearchResult}
+          onSelectAllResults={onSelectAllResults}
+          mode={mode}
         />
       )}
     </div>

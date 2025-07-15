@@ -3,8 +3,6 @@ import mongoose from "mongoose";
 // Definir el URI de MongoDB desde las variables de entorno
 const MONGODB_URI = process.env.MONGODB_URI || "";
 
-console.log("MONGODB_URI", MONGODB_URI);
-
 if (!MONGODB_URI) {
   throw new Error("Por favor, define la variable de entorno MONGODB_URI");
 }

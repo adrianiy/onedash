@@ -98,8 +98,7 @@ export function generateTableData(
           (c) =>
             c.indicator === indicator &&
             (!c.modifiers.calculation || c.modifiers.calculation === "valor") &&
-            c.modifiers.saleType === modifiers.saleType &&
-            c.modifiers.scope === modifiers.scope
+            c.modifiers.saleType === modifiers.saleType
         )?.id;
 
         const baseValue = baseId ? baseMetrics[baseId] : null;

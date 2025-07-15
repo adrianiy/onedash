@@ -1,6 +1,7 @@
 import React from "react";
 import { Tooltip } from "react-tooltip";
 import type { MetricSelectorProps } from "./types";
+import type { MetricDefinition } from "@/types/metricConfig";
 import { useMetricSelector } from "./hooks";
 
 // Importar componentes
@@ -81,8 +82,29 @@ const MetricSelector: React.FC<MetricSelectorProps> = ({
   };
 
   // Función para manejar los resultados de búsqueda
-  const handleSearchResultSelect = (resultType: string) => {
-    // Lógica para manejar cada tipo de resultado
+  const handleSearchResultSelect = (
+    resultType: string,
+    options?: Record<string, unknown>
+  ) => {
+    // Limpiar la búsqueda después de seleccionar un resultado
+    setSearchQuery("");
+
+    // Manejar resultados de IA
+    if (resultType === "iaColumn" && options?.column) {
+      const column = options.column as MetricDefinition;
+
+      if (mode === "single" && onSelectMetric) {
+        // En modo single, seleccionamos directamente la métrica
+        onSelectMetric(column);
+        if (onClose) onClose();
+      } else if (mode === "multiple" && onSelectMetrics) {
+        // En modo multiple, añadimos la columna a las seleccionadas
+        onSelectMetrics([column]);
+      }
+      return;
+    }
+
+    // Lógica para manejar tipos anteriores (para compatibilidad)
     switch (resultType) {
       case "importeNeto":
         // Añadir métrica de importe neto
@@ -99,9 +121,20 @@ const MetricSelector: React.FC<MetricSelectorProps> = ({
       default:
         break;
     }
+  };
 
-    // Limpiar la búsqueda después de seleccionar un resultado
+  // Función para manejar la selección de todas las columnas generadas por IA
+  const handleSelectAllResults = (columns: MetricDefinition[]) => {
+    // Limpiar la búsqueda
     setSearchQuery("");
+
+    if (mode === "multiple" && onSelectMetrics) {
+      // Añadir todas las columnas generadas
+      onSelectMetrics(columns);
+
+      // Opcional: cerrar el selector si corresponde
+      if (onClose) onClose();
+    }
   };
 
   // Renderizar el componente según la pestaña activa
@@ -160,6 +193,8 @@ const MetricSelector: React.FC<MetricSelectorProps> = ({
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           onSelectSearchResult={handleSearchResultSelect}
+          onSelectAllResults={handleSelectAllResults}
+          mode={mode}
         />
 
         {/* Botón de cerrar */}
