@@ -4,7 +4,6 @@ import type {
   MetricModifiers,
   ComparisonType,
   SaleType,
-  ScopeType,
   TimeframeType,
   CalculationType,
   IndicatorType,
@@ -74,9 +73,6 @@ function setModifierValue(
   switch (key) {
     case "saleType":
       modifiers.saleType = value as SaleType;
-      break;
-    case "scope":
-      modifiers.scope = value as ScopeType;
       break;
     case "timeframe":
       modifiers.timeframe = value as TimeframeType;
