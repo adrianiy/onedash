@@ -274,9 +274,9 @@ export const useGridStore = create<GridState>()(
         partialize: (state) => ({
           dashboard: state.dashboard,
           widgets: state.widgets,
-          addedWidgets: Array.from(state.addedWidgets),
-          deletedWidgets: Array.from(state.deletedWidgets),
-          modifiedWidgets: Array.from(state.modifiedWidgets),
+          addedWidgets: state.addedWidgets,
+          deletedWidgets: state.deletedWidgets,
+          modifiedWidgets: state.modifiedWidgets,
         }),
         limit: 50, // Mantener hasta 50 acciones en el historial
       }
