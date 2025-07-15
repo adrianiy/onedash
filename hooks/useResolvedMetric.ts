@@ -21,7 +21,6 @@ const MOCK_API_DATA: Record<string, number> = {
 const generateMockValue = (resolvedMetric: MetricDefinition): number => {
   const key = [
     resolvedMetric.indicator,
-    resolvedMetric.modifiers.scope || "total",
     resolvedMetric.modifiers.timeframe || "anual",
     resolvedMetric.modifiers.calculation || "valor",
   ].join("-");
