@@ -136,10 +136,57 @@ export const useWidgetCreator = (): WidgetCreatorHookReturn => {
     );
   };
 
+  /**
+   * Crea un widget de gráfico con tipo específico
+   */
+  const addSpecificChartWidget = (chartType: "bar" | "line" | "pie" | "scatter" | "area") => {
+    const chartTitles = {
+      bar: "Gráfico de barras",
+      line: "Gráfico de líneas", 
+      pie: "Gráfico circular",
+      scatter: "Gráfico de dispersión",
+      area: "Gráfico de área"
+    };
+
+    addWidgetToBoard(
+      {
+        type: "chart" as WidgetType,
+        title: chartTitles[chartType],
+        config: {
+          chartType,
+          data: [],
+        },
+        isConfigured: false,
+      },
+      { w: 16, h: 6 }
+    );
+  };
+
+  /**
+   * Crea un widget de comparativa (chart especial)
+   */
+  const addComparisonWidget = () => {
+    addWidgetToBoard(
+      {
+        type: "chart" as WidgetType,
+        title: "Widget de comparativa",
+        config: {
+          chartType: "bar" as const,
+          isComparison: true,
+          data: [],
+        },
+        isConfigured: false,
+      },
+      { w: 16, h: 8 }
+    );
+  };
+
   return {
     addMetricWidget,
     addTableWidget,
     addChartWidget,
     addTextWidget,
+    addSpecificChartWidget,
+    addComparisonWidget,
   };
 };

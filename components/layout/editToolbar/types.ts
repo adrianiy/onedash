@@ -39,6 +39,8 @@ export interface WidgetCreatorHookReturn {
   addTableWidget: () => void;
   addChartWidget: () => void;
   addTextWidget: () => void;
+  addSpecificChartWidget: (chartType: "bar" | "line" | "pie" | "scatter" | "area") => void;
+  addComparisonWidget: () => void;
 }
 
 export interface DragAndDropHookReturn {
@@ -46,4 +48,9 @@ export interface DragAndDropHookReturn {
   handleTableDragStart: (e: React.DragEvent) => void;
   handleChartDragStart: (e: React.DragEvent) => void;
   handleTextDragStart: (e: React.DragEvent) => void;
+  handleBarChartDragStart: (e: React.DragEvent) => void;
+  handleLineChartDragStart: (e: React.DragEvent) => void;
+  handlePieChartDragStart: (e: React.DragEvent) => void;
+  handleAreaChartDragStart: (e: React.DragEvent) => void;
+  handleComparisonDragStart: (e: React.DragEvent) => void;
 }

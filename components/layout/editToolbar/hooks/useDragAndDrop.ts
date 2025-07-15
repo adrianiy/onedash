@@ -101,10 +101,85 @@ export const useDragAndDrop = (): DragAndDropHookReturn => {
     setupDragData(e, "text", "", { w: 12, h: 3 }, {}, true);
   };
 
+  /**
+   * Maneja el inicio del arrastre para widgets de gráfico de barras
+   */
+  const handleBarChartDragStart = (e: React.DragEvent) => {
+    setupDragData(
+      e,
+      "chart",
+      "Gráfico de barras",
+      { w: 16, h: 6 },
+      { chartType: "bar", data: [] },
+      false
+    );
+  };
+
+  /**
+   * Maneja el inicio del arrastre para widgets de gráfico de líneas
+   */
+  const handleLineChartDragStart = (e: React.DragEvent) => {
+    setupDragData(
+      e,
+      "chart",
+      "Gráfico de líneas",
+      { w: 16, h: 6 },
+      { chartType: "line", data: [] },
+      false
+    );
+  };
+
+  /**
+   * Maneja el inicio del arrastre para widgets de gráfico circular
+   */
+  const handlePieChartDragStart = (e: React.DragEvent) => {
+    setupDragData(
+      e,
+      "chart",
+      "Gráfico circular",
+      { w: 16, h: 6 },
+      { chartType: "pie", data: [] },
+      false
+    );
+  };
+
+  /**
+   * Maneja el inicio del arrastre para widgets de gráfico de área
+   */
+  const handleAreaChartDragStart = (e: React.DragEvent) => {
+    setupDragData(
+      e,
+      "chart",
+      "Gráfico de área",
+      { w: 16, h: 6 },
+      { chartType: "area", data: [] },
+      false
+    );
+  };
+
+  /**
+   * Maneja el inicio del arrastre para widgets de comparativa
+   */
+  const handleComparisonDragStart = (e: React.DragEvent) => {
+    setupDragData(
+      e,
+      "chart",
+      "Widget de comparativa",
+      { w: 16, h: 8 },
+      { chartType: "bar", isComparison: true, data: [] },
+      false
+    );
+  };
+
   return {
     handleMetricDragStart,
     handleTableDragStart,
     handleChartDragStart,
     handleTextDragStart,
+    handleBarChartDragStart,
+    handleLineChartDragStart,
+    handlePieChartDragStart,
+    handleAreaChartDragStart,
+    handleComparisonDragStart,
   };
 };
