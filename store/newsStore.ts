@@ -34,6 +34,17 @@ interface NewsStore {
 const newsItems: NewsItem[] = [
   // Novedades funcionales
   {
+    id: "13",
+    title: "IA para generación de columnas",
+    description:
+      "Ahora puedes usar inteligencia artificial para generar automáticamente columnas personalizadas en tus tablas. Simplemente escribe lo que necesitas en lenguaje natural y la IA creará las columnas más adecuadas para tu análisis.",
+    icon: "zap",
+    date: "2025-07-15",
+    read: false,
+    category: "functional",
+  },
+  // Novedades funcionales
+  {
     id: "10",
     title: "Nueva guía de bienvenida",
     description:
@@ -164,6 +175,7 @@ export const useNewsStore = create<NewsStore>()(
       items: newsItems,
       lastViewedDate: null,
       bannerDismissed: false,
+      version: 2,
 
       markAsRead: (id) => {
         set((state) => ({
@@ -193,7 +205,7 @@ export const useNewsStore = create<NewsStore>()(
     }),
     {
       name: "onedash-news", // nombre único para localStorage
-      version: 1,
+      version: 2,
       partialize: (state) => ({
         // Solo persistimos estos campos
         items: state.items.map((item) => ({
