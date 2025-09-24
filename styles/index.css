@@ -26,6 +26,7 @@
 @import "./components/dashboard/share-section.css";
 @import "./components/dashboard/shared-indicator.css";
 @import "./components/dashboard/dashboard-tabs.css";
+@import "./components/dashboard/ia/index.css";
 
 /* Common components */
 @import "./components/common/modal.css";

@@ -1,0 +1,181 @@
+/*
+ * Estilos para la integración de IA en el DashboardEmptyPlaceholder
+ * Siguiendo los patrones de diseño de OneDash
+ */
+
+.dashboard-empty-placeholder__ia-section {
+  margin-top: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-lg);
+  width: 100%;
+  max-width: 500px;
+}
+
+/* Input container para el campo de texto */
+.dashboard-empty-placeholder__ia-input-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 450px;
+  max-width: 500px;
+  border-bottom: 1px solid var(--color-border);
+  padding: 0 var(--spacing-md);
+  transition: var(--transition-fast);
+}
+
+.dashboard-empty-placeholder__ia-input-container:focus-within {
+  transform: translateY(-1px);
+}
+
+/* Input de texto */
+.dashboard-empty-placeholder__ia-input {
+  flex: 1;
+  padding: var(--spacing-md) 0;
+  border: none;
+  background: transparent;
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  outline: none;
+  width: 100%;
+}
+
+.dashboard-empty-placeholder__ia-input::placeholder {
+  color: var(--color-text-tertiary);
+  opacity: 0.7;
+}
+
+/* Botón de envío */
+.dashboard-empty-placeholder__ia-send-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  color: var(--color-primary);
+}
+
+.dashboard-empty-placeholder__ia-send-button:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+}
+
+.dashboard-empty-placeholder__ia-send-button:active {
+  transform: translateY(1px);
+}
+
+.dashboard-empty-placeholder__ia-send-button:disabled {
+  color: var(--color-text-tertiary);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.dashboard-empty-placeholder__quick-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  width: 100%;
+}
+
+.dashboard-empty-placeholder__quick-actions > p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  font-weight: 400;
+}
+
+.dashboard-empty-placeholder__quick-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  justify-content: center;
+  width: 100%;
+}
+
+.dashboard-empty-placeholder__quick-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  transition: var(--transition-fast);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.dashboard-empty-placeholder__quick-button:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background-color: rgba(var(--color-primary-rgb), 0.05);
+  transform: translateY(-1px);
+}
+
+.dashboard-empty-placeholder__quick-button:active {
+  transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dashboard-empty-placeholder__ia-section {
+    gap: var(--spacing-md);
+  }
+
+  .dashboard-empty-placeholder__ia-input-container {
+    width: 100%;
+    max-width: none;
+  }
+
+  .dashboard-empty-placeholder__quick-buttons {
+    flex-direction: column;
+  }
+
+  .dashboard-empty-placeholder__quick-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Correcciones de pointer-events para TODOS los temas */
+.dashboard-empty-placeholder__ia-section,
+.dashboard-empty-placeholder__ia-input-container,
+.dashboard-empty-placeholder__ia-input,
+.dashboard-empty-placeholder__ia-send-button,
+.dashboard-empty-placeholder__quick-actions,
+.dashboard-empty-placeholder__quick-buttons,
+.dashboard-empty-placeholder__quick-button {
+  pointer-events: auto !important;
+  z-index: 2;
+  position: relative;
+}
+
+/* Asegurar que los botones sean clicables */
+.dashboard-empty-placeholder__ia-send-button,
+.dashboard-empty-placeholder__quick-button {
+  cursor: pointer !important;
+}
+
+/* Asegurar que los iconos dentro de los botones sean visibles */
+.dashboard-empty-placeholder__ia-send-button svg,
+.dashboard-empty-placeholder__quick-button svg {
+  pointer-events: none;
+}
+
+/* Correcciones de color específicas para tema ITX */
+[data-theme="itx"] .dashboard-empty-placeholder__ia-input-container {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+[data-theme="itx"] .dashboard-empty-placeholder__ia-send-button svg {
+  color: var(--color-primary);
+}

@@ -136,10 +136,30 @@ export const useWidgetCreator = (): WidgetCreatorHookReturn => {
     );
   };
 
+  /**
+   * Crea un widget de comparativa
+   */
+  const addComparisonWidget = () => {
+    // Crear widget de comparativa
+    addWidgetToBoard(
+      {
+        type: "comparison" as WidgetType,
+        title: "Nueva comparativa",
+        config: {
+          visualizationType: "bars" as const,
+          data: [],
+        },
+        isConfigured: false,
+      },
+      { w: 16, h: 6 }
+    );
+  };
+
   return {
     addMetricWidget,
     addTableWidget,
     addChartWidget,
     addTextWidget,
+    addComparisonWidget,
   };
 };

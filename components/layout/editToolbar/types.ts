@@ -39,6 +39,7 @@ export interface WidgetCreatorHookReturn {
   addTableWidget: () => void;
   addChartWidget: () => void;
   addTextWidget: () => void;
+  addComparisonWidget: () => void;
 }
 
 export interface DragAndDropHookReturn {
@@ -46,4 +47,5 @@ export interface DragAndDropHookReturn {
   handleTableDragStart: (e: React.DragEvent) => void;
   handleChartDragStart: (e: React.DragEvent) => void;
   handleTextDragStart: (e: React.DragEvent) => void;
+  handleComparisonDragStart: (e: React.DragEvent) => void;
 }

@@ -1,0 +1,9 @@
+/* 
+ * Archivo principal para importar todos los estilos relacionados con la IA
+ */
+
+/* Importar estilos de componentes */
+@import "./chat-message.css";
+@import "./dashboard-chat-modal.css";
+@import "./dashboard-chat-sidebar.css";
+@import "./empty-placeholder-ia.css";

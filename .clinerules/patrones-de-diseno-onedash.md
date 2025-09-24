@@ -46,6 +46,8 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
 ## 🏗️ Arquitectura de Componentes
 
+Sigue siempre principios de buena programación SOLID y DRY
+
 ### Estructura Granular Obligatoria
 
 - Máximo **200 líneas** por componente
@@ -116,6 +118,8 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 - **Bordes finos**: Preferir iconos outline sobre filled
 - **Tamaños consistentes**: 16px (sm), 20px (md), 24px (lg)
 - **No emojis**: Usar solo iconos de Lucide React
+
+IMPORTANTE: Si no tienes un icono intenta añadirlo siemmpre que exista dentro de las librerias disponibles
 
 ## 📦 Componentes Comunes Obligatorios
 

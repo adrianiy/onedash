@@ -265,13 +265,14 @@ export function getDisplayTitle(
       column.indicator !== null &&
       "type" in column.indicator &&
       column.indicator.type === "variable") ||
-    Object.values(column.modifiers).some(
-      (value) =>
-        typeof value === "object" &&
-        value !== null &&
-        "type" in value &&
-        value.type === "variable"
-    );
+    (column.modifiers &&
+      Object.values(column.modifiers).some(
+        (value) =>
+          typeof value === "object" &&
+          value !== null &&
+          "type" in value &&
+          value.type === "variable"
+      ));
 
   if (hasDynamicElements && variables) {
     try {

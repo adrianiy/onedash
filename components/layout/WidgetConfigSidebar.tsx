@@ -53,6 +53,8 @@ export const WidgetConfigSidebar: React.FC = () => {
         return "target";
       case "text":
         return "edit";
+      case "comparison":
+        return "git-compare-arrows";
       default:
         return "settings";
     }
@@ -74,6 +76,8 @@ export const WidgetConfigSidebar: React.FC = () => {
         return "Nueva Métrica";
       case "text":
         return "Nuevo Texto";
+      case "comparison":
+        return "Nuevo Comparador";
       default:
         return "Nuevo Widget";
     }

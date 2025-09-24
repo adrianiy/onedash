@@ -101,10 +101,25 @@ export const useDragAndDrop = (): DragAndDropHookReturn => {
     setupDragData(e, "text", "", { w: 12, h: 3 }, {}, true);
   };
 
+  /**
+   * Maneja el inicio del arrastre para widgets de comparativa
+   */
+  const handleComparisonDragStart = (e: React.DragEvent) => {
+    setupDragData(
+      e,
+      "comparison",
+      "Nueva comparativa",
+      { w: 16, h: 6 },
+      { visualizationType: "bars", data: [] },
+      false
+    );
+  };
+
   return {
     handleMetricDragStart,
     handleTableDragStart,
     handleChartDragStart,
     handleTextDragStart,
+    handleComparisonDragStart,
   };
 };

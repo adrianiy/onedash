@@ -107,6 +107,7 @@ import {
   Monitor,
   Tablet,
   Smartphone,
+  GitCompareArrows,
   type LucideIcon,
 } from "lucide-react";
 
@@ -238,6 +239,7 @@ const lucideIconMap = {
   monitor: Monitor,
   tablet: Tablet,
   smartphone: Smartphone,
+  "git-compare-arrows": GitCompareArrows,
 } as const;
 
 const tablerIconMap = {

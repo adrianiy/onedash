@@ -1,0 +1,1 @@
+export { ComparisonConfig } from "./ComparisonConfig";

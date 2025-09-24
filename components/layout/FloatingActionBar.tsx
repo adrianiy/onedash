@@ -7,11 +7,15 @@ import { useGridStore } from "@/store/gridStore";
 interface FloatingActionBarProps {
   onToggleSidebar: () => void;
   isSidebarOpen: boolean;
+  onToggleChat?: () => void;
+  isChatOpen?: boolean;
 }
 
 export const FloatingActionBar: React.FC<FloatingActionBarProps> = ({
   onToggleSidebar,
   isSidebarOpen,
+  onToggleChat,
+  isChatOpen,
 }) => {
   const { isEditing, toggleEditing } = useUIStore();
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -58,6 +62,22 @@ export const FloatingActionBar: React.FC<FloatingActionBarProps> = ({
 
         <div className="floating-action-bar__separator" />
 
+        {onToggleChat && (
+          <>
+            <button
+              className={`floating-action-bar__button ${
+                isChatOpen ? "floating-action-bar__button--active" : ""
+              }`}
+              onClick={onToggleChat}
+              data-tooltip-id="chat-tooltip"
+            >
+              <Icon name="zap" size={20} />
+            </button>
+
+            <div className="floating-action-bar__separator" />
+          </>
+        )}
+
         <button
           className="floating-action-bar__toggle-btn"
           onClick={toggleCollapsed}
@@ -73,6 +93,9 @@ export const FloatingActionBar: React.FC<FloatingActionBarProps> = ({
         place="right"
       />
       <Tooltip id="dashboard-tooltip" content="Dashboards" place="right" />
+      {onToggleChat && (
+        <Tooltip id="chat-tooltip" content="Asistente IA" place="right" />
+      )}
       <Tooltip
         id="toggle-tooltip"
         content={isCollapsed ? "Expandir menú" : "Contraer menú"}

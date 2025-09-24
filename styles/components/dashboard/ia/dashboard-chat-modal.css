@@ -1,0 +1,328 @@
+/*
+ * Estilos para el componente DashboardChatModal
+ * Siguiendo los patrones de diseño de OneDash
+ */
+
+.dashboard-chat-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Overlay de fondo */
+.dashboard-chat-modal__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
+  z-index: 1;
+}
+
+/* Contenedor principal */
+.dashboard-chat-modal__container {
+  position: relative;
+  z-index: 2;
+  width: 90%;
+  max-width: 700px;
+  height: 80%;
+  max-height: 700px;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Cabecera del modal */
+.dashboard-chat-modal__header {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dashboard-chat-modal__title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.dashboard-chat-modal__actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.dashboard-chat-modal__action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.dashboard-chat-modal__action-button:hover {
+  background: var(--color-surface-secondary);
+  color: var(--color-text-primary);
+}
+
+/* Cuerpo con mensajes */
+.dashboard-chat-modal__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-lg);
+}
+
+/* Estado vacío */
+.dashboard-chat-modal__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  height: 100%;
+  text-align: center;
+  padding: var(--spacing-lg);
+}
+
+.dashboard-chat-modal__empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+}
+
+.dashboard-chat-modal__empty h4 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.dashboard-chat-modal__empty p {
+  max-width: 400px;
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+/* Sugerencias para empezar la conversación */
+.dashboard-chat-modal__suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+  max-width: 500px;
+}
+
+.dashboard-chat-modal__suggestion {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  transition: var(--transition-fast);
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.dashboard-chat-modal__suggestion:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background-color: rgba(var(--color-primary-rgb), 0.05);
+  transform: translateY(-1px);
+}
+
+/* Contenedor de mensajes */
+.dashboard-chat-modal__messages {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* Pie del modal con input */
+.dashboard-chat-modal__footer {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
+}
+
+.dashboard-chat-modal__input-container {
+  display: flex;
+  gap: var(--spacing-sm);
+  background-color: var(--color-surface-secondary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm);
+  position: relative;
+}
+
+.dashboard-chat-modal__input {
+  flex: 1;
+  resize: none;
+  border: none;
+  background: transparent;
+  padding: var(--spacing-sm);
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+}
+
+.dashboard-chat-modal__input::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.dashboard-chat-modal__send-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary);
+  color: var(--color-text-on-primary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.dashboard-chat-modal__send-button:hover {
+  background: var(--color-primary-dark);
+}
+
+.dashboard-chat-modal__send-button:disabled {
+  background: var(--color-text-tertiary);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Animación de giro para iconos de carga */
+.icon-spin {
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Pista para uso del teclado */
+.dashboard-chat-modal__hint {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dashboard-chat-modal__container {
+    width: 95%;
+    height: 90%;
+    max-height: none;
+  }
+
+  .dashboard-chat-modal__header,
+  .dashboard-chat-modal__footer {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .dashboard-chat-modal__body {
+    padding: var(--spacing-md);
+  }
+
+  .dashboard-chat-modal__suggestions {
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .dashboard-chat-modal__suggestion {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Dark theme */
+[data-theme="dark"] .dashboard-chat-modal__overlay {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* Correcciones de pointer-events para TODOS los temas */
+.dashboard-chat-modal__container,
+.dashboard-chat-modal__header,
+.dashboard-chat-modal__body,
+.dashboard-chat-modal__footer,
+.dashboard-chat-modal__actions,
+.dashboard-chat-modal__action-button,
+.dashboard-chat-modal__input-container,
+.dashboard-chat-modal__input,
+.dashboard-chat-modal__send-button,
+.dashboard-chat-modal__messages {
+  pointer-events: auto !important;
+  position: relative;
+}
+
+/* Asegurar que el input tenga foco y sea visible */
+.dashboard-chat-modal__input {
+  cursor: text !important;
+  background-color: var(--color-surface-secondary);
+}
+
+/* Correcciones específicas para tema ITX */
+[data-theme="itx"] .dashboard-chat-modal__container {
+  z-index: 9999;
+}
+
+[data-theme="itx"] .dashboard-chat-modal__input {
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+
+[data-theme="itx"] .dashboard-chat-modal__input-container {
+  background-color: transparent;
+}
+
+[data-theme="itx"] .dashboard-chat-modal__send-button {
+  background-color: var(--color-surface);
+  color: var(--color-primary);
+  border: 1px solid var(--color-border);
+}
+
+[data-theme="itx"] .dashboard-chat-modal__send-button:hover {
+  background-color: var(--color-surface-hover);
+}

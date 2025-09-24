@@ -2,6 +2,7 @@ import { ErrorPage, LoaderPage } from "@/components/common";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { DashboardGrid } from "@/components/dashboard/DashboardGrid";
 import { DashboardSharedIndicator } from "@/components/dashboard/DashboardSharedIndicator";
+import { DashboardChatSidebar } from "@/components/dashboard/ia/DashboardChatSidebar";
 import { AppWizard } from "@/components/wizard/AppWizard";
 import {
   useDashboardByIdQuery,
@@ -32,7 +33,7 @@ export default function Dashboard() {
   const previousDashboardIdRef = useRef<string | null>(null);
 
   // Usar los nuevos stores
-  const { isEditing } = useUIStore();
+  const { isEditing, iaChatOpen, toggleIaChat, closeIaChat } = useUIStore();
   const { setDashboard, setWidgets } = useGridStore();
 
   // Usar React Query para obtener el dashboard por ID sin callback onSuccess
@@ -134,8 +135,11 @@ export default function Dashboard() {
         <FloatingActionBar
           onToggleSidebar={toggleSidebar}
           isSidebarOpen={isSidebarOpen}
+          onToggleChat={toggleIaChat}
+          isChatOpen={iaChatOpen}
         />
         <DashboardSidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+        <DashboardChatSidebar isOpen={iaChatOpen} onClose={closeIaChat} />
         <AppWizard />
       </ProtectedRoute>
     </>

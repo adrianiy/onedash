@@ -79,3 +79,46 @@ export const formatValue = (
       return formatNumber(value);
   }
 };
+
+/**
+ * Formatea una fecha para mostrar cuánto tiempo ha pasado desde entonces
+ * @param date La fecha a formatear
+ * @returns String con el tiempo transcurrido (ej: "hace 5 minutos", "hace 2 horas")
+ */
+export const formatTimeAgo = (date: Date): string => {
+  const now = new Date();
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+  // Menos de un minuto
+  if (diffInSeconds < 60) {
+    return "ahora mismo";
+  }
+
+  // Menos de una hora
+  if (diffInSeconds < 3600) {
+    const minutes = Math.floor(diffInSeconds / 60);
+    return `hace ${minutes} ${minutes === 1 ? "minuto" : "minutos"}`;
+  }
+
+  // Menos de un día
+  if (diffInSeconds < 86400) {
+    const hours = Math.floor(diffInSeconds / 3600);
+    return `hace ${hours} ${hours === 1 ? "hora" : "horas"}`;
+  }
+
+  // Menos de un mes
+  if (diffInSeconds < 2592000) {
+    const days = Math.floor(diffInSeconds / 86400);
+    return `hace ${days} ${days === 1 ? "día" : "días"}`;
+  }
+
+  // Menos de un año
+  if (diffInSeconds < 31536000) {
+    const months = Math.floor(diffInSeconds / 2592000);
+    return `hace ${months} ${months === 1 ? "mes" : "meses"}`;
+  }
+
+  // Más de un año
+  const years = Math.floor(diffInSeconds / 31536000);
+  return `hace ${years} ${years === 1 ? "año" : "años"}`;
+};

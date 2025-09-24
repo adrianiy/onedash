@@ -1,4 +1,5 @@
 import { Breakpoint, DashboardSettings } from "@/types/dashboard";
+import { ChatMessage } from "@/types/iaChat";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
@@ -11,6 +12,13 @@ interface UIState {
   droppingItemSize: { w: number; h: number };
   lockChanges: boolean;
   currentBreakpoint: Breakpoint; // Añadido: breakpoint actual
+
+  // Estado de IA
+  iaChatOpen: boolean;
+  iaMessages: ChatMessage[];
+  iaCurrentCheckpointId: string | null;
+  iaIsLoading: boolean;
+  preparedMessage: string; // Añadido: mensaje preparado para el chat
 
   // Acciones de UI
   toggleEditing: () => void;
@@ -25,6 +33,19 @@ interface UIState {
   resetDroppingItemSize: () => void;
   setLockChanges: (value: boolean) => void;
   setCurrentBreakpoint: (breakpoint: Breakpoint) => void; // Añadido: acción para cambiar breakpoint
+
+  // Acciones de IA
+  toggleIaChat: () => void;
+  openIaChat: () => void;
+  closeIaChat: () => void;
+  addIaMessage: (message: ChatMessage) => void;
+  setIaMessages: (messages: ChatMessage[]) => void;
+  updateIaMessage: (messageId: string, updates: Partial<ChatMessage>) => void;
+  clearIaMessages: () => void;
+  setIaIsLoading: (isLoading: boolean) => void;
+  setIaCurrentCheckpoint: (checkpointId: string | null) => void;
+  setPreparedMessage: (message: string) => void; // Añadido: establecer mensaje preparado
+  clearPreparedMessage: () => void; // Añadido: limpiar mensaje preparado
 }
 
 const defaultSettings: DashboardSettings = {
@@ -46,6 +67,13 @@ export const useUIStore = create<UIState>()(
       droppingItemSize: { w: 6, h: 6 },
       lockChanges: false,
       currentBreakpoint: "lg", // Añadido: valor por defecto (desktop)
+
+      // Estado inicial de IA
+      iaChatOpen: false,
+      iaMessages: [],
+      iaCurrentCheckpointId: null,
+      iaIsLoading: false,
+      preparedMessage: "", // Añadido: inicializado vacío
 
       // Acciones de UI
       toggleEditing: () => set((state) => ({ isEditing: !state.isEditing })),
@@ -74,6 +102,39 @@ export const useUIStore = create<UIState>()(
       // Añadido: acción para cambiar el breakpoint
       setCurrentBreakpoint: (breakpoint) =>
         set({ currentBreakpoint: breakpoint }),
+
+      // Acciones de IA
+      toggleIaChat: () => set((state) => ({ iaChatOpen: !state.iaChatOpen })),
+
+      openIaChat: () => set({ iaChatOpen: true }),
+
+      closeIaChat: () => set({ iaChatOpen: false }),
+
+      addIaMessage: (message) =>
+        set((state) => ({
+          iaMessages: [...state.iaMessages, message],
+        })),
+
+      setIaMessages: (messages) => set({ iaMessages: messages }),
+
+      updateIaMessage: (messageId, updates) =>
+        set((state) => ({
+          iaMessages: state.iaMessages.map((message) =>
+            message.id === messageId ? { ...message, ...updates } : message
+          ),
+        })),
+
+      clearIaMessages: () => set({ iaMessages: [] }),
+
+      setIaIsLoading: (isLoading) => set({ iaIsLoading: isLoading }),
+
+      setIaCurrentCheckpoint: (checkpointId) =>
+        set({ iaCurrentCheckpointId: checkpointId }),
+
+      // Añadido: acciones para el mensaje preparado
+      setPreparedMessage: (message) => set({ preparedMessage: message }),
+
+      clearPreparedMessage: () => set({ preparedMessage: "" }),
     }),
     {
       name: "ui-store",
