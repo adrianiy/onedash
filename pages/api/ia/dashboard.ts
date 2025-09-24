@@ -38,6 +38,25 @@ interface DashboardIAResponse {
   };
 }
 
+// Interfaces para el sistema de diff (JSON Patch)
+interface DiffOperation {
+  op: "add" | "remove" | "replace" | "move" | "copy" | "test";
+  path: string;
+  value?: any;
+  from?: string; // Para operaciones move/copy
+}
+
+interface DashboardDiffResponse {
+  type: "diff_operations";
+  operations: DiffOperation[];
+  userMessage: string;
+  suggestions?: string[];
+  needsMoreInfo?: {
+    question: string;
+    context: string;
+  };
+}
+
 interface TransformedDashboardResult {
   dashboard: any; // Dashboard con widgets como array de IDs
   widgets: Record<string, any>; // Objeto con widgets indexados por ID
@@ -67,6 +86,8 @@ interface DashboardResponse {
   };
   content?: string;
   additional_kwargs?: AdditionalKwargs;
+  type?: "full_dashboard" | "diff_operations";
+  operations?: DiffOperation[];
 }
 
 /**
@@ -191,8 +212,8 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
           const parsedContext = JSON.parse(context);
           if (parsedContext?.currentDashboard?.isExistingDashboard) {
             existingDashboard = parsedContext.currentDashboard;
-            existingWidgets =
-              parsedContext.currentDashboard.dashboardWidgets || {};
+            // Ahora los widgets ya no están en dashboardWidgets sino en el nivel superior como "widgets"
+            existingWidgets = parsedContext.widgets || {};
             isModification = true;
             console.log(
               "Detectado contexto de dashboard existente:",
@@ -224,32 +245,155 @@ IMPORTANTE: Estás MODIFICANDO un dashboard existente, NO creando uno nuevo. Deb
 ESTADO ACTUAL DEL DASHBOARD:
 dashboard: ${JSON.stringify(existingDashboard, null, 2)}
 
-INSTRUCCIONES PARA MODIFICAR UN DASHBOARD:
-1. NUNCA regeneres todo el dashboard desde cero
-2. Mantén todos los widgets existentes que no se mencionen explícitamente para cambiar o eliminar
-3. Preserva los IDs de los widgets existentes que mantengas - NO GENERES NUEVOS IDs
-4. Respeta los layouts originales para los widgets que no cambien
+FORMATO DE RESPUESTA PARA MODIFICACIONES:
+En lugar de generar un dashboard completo, debes generar operaciones JSON Patch (RFC 6902) que especifiquen exactamente qué cambios hacer.
+Utiliza este formato para tu respuesta:
 
-5. REGLA CRÍTICA DE PRESERVACIÓN: SOLO modifica las propiedades ESPECÍFICAMENTE mencionadas en la petición del usuario:
-   * Si solo piden cambiar la altura (height), PRESERVA el ancho (width) exactamente como estaba
-   * Si solo piden cambiar el ancho (width), PRESERVA la altura (height) exactamente como estaba
-   * Si solo piden cambiar colores o estilos, NO MODIFIQUES ninguna dimensión o posición
-   * Si solo piden cambiar el título, PRESERVA toda la configuración técnica tal cual estaba
+\`\`\`json
+{
+  "type": "diff_operations",
+  "operations": [
+    {
+      "op": "replace",
+      "path": "/dashboard/name",
+      "value": "Nuevo nombre del dashboard"
+    },
+    {
+      "op": "add", 
+      "path": "/widgets/nuevo_widget_id", 
+      "value": { 
+        "type": "metric",
+        "title": "Nuevo widget",
+        ... resto de la configuración
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/dashboard/layouts/lg/0/h",
+      "value": 4
+    },
+    {
+      "op": "remove",
+      "path": "/widgets/widget_id_a_eliminar"
+    }
+  ],
+  "userMessage": "He actualizado el dashboard según tu petición",
+  "suggestions": ["¿Quieres que aumente el tamaño de las métricas?"]
+}
+\`\`\`
 
-6. INSTRUCCIONES ESPECÍFICAS PARA LAYOUTS:
-   * Cuando se pide "hacer más alto" o "aumentar altura" - SOLO modifica la propiedad "h" en los layouts
-   * Cuando se pide "hacer más ancho" o "aumentar ancho" - SOLO modifica la propiedad "w" en los layouts
-   * NUNCA cambies coordenadas "x", "y" salvo que se pidan explícitamente cambios de posición
-   * Preserva EXACTAMENTE el mismo valor numérico para dimensiones no mencionadas
+IMPORTANTE: La estructura del estado en el frontend es:
+\`\`\`
+{
+  dashboard: { // Datos del dashboard (nombre, layouts, etc.)
+    name: "...",
+    description: "...",
+    layouts: { lg: [...], md: [...], sm: [...] },
+    widgets: ["widget-id-1", "widget-id-2", ...] // Array de IDs
+  },
+  widgets: { // Objeto con widgets indexados por ID
+    "widget-id-1": { ... },
+    "widget-id-2": { ... }
+  }
+}
+\`\`\`
 
-7. Si el usuario pide eliminar un widget, elimínalo completamente (no solo ocultarlo)
-8. Si el usuario pide añadir un widget, créalo con un ID nuevo y colócalo en una posición adecuada
-9. Si el usuario pide modificar un widget, mantén su ID pero actualiza su configuración según lo solicitado
+OPERACIONES JSON PATCH:
+- "add": Añadir una propiedad o elemento 
+- "remove": Eliminar una propiedad o elemento
+- "replace": Cambiar valor de una propiedad existente
+- "move": Mover un valor de una ubicación a otra (incluye 'from')
+- "copy": Copiar un valor de una ubicación a otra (incluye 'from')
 
-EJEMPLOS DE MODIFICACIONES PARCIALES:
-* Si usuario dice "haz los widgets más altos" → SOLO cambiar "h" (altura) en layouts, mantener "w", "x", "y" idénticos
-* Si usuario dice "cambiar el título a..." → SOLO cambiar la propiedad "title", mantener todo lo demás igual
-* Si usuario dice "añadir un nuevo KPI" → Mantener todos los widgets actuales y añadir uno nuevo
+EJEMPLOS DE PATHS COMUNES:
+- "/dashboard/name" - Cambiar nombre del dashboard
+- "/dashboard/description" - Cambiar descripción
+- "/dashboard/layouts/lg/0/h" - Cambiar altura del primer widget en layout desktop
+- "/dashboard/layouts/lg/0/w" - Cambiar ancho del primer widget en layout desktop
+- "/dashboard/layouts/lg/0/x" - Cambiar posición X del primer widget en layout desktop
+- "/dashboard/layouts/lg/0/y" - Cambiar posición Y del primer widget en layout desktop
+- "/widgets/widget_123/title" - Cambiar título de un widget específico
+- "/widgets/widget_123/config/primaryMetric/indicator" - Cambiar indicador de métrica primaria
+- "/dashboard/widgets/-" - Añadir widget ID al array de widgets del dashboard (cuando se crea uno nuevo)
+- "/widgets/nuevo_widget_id" - Añadir la configuración de un nuevo widget
+
+IMPORTANTE: NO uses paths incorrectos como "/dashboard/dashboardWidgets/..." o "/dashboard/widgets/widget_id/..." ya que causarán errores.
+Los widgets están en la raíz del objeto como "/widgets/widget_id", NO dentro del dashboard.
+
+REGLAS CLAVE:
+1. SOLO modifica las propiedades ESPECÍFICAMENTE mencionadas en la petición del usuario
+2. Para modificaciones de layout, utiliza rutas exactas a los elementos que deben cambiar
+3. Preserva todos los IDs existentes de widgets que no se eliminen
+4. Para eliminar un widget:
+   - Elimina su ID del array widgets del dashboard
+   - Elimina el widget completo del objeto widgets
+   - Elimina sus entradas en cada layout (lg, md, sm)
+5. Para añadir un widget:
+   - Genera un ID único para el nuevo widget
+   - Añade el widget completo al objeto widgets 
+   - Añade el ID del widget al array widgets del dashboard
+   - Añade entradas en cada layout (lg, md, sm)
+
+EJEMPLOS DE OPERACIONES COMUNES:
+
+1. Cambiar el título de un widget:
+\`\`\`json
+{
+  "op": "replace",
+  "path": "/widgets/widget_123/title",
+  "value": "Nuevo título"
+}
+\`\`\`
+
+CORRECTO: "/widgets/widget_123/title" (widgets está en la raíz)
+INCORRECTO: "/dashboard/dashboardWidgets/widget_123/title" (no existe esta ruta)
+INCORRECTO: "/dashboard/widgets/widget_123/title" (widgets no está dentro de dashboard)
+
+2. Eliminar un widget:
+\`\`\`json
+[
+  {"op": "remove", "path": "/widgets/widget_to_delete"},
+  {"op": "remove", "path": "/dashboard/layouts/lg/2"}, 
+  {"op": "remove", "path": "/dashboard/layouts/md/2"},
+  {"op": "remove", "path": "/dashboard/layouts/sm/2"},
+  {"op": "remove", "path": "/dashboard/widgets/2"}
+]
+\`\`\`
+
+3. Añadir un nuevo widget:
+\`\`\`json
+[
+  {
+    "op": "add",
+    "path": "/widgets/new_widget_123",
+    "value": {
+      "type": "metric",
+      "title": "Nueva métrica",
+      "config": { ... }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/dashboard/widgets/-",
+    "value": "new_widget_123"
+  },
+  {
+    "op": "add",
+    "path": "/dashboard/layouts/lg/-",
+    "value": {"i": "new_widget_123", "x": 0, "y": 8, "w": 8, "h": 2, "static": false}
+  },
+  {
+    "op": "add",
+    "path": "/dashboard/layouts/md/-",
+    "value": {"i": "new_widget_123", "x": 0, "y": 8, "w": 6, "h": 2, "static": false}
+  },
+  {
+    "op": "add",
+    "path": "/dashboard/layouts/sm/-",
+    "value": {"i": "new_widget_123", "x": 0, "y": 10, "w": 8, "h": 2, "static": false}
+  }
+]
+\`\`\`
 `
     : ""
 }
@@ -502,8 +646,23 @@ Si necesitas más información, debes indicar una pregunta específica en 'needs
       // Extraer los datos de la respuesta según el formato recibido
       let dashboardData: DashboardIAResponse | null = null;
 
-      // Verificar si la respuesta tiene el formato antiguo
-      if (response?.dashboard) {
+      // Verificar si la respuesta es una operación diff
+      if (
+        response?.type === "diff_operations" &&
+        Array.isArray(response.operations)
+      ) {
+        // Devolver directamente las operaciones diff sin transformar el dashboard
+        return res.status(200).json({
+          data: {
+            type: "diff_operations",
+            operations: response.operations,
+            userMessage: response.userMessage || "",
+            suggestions: response.suggestions || [],
+          },
+        });
+      }
+      // Verificar si la respuesta tiene el formato dashboard completo
+      else if (response?.dashboard) {
         dashboardData = {
           dashboard: response.dashboard,
           userMessage: response.userMessage || "",
@@ -530,15 +689,30 @@ Si necesitas más información, debes indicar una pregunta específica en 'needs
           const parsedContent = JSON.parse(cleanContent);
           console.log("JSON parseado:", parsedContent);
 
-          // Verificar que el dashboard esté presente
+          // Verificar si es una respuesta tipo diff_operations
+          if (
+            parsedContent.type === "diff_operations" &&
+            Array.isArray(parsedContent.operations)
+          ) {
+            return res.status(200).json({
+              data: {
+                type: "diff_operations",
+                operations: parsedContent.operations,
+                userMessage: parsedContent.userMessage || "",
+                suggestions: parsedContent.suggestions || [],
+              },
+            });
+          }
+
+          // Verificar que el dashboard esté presente para formato completo
           if (!parsedContent.dashboard) {
             console.error(
-              "La respuesta no contiene el objeto dashboard:",
+              "La respuesta no contiene el objeto dashboard ni operaciones diff:",
               parsedContent
             );
             return res.status(500).json({
               message:
-                "La respuesta de IA no incluye la configuración del dashboard",
+                "La respuesta de IA no incluye la configuración del dashboard ni operaciones diff",
               response,
             });
           }

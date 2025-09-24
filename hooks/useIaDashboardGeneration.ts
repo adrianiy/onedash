@@ -8,6 +8,7 @@ import { Dashboard } from "@/types/dashboard";
 import { Widget } from "@/types/widget";
 import { deepClone } from "@/utils/helpers";
 import { useEffect } from "react";
+import { applyPatch } from "fast-json-patch";
 
 // Interfaz para la estructura de respuesta del endpoint de IA dashboard
 interface IaDashboardResponse {
@@ -19,6 +20,8 @@ interface IaDashboardResponse {
     question: string;
     context: string;
   };
+  type?: "full_dashboard" | "diff_operations";
+  operations?: any[];
 }
 
 /**
@@ -98,8 +101,56 @@ export const useIaDashboardGeneration = () => {
           return;
         }
 
-        // Si la respuesta tiene un dashboard válido
-        if (response?.data?.dashboard) {
+        // Verificar si es una operación diff o un dashboard completo
+        if (
+          response?.data?.type === "diff_operations" &&
+          Array.isArray(response?.data?.operations)
+        ) {
+          console.log("Recibida operación diff:", response.data.operations);
+
+          // Solo podemos aplicar diffs si ya tenemos un dashboard
+          if (!dashboard) {
+            throw new Error(
+              "No se puede aplicar diff sin un dashboard existente"
+            );
+          }
+
+          // Crear estado actual para aplicar diffs
+          const currentState = {
+            dashboard: deepClone(dashboard),
+            widgets: deepClone(widgets || {}),
+          };
+
+          // Aplicar las operaciones JSON Patch
+          const result = applyPatch(currentState, response.data.operations);
+          const newState = result.newDocument;
+
+          console.log("Estado después de aplicar diffs:", newState);
+
+          // Guardar el estado resultante como checkpoint
+          const checkpoint: DashboardCheckpointState = {
+            dashboardState: newState.dashboard,
+            widgetsState: newState.widgets,
+          };
+
+          // Actualizar mensaje con el checkpoint
+          const updatedAssistantMessage: ChatMessage = {
+            ...assistantMessage,
+            isLoading: false,
+            content:
+              response.data.userMessage ||
+              "He actualizado el dashboard según tu petición.",
+            checkpoint,
+            isCurrentState: true,
+          };
+
+          setMessages([userMessage, updatedAssistantMessage]);
+
+          // Aplicar cambios al dashboard y widgets
+          applyDashboardChanges(checkpoint, newState.widgets);
+        }
+        // Si la respuesta tiene un dashboard completo
+        else if (response?.data?.dashboard) {
           // Procesar los widgets recibidos
           const widgetsData = response?.data?.widgets || {};
 
@@ -128,7 +179,9 @@ export const useIaDashboardGeneration = () => {
           // Aplicar cambios al dashboard y widgets
           applyDashboardChanges(checkpoint, widgetsData);
         } else {
-          throw new Error("La respuesta no contiene un dashboard válido");
+          throw new Error(
+            "La respuesta no contiene un dashboard válido ni operaciones diff"
+          );
         }
       } catch (err) {
         console.error("Error al generar el dashboard:", err);
@@ -194,14 +247,17 @@ export const useIaDashboardGeneration = () => {
               currentDashboard: {
                 ...dashboard,
                 isExistingDashboard: true, // Flag para indicar que es una modificación
-                dashboardWidgets: dashboard.widgets.reduce((acc, widgetId) => {
-                  // Solo incluir los widgets que existen en el store
-                  if (widgets && widgets[widgetId]) {
-                    acc[widgetId] = widgets[widgetId];
-                  }
-                  return acc;
-                }, {} as Record<string, Widget>),
+                // Importante: No usar dashboardWidgets que confunde al modelo
+                // En su lugar, enviar la estructura correcta que coincide con el estado real
               },
+              // Incluir los widgets como estructura separada, que es como se almacenan realmente
+              widgets: dashboard.widgets.reduce((acc, widgetId) => {
+                // Solo incluir los widgets que existen en el store
+                if (widgets && widgets[widgetId]) {
+                  acc[widgetId] = widgets[widgetId];
+                }
+                return acc;
+              }, {} as Record<string, Widget>),
             })
           : null;
 
@@ -235,16 +291,70 @@ export const useIaDashboardGeneration = () => {
           return;
         }
 
-        // Si la respuesta tiene un dashboard válido
-        if (response?.data?.dashboard) {
-          // Marcar todos los estados anteriores como no actuales
-          setMessages((prevMessages) =>
-            prevMessages.map((msg) => ({
-              ...msg,
-              isCurrentState: false,
-            }))
+        // Marcar todos los estados anteriores como no actuales
+        setMessages((prevMessages) =>
+          prevMessages.map((msg) => ({
+            ...msg,
+            isCurrentState: false,
+          }))
+        );
+
+        // Verificar si es una operación diff o un dashboard completo
+        if (
+          response?.data?.type === "diff_operations" &&
+          Array.isArray(response?.data?.operations)
+        ) {
+          console.log(
+            "Recibida operación diff (en continuación):",
+            response.data.operations
           );
 
+          // Solo podemos aplicar diffs si ya tenemos un dashboard
+          if (!dashboard) {
+            throw new Error(
+              "No se puede aplicar diff sin un dashboard existente"
+            );
+          }
+
+          // Crear estado actual para aplicar diffs
+          const currentState = {
+            dashboard: deepClone(dashboard),
+            widgets: deepClone(widgets || {}),
+          };
+
+          // Aplicar las operaciones JSON Patch
+          const result = applyPatch(currentState, response.data.operations);
+          const newState = result.newDocument;
+
+          console.log("Estado después de aplicar diffs:", newState);
+
+          // Guardar el estado resultante como checkpoint
+          const checkpoint: DashboardCheckpointState = {
+            dashboardState: newState.dashboard,
+            widgetsState: newState.widgets,
+          };
+
+          // Actualizar mensaje con el checkpoint
+          const updatedAssistantMessage: ChatMessage = {
+            ...assistantMessage,
+            isLoading: false,
+            content:
+              response.data.userMessage ||
+              "He actualizado el dashboard según tu petición.",
+            checkpoint,
+            isCurrentState: true,
+          };
+
+          setMessages((prevMessages) => [
+            ...prevMessages.slice(0, -1),
+            updatedAssistantMessage,
+          ]);
+
+          // Aplicar cambios al dashboard y widgets
+          applyDashboardChanges(checkpoint, newState.widgets);
+        }
+        // Si la respuesta tiene un dashboard completo
+        else if (response?.data?.dashboard) {
           // Procesar los widgets recibidos
           const widgetsData = response?.data?.widgets || {};
 
@@ -276,7 +386,9 @@ export const useIaDashboardGeneration = () => {
           // Aplicar cambios al dashboard y widgets
           applyDashboardChanges(checkpoint, widgetsData);
         } else {
-          throw new Error("La respuesta no contiene un dashboard válido");
+          throw new Error(
+            "La respuesta no contiene un dashboard válido ni operaciones diff"
+          );
         }
       } catch (err) {
         console.error("Error al actualizar el dashboard:", err);
