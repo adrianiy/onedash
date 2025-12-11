@@ -4,6 +4,8 @@ import { NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import { Widget, WidgetType } from "@/types/widget";
+import { RetryContext } from "@/types/iaChat";
+import { v4 as uuidv4 } from "uuid";
 import {
   simpleTemplate,
   advancedTemplate,
@@ -91,6 +93,134 @@ interface DashboardResponse {
 }
 
 /**
+ * Procesa las operaciones diff para asegurar que todos los widgets añadidos tengan un ID único
+ * @param operations Array de operaciones diff
+ * @returns Array de operaciones procesadas
+ */
+function processDiffOperations(operations: DiffOperation[]): DiffOperation[] {
+  if (!Array.isArray(operations)) return operations;
+
+  return operations.map((operation) => {
+    // Solo procesar operaciones de tipo "add" que añaden widgets nuevos
+    if (operation.op === "add" && operation.path.startsWith("/widgets/")) {
+      // Si el widget no tiene _id, añadir uno
+      if (
+        operation.value &&
+        typeof operation.value === "object" &&
+        !operation.value._id
+      ) {
+        console.log(`Añadiendo _id a widget en ruta: ${operation.path}`);
+        // Generar un ID único con uuid
+        operation.value._id = `widget_${uuidv4()}`;
+      }
+    }
+    return operation;
+  });
+}
+
+/**
+ * Detecta si un error es recuperable (puede ser reintentado)
+ * Los errores recuperables son aquellos relacionados con formato de JSON o estructura incorrecta
+ */
+function isRecoverableError(error: any): boolean {
+  if (!error) return false;
+
+  const errorMessage =
+    error instanceof Error
+      ? error.message
+      : typeof error === "string"
+      ? error
+      : String(error);
+
+  // Errores de parsing de JSON son recuperables
+  if (
+    errorMessage.includes("JSON") ||
+    errorMessage.includes("json") ||
+    errorMessage.includes("parse") ||
+    errorMessage.includes("syntax")
+  ) {
+    return true;
+  }
+
+  // Errores de estructura de dashboard son recuperables
+  if (
+    errorMessage.includes("dashboard") ||
+    errorMessage.includes("widgets") ||
+    errorMessage.includes("operations") ||
+    errorMessage.includes("diff")
+  ) {
+    return true;
+  }
+
+  // Por defecto, otros tipos de errores no son recuperables
+  return false;
+}
+
+/**
+ * Crea un contexto enriquecido para el reintento, incluyendo el error original
+ */
+function createRetryContext(error: any, originalResponse: any): RetryContext {
+  return {
+    originalMessage:
+      "Ha ocurrido un error al procesar la respuesta. Intentando corregir...",
+    errorDetails: error instanceof Error ? error.message : String(error),
+    failedResponse:
+      typeof originalResponse === "string"
+        ? originalResponse
+        : JSON.stringify(originalResponse, null, 2),
+    attempt: 1,
+  };
+}
+
+/**
+ * Procesa una solicitud a la IA con manejo de errores y reintentos
+ */
+async function processIARequest(
+  messages: any[],
+  kaiaMessages: any[],
+  context: any = null,
+  retryContext: RetryContext | null = null
+): Promise<DashboardResponse> {
+  try {
+    // Si es un reintento, añadir contexto de error para ayudar a la corrección
+    if (retryContext) {
+      console.log("Reintentando con contexto de error:", retryContext);
+
+      // Añadir mensaje de sistema con información del error para ayudar a la IA a corregirlo
+      kaiaMessages.unshift({
+        type: "ai",
+        content: `
+IMPORTANTE: El mensaje anterior generó un error. Por favor, corrige los siguientes problemas:
+
+ERROR DETECTADO: ${retryContext.errorDetails}
+
+RESPUESTA PROBLEMÁTICA: 
+${retryContext.failedResponse}
+
+INSTRUCCIONES PARA CORRECCIÓN:
+1. Si el error es de formato JSON, asegúrate de generar un JSON válido sin errores de sintaxis
+2. Si el error es de estructura, verifica que estés usando las rutas correctas en operaciones diff o incluyendo todos los campos requeridos
+3. No cambies el contenido semántico o la intención de la respuesta, solo corrige los errores técnicos
+4. Genera una respuesta completa válida, no solo la parte con errores
+
+Este es un reintento automático para evitar mostrar un error al usuario. Por favor, genera una versión corregida.`,
+      });
+    }
+
+    // Llamada a KAIA para procesar los mensajes
+    const response = await kaiaRequest<DashboardResponse>("/agent", "POST", {
+      messages: kaiaMessages,
+      model: "gpt-41",
+    });
+
+    return response;
+  } catch (error) {
+    console.error("Error en la solicitud a KAIA:", error);
+    throw error; // Re-lanzar para manejo en el nivel superior
+  }
+}
+
+/**
  * Transforma un dashboard con widgets en formato array a un dashboard con widgets como IDs
  * y un objeto separado con los widgets indexados por ID
  */
@@ -108,8 +238,8 @@ function transformToDashboard(dashboardData: any): TransformedDashboardResult {
   const widgetIds: string[] = [];
 
   dashboard.widgets.forEach((widget: any, index: number) => {
-    // Asegurar que el widget tenga un ID único
-    const widgetId = widget._id || `widget_${Date.now()}_${index}`;
+    // Asegurar que el widget tenga un ID único usando uuid para garantizar unicidad
+    const widgetId = widget._id || `widget_${uuidv4()}`;
     widget._id = widgetId;
 
     // Guardar el widget en el mapa usando su ID como clave
@@ -144,10 +274,10 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
 
   if (req.method === "POST") {
     try {
-      const { prompt, context } = req.body;
+      const { messages, context } = req.body;
 
-      if (!prompt) {
-        return res.status(400).json({ message: "Prompt is required" });
+      if (!messages || !Array.isArray(messages) || messages.length === 0) {
+        return res.status(400).json({ message: "Messages array is required" });
       }
 
       // Extraer información de plantillas para enriquecer el contexto
@@ -161,6 +291,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
           layouts: simpleTemplate.layouts,
           widgets: simpleTemplate.widgets.reduce((acc: any, w: Widget) => {
             acc[w._id] = {
+              _id: w._id,
               type: w.type,
               title: w.title,
               description: w.description,
@@ -177,6 +308,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
           layouts: advancedTemplate.layouts,
           widgets: advancedTemplate.widgets.reduce((acc: any, w: Widget) => {
             acc[w._id] = {
+              _id: w._id,
               type: w.type,
               title: w.title,
               description: w.description,
@@ -193,6 +325,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
           layouts: detailTemplate.layouts,
           widgets: detailTemplate.widgets.reduce((acc: any, w: Widget) => {
             acc[w._id] = {
+              _id: w._id,
               type: w.type,
               title: w.title,
               description: w.description,
@@ -230,12 +363,11 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         ? `Eres un experto en diseño de dashboards de análisis de datos especializado en MODIFICAR dashboards existentes según peticiones en lenguaje natural. Tu tarea es interpretar peticiones y aplicar cambios específicos al dashboard existente que se te proporciona en el contexto, manteniendo la estructura general pero realizando las modificaciones solicitadas.`
         : `Eres un experto en diseño de dashboards de análisis de datos especializado en transformar peticiones en lenguaje natural a configuraciones técnicas completas de dashboards para análisis de negocio. Tu tarea es interpretar peticiones y convertirlas en una configuración estructurada de dashboard completo, incluyendo distintos widgets como métricas, gráficas y tablas, con su configuración y distribución en el layout.`;
 
-      // Llamada a KAIA para procesar el prompt
-      const response = await kaiaRequest<DashboardResponse>("/agent", "POST", {
-        messages: [
-          {
-            type: "ai",
-            content: `${promptIntro}
+      // Procesar los mensajes recibidos para la llamada a KAIA
+      const kaiaMessages = [
+        {
+          type: "ai",
+          content: `${promptIntro}
 
 ${
   isModification
@@ -278,7 +410,7 @@ Utiliza este formato para tu respuesta:
     }
   ],
   "userMessage": "He actualizado el dashboard según tu petición",
-  "suggestions": ["¿Quieres que aumente el tamaño de las métricas?"]
+  "suggestions": ["Aumentar el tamaño de las métricas", "Añadir más widgets de comparación"]
 }
 \`\`\`
 
@@ -398,7 +530,7 @@ INCORRECTO: "/dashboard/widgets/widget_123/title" (widgets no está dentro de da
     : ""
 }
 
-IMPORTANTE: DEBES generar un objeto JSON completo que incluya la configuración técnica del dashboard. NO solo generes una respuesta conversacional. El objeto JSON DEBE seguir exactamente la estructura que te indicaré más adelante.
+IMPORTANTE: DEBES generar un objeto JSON completo que incluya la configuración técnica del dashboard SOLO SI dispones de información completa para configurar todos los campos obligatorios. Si la petición del usuario es ambigua o incompleta, DEBES utilizar el campo "needsMoreInfo" para solicitar la información faltante. NO INVENTES ni ASUMAS valores que el usuario no haya especificado explícitamente.
 
 ## CONTEXTO DE NEGOCIO:
 Los datos se refieren a métricas de ventas y pedidos de una empresa retail, donde los usuarios necesitan analizar diferentes indicadores (importe, unidades, pedidos) con varios modificadores para obtener insights de negocio.
@@ -411,8 +543,9 @@ Los datos se refieren a métricas de ventas y pedidos de una empresa retail, don
    - Tamaño recomendado: w=8, h=2 (en desktop)
 
 2. GRÁFICA (chart): Para visualizar datos y tendencias
-   - Gráficos de barras para análisis comparativos y temporales
-   - Puede incluir múltiples series de datos
+   - IMPORTANTE: Actualmente SOLO está disponible el tipo "bar" (gráfico de barras)
+   - Permite visualizar comparativas y tendencias con barras verticales u horizontales
+   - Puede incluir múltiples series de datos (máximo recomendado: 5 series)
    - Tamaño recomendado: w=12, h=4 (en desktop)
 
 3. TABLA (table): Para mostrar datos detallados
@@ -464,6 +597,11 @@ ${JSON.stringify(templateContext, null, 2)}
    - Métricas y KPIs requeridos
    - Periodo de análisis
    - Cualquier visualización específica mencionada
+   
+   IMPORTANTE: Si la petición no especifica explícitamente algún elemento obligatorio, DEBES PREGUNTAR al usuario. Por ejemplo:
+   - Si pide "añade un KPI" sin especificar qué indicador (importe, unidades, pedidos), DEBES preguntar
+   - Si pide una métrica de "importe" o "unidades" pero no especifica el tipo de venta (bruto, neto, devos), DEBES preguntar
+   - Si pide una tabla pero no especifica qué columnas incluir, DEBES preguntar
 
 2. Genera un dashboard completo con:
    - Nombre descriptivo y relevante
@@ -481,22 +619,152 @@ ${JSON.stringify(templateContext, null, 2)}
 3. Genera una respuesta conversacional amigable que:
    - Explique al usuario qué has creado
    - Mencione los widgets y métricas incluidas
-   - Sugiera posibles mejoras o adiciones
-   - Pregunte si desea realizar cambios específicos
+   - Incluya sugerencias en formato imperativo/afirmativo
+   
+4. Formato de sugerencias:
+   - NUNCA formules sugerencias como preguntas (ej. "¿Te gustaría añadir...?")
+   - SIEMPRE usa frases completas y específicas que puedan ser comprendidas como prompts completos
+   - Cada sugerencia debe ser una instrucción clara y detallada que el modelo de IA pueda entender
+   - Incluye todos los detalles necesarios para ejecutar la acción correctamente
+   
+   Ejemplos CORRECTOS:
+   - "Cambia el indicador del primer KPI a unidades vendidas brutas"
+   - "Modifica el periodo de análisis a últimos 3 meses"
+   - "Añade una tabla con desglose por categoría y producto"
+   - "Crea un gráfico de barras comparando ventas por país"
+   
+   Ejemplos INCORRECTOS:
+   - "Cambiar el indicador" (demasiado genérico)
+   - "Añadir métrica" (falta especificidad)
+   - "Mostrar más datos" (ambiguo)
+   - "¿Quieres añadir un gráfico de tendencias?" (pregunta)
 
-4. Si la petición es ambigua o incompleta:
-   - Solicita información adicional específica
-   - Explica qué detalles necesitas y por qué son importantes
-   - Sugiere opciones para ayudar al usuario a decidir
+4. GESTIÓN DE PETICIONES AMBIGUAS O INCOMPLETAS:
+   
+   Es CRUCIAL que no asumas valores por defecto para campos obligatorios. SIEMPRE que la petición no contenga información suficiente para configurar correctamente un widget:
+   
+   - Utiliza el campo "needsMoreInfo" para solicitar información específica
+   - Formula preguntas claras y directas
+   - Explica qué información se necesita exactamente y por qué es importante
+   - Si es apropiado, ofrece opciones entre las que el usuario pueda elegir
+   - Si el dashboard ya tiene widgets, usa ese contexto para hacer preguntas más relevantes
 
-5. NUNCA omitas la configuración del dashboard:
-   - SIEMPRE debes incluir el objeto "dashboard" completo
-   - SIEMPRE incluye widgets con configuración detallada
-   - NO generes respuestas que solo incluyan "userMessage" sin configuración
+   VALIDACIONES OBLIGATORIAS:
+   - Para métricas de "importe" y "unidades": SIEMPRE exigir "saleType" (bruto/neto/devos) y "calculation"
+   - Para métricas de "pedidos": SIEMPRE exigir "calculation"
+   - Para tablas: SIEMPRE exigir qué columnas incluir y al menos un nivel de desglose
+   - Para gráficos: SIEMPRE exigir qué métricas mostrar
+   - Para comparaciones: SIEMPRE exigir qué métricas comparar
+   
+   EJEMPLOS DE RESPUESTAS ANTE PETICIONES AMBIGUAS:
+   
+   1. Si el usuario dice: "Añade un KPI"
+      RESPUESTA CORRECTA:
+      \`\`\`
+      {
+        "userMessage": "Para añadir un KPI, necesito saber qué tipo de indicador quieres mostrar. Hay varias métricas disponibles que podríamos visualizar.",
+        "needsMoreInfo": {
+          "question": "¿Qué tipo de indicador quieres mostrar en el KPI?",
+          "context": "Opciones disponibles: importe (valor monetario), unidades (cantidad de productos vendidos) o pedidos (número de órdenes). Cada uno requiere configuración específica para mostrarse correctamente."
+        }
+      }
+      \`\`\`
+      
+   2. Si el usuario dice: "Añade una métrica de importe"
+      RESPUESTA CORRECTA:
+      \`\`\`
+      {
+        "userMessage": "Para añadir una métrica de importe, necesito especificaciones adicionales. El sistema requiere conocer el tipo de venta y el cálculo a realizar.",
+        "needsMoreInfo": {
+          "question": "¿Qué tipo de venta y cálculo quieres para la métrica de importe?",
+          "context": "Para el tipo de venta: bruto (total sin devoluciones), neto (descontando devoluciones) o devos (solo devoluciones). Para el cálculo: valor (cifra absoluta), crecimiento (variación porcentual) o peso (proporción sobre el total)."
+        }
+      }
+      \`\`\`
+      
+   3. Si el usuario dice: "Añade una tabla con desglose por país"
+      RESPUESTA CORRECTA:
+      \`\`\`
+      {
+        "userMessage": "Para crear la tabla con desglose por país, necesito saber qué métricas quieres visualizar como columnas.",
+        "needsMoreInfo": {
+          "question": "¿Qué métricas quieres mostrar en las columnas de la tabla?",
+          "context": "Puedes elegir entre: importe (valor monetario), unidades (cantidad de productos) o pedidos (número de órdenes). También puedes especificar si quieres ver valores brutos, netos, crecimiento, etc."
+        }
+      }
+      \`\`\`
+      
+   4. Si el contexto tiene KPIs de unidades y el usuario dice: "Añade un gráfico"
+      RESPUESTA CORRECTA:
+      \`\`\`
+      {
+        "userMessage": "Para añadir un gráfico complementario a tus KPIs de unidades, necesito algunos detalles adicionales.",
+        "needsMoreInfo": {
+          "question": "¿Qué métricas quieres visualizar en el gráfico y con qué desglose?",
+          "context": "Veo que ya tienes KPIs de unidades. ¿Quieres un gráfico que muestre la evolución de unidades por tiempo (días, semanas, meses), o prefieres un desglose por otra dimensión como producto, categoría o país?"
+        }
+      }
+      \`\`\`
+      
+   EJEMPLOS DE LO QUE NO DEBES HACER:
+   
+   1. INCORRECTO: Asumir valores por defecto
+      \`\`\`
+      {
+        "dashboard": {
+          "widgets": [{
+            "type": "metric",
+            "title": "KPI de Importe",  /* Asumiendo importe sin preguntar */
+            "config": {
+              "primaryMetric": {
+                "indicator": "importe",
+                "modifiers": {
+                  "saleType": "bruto",  /* Asumiendo bruto sin preguntar */
+                  "calculation": "valor" /* Asumiendo valor sin preguntar */
+                }
+              }
+            }
+          }]
+        }
+      }
+      \`\`\`
+      
+   2. INCORRECTO: Hacer preguntas genéricas que no ayudan a configurar los campos obligatorios
+      \`\`\`
+      {
+        "userMessage": "¿Qué tipo de widget quieres añadir?",
+        "needsMoreInfo": {
+          "question": "¿Qué datos quieres ver?", /* Demasiado genérica */
+          "context": "Hay muchas opciones disponibles."  /* No ofrece opciones concretas */
+        }
+      }
+      \`\`\`
+
+5. NUNCA generes una respuesta con configuración completa si la información es insuficiente:
+   - Si falta información crítica, utiliza EXCLUSIVAMENTE "needsMoreInfo"
+   - NO rellenes campos obligatorios con valores por defecto o asumidos
+   - NO generes widgets parcialmente configurados o con configuración inválida
+   - Solo cuando tengas TODA la información necesaria, incluye el objeto "dashboard" completo
 
 ## FORMATO DE RESPUESTA:
 
-IMPORTANTE: Debes responder ÚNICAMENTE con un JSON válido que contenga EXACTAMENTE la siguiente estructura, sin texto explicativo antes o después del JSON:
+IMPORTANTE: Hay DOS formatos de respuesta válidos dependiendo de si necesitas más información o no:
+
+1. SI LA INFORMACIÓN ES COMPLETA: Responde con un JSON completo que incluya la configuración del dashboard
+2. SI LA INFORMACIÓN ES INSUFICIENTE: Responde ÚNICAMENTE con un JSON que incluya el campo "needsMoreInfo"
+
+Estructura JSON cuando FALTE información:
+\`\`\`
+{
+  "userMessage": "Mensaje conversacional explicando por qué necesitas más información",
+  "needsMoreInfo": {
+    "question": "Pregunta clara y específica sobre lo que necesitas saber",
+    "context": "Explicación de por qué esta información es importante y opciones disponibles"
+  }
+}
+\`\`\`
+
+Estructura JSON cuando TODA la información esté COMPLETA:
 
 \`\`\`json
 {
@@ -513,7 +781,7 @@ IMPORTANTE: Debes responder ÚNICAMENTE con un JSON válido que contenga EXACTAM
           // Configuración específica según tipo de widget
           // Para métricas:
           "primaryMetric": {
-            "id": "metrica1",
+            "id": "importe_saleType_bruto_calculation_valor", // IMPORTANTE: Siempre generar IDs únicos usando indicador y modificadores
             "indicator": "importe|unidades|pedidos",
             "title": "Título personalizado (opcional)",
             "modifiers": {
@@ -537,24 +805,67 @@ IMPORTANTE: Debes responder ÚNICAMENTE con un JSON válido que contenga EXACTAM
           },
           "size": "small|medium|large",
           "alignment": "left|center|right",
-          "visualization": { "showTitle": true }
+          "visualization": { "showTitle": false }
           
           // Para gráficos:
-          "chartType": "bar|line|pie|area",
+          "chartType": "bar", // IMPORTANTE: Actualmente SOLO "bar" está implementado
           "xAxisDimension": "tiempo|producto|categoría",
           "series": [],
           "data": [],
-          "visualization": { "showTitle": true, "showLegend": true, "showGrid": true }
+          "visualization": { 
+            "showTitle": false, 
+            "showLegend": true, 
+            "showGrid": true,
+            "showValues": false,
+            "showXAxis": true,
+            "showYAxis": true,
+            "rotateXLabels": false,
+            "chartOrientation": "vertical|horizontal",
+            "barWidth": 0.06,
+            "barGap": 2,
+            "colorMode": "default|palette|custom",
+            "colorPalette": "default|black|blue|violet|green",
+            /* IMPORTANTE: Reglas para colorMode y colorPalette:
+               1. Si colorPalette es "default", colorMode debe ser "default"
+               2. Si colorPalette es cualquier otro valor (black, blue, violet, green), colorMode DEBE ser "palette"
+               3. Si se quiere usar colores personalizados, colorMode debe ser "custom" y usar customColors
+               Ejemplos correctos:
+               - { colorMode: "default", colorPalette: "default" }
+               - { colorMode: "palette", colorPalette: "green" }
+               - { colorMode: "palette", colorPalette: "blue" }
+               - { colorMode: "custom", customColors: ["#ff0000", "#00ff00"] }
+               Ejemplos INCORRECTOS:
+               - { colorMode: "default", colorPalette: "green" } <- ERROR
+               - { colorMode: "custom", colorPalette: "blue" } <- ERROR
+            */
+            "legendPosition": {
+              "vertical": "bottom|top",
+              "horizontal": "center|left|right"
+            }
+          }
           
           // Para tablas:
-          "columns": [], // Métricas a mostrar como columnas (importe, unidades, pedidos)
+          "columns": [
+            {
+              "id": "importe_saleType_neto_calculation_valor", // IMPORTANTE: Siempre incluir IDs únicos para cada columna
+              "indicator": "importe",
+              "modifiers": {
+                "saleType": "neto",
+                "timeframe": "mes",
+                "comparison": "actual", 
+                "calculation": "valor"
+              },
+              "title": "Importe",
+              "width": 120
+            }
+          ], // Métricas a mostrar como columnas (importe, unidades, pedidos)
           "data": [],
           // IMPORTANTE: Solo usar valores EXACTOS de esta lista en breakdownLevels:
           // Geográfico: 'zone' (Zona), 'country' (País), 'city' (Ciudad), 'store' (Tienda)
           // Comercial: 'product' (Producto), 'section' (Sección), 'family' (Familia), 'buyer' (Comprador)
           // Temporal: 'day' (Día), 'week' (Semana), 'month' (Mes), 'quarter' (Quarter), 'year' (Año)
           "breakdownLevels": [],
-          "visualization": { "showTitle": true, "compact": false, "showBorders": true, "alternateRowColors": true }
+          "visualization": { "showTitle": false, "compact": false, "showBorders": true, "alternateRowColors": true }
           
           // Para comparación:
           "dimension": "tiempo|métrica|custom",
@@ -564,7 +875,30 @@ IMPORTANTE: Debes responder ÚNICAMENTE con un JSON válido que contenga EXACTAM
           // Si dimension es tiempo o métrica:
           "primaryMetric": {},
           "secondaryMetric": {},
-          "visualization": { "showTitle": true, "showLegend": true }
+          "visualization": { 
+            "showTitle": false, 
+            "showLegend": true, 
+            "showGrid": true,
+            "showValues": false,
+            "showXAxis": true,
+            "showYAxis": true,
+            "colorMode": "default|palette|custom",
+            "colorPalette": "default|black|blue|violet|green",
+            /* IMPORTANTE: Reglas para colorMode y colorPalette:
+               1. Si colorPalette es "default", colorMode debe ser "default"
+               2. Si colorPalette es cualquier otro valor (black, blue, violet, green), colorMode DEBE ser "palette"
+               3. Si se quiere usar colores personalizados, colorMode debe ser "custom" y usar customColors
+               Ejemplos correctos:
+               - { colorMode: "default", colorPalette: "default" }
+               - { colorMode: "palette", colorPalette: "green" }
+               - { colorMode: "palette", colorPalette: "blue" }
+               - { colorMode: "custom", customColors: ["#ff0000", "#00ff00"] }
+               Ejemplos INCORRECTOS:
+               - { colorMode: "default", colorPalette: "green" } <- ERROR
+               - { colorMode: "custom", colorPalette: "blue" } <- ERROR
+            */
+            "valueFormat": "auto|currency|percent|integer|decimal"
+          }
         }
         // IMPORTANTE: NO INCLUIR coordenadas x, y, w, h aquí. Deben ir en layouts
       }
@@ -594,8 +928,11 @@ IMPORTANTE: Debes responder ÚNICAMENTE con un JSON válido que contenga EXACTAM
   },
   "userMessage": "Mensaje conversacional para el usuario explicando el dashboard",
   "suggestions": [
-    "Sugerencia 1 para mejorar el dashboard",
-    "Sugerencia 2 para mejorar el dashboard"
+    "Añade un gráfico de barras mostrando la evolución de ventas por semana",
+    "Cambia el indicador de la primera métrica a unidades vendidas netas",
+    "Crea una tabla detallada con desglose por categoría y producto",
+    "Modifica el layout para mostrar 4 métricas en la primera fila en lugar de 3",
+    "Añade una comparativa entre ventas actuales y del año anterior por categoría"
   ],
   "needsMoreInfo": {
     "question": "", // Dejar vacío si no se necesita más información
@@ -604,15 +941,94 @@ IMPORTANTE: Debes responder ÚNICAMENTE con un JSON válido que contenga EXACTAM
 }
 \`\`\`
 
-Si la petición es clara y completa, los campos 'needsMoreInfo.question' y 'needsMoreInfo.context' deben estar vacíos.
-Si necesitas más información, debes indicar una pregunta específica en 'needsMoreInfo.question' y explicar por qué en 'needsMoreInfo.context'.
+IMPORTANTE:
+- NUNCA incluyas simultáneamente "dashboard" y "needsMoreInfo" con valores no vacíos
+- Si necesitas más información, responde SOLO con el objeto que tiene "userMessage" y "needsMoreInfo"
+- Si toda la información es completa, responde con el objeto completo que incluye "dashboard"
+- NO generes configuraciones parciales o asumas valores por defecto
+
+EJEMPLOS DE PETICIONES AMBIGUAS QUE REQUIEREN PREGUNTAR:
+
+1. "Añade un KPI" → DEBES preguntar qué tipo de indicador (importe, unidades, pedidos)
+   Respuesta adecuada:
+   \`\`\`
+   {
+     "userMessage": "Para añadir un KPI necesito saber qué indicador quieres mostrar",
+     "needsMoreInfo": {
+       "question": "¿Qué tipo de indicador quieres mostrar en el KPI?",
+       "context": "Puedes elegir entre: importe (valor monetario), unidades (cantidad de productos) o pedidos (número de órdenes)"
+     }
+   }
+   \`\`\`
+
+2. "Añade una métrica de importe" → DEBES preguntar tipo de venta (bruto, neto, devos) y cálculo
+   Respuesta adecuada:
+   \`\`\`
+   {
+     "userMessage": "Para configurar la métrica de importe necesito información adicional",
+     "needsMoreInfo": {
+       "question": "¿Qué tipo de venta y qué cálculo quieres para la métrica de importe?",
+       "context": "Para tipo de venta: bruto (total sin devoluciones), neto (descontando devoluciones) o devos (solo devoluciones). Para cálculo: valor (cifra absoluta), crecimiento (variación porcentual) o peso (proporción sobre el total)"
+     }
+   }
+   \`\`\`
+
+3. "Crea una tabla con datos por país" → DEBES preguntar qué columnas/métricas mostrar
+   Respuesta adecuada:
+   \`\`\`
+   {
+     "userMessage": "Para crear la tabla con desglose por país necesito definir qué métricas mostrar",
+     "needsMoreInfo": {
+       "question": "¿Qué métricas quieres incluir como columnas en la tabla por país?",
+       "context": "Puedes elegir entre importe, unidades o pedidos, y especificar si quieres valores absolutos, crecimiento, etc."
+     }
+   }
+   \`\`\`
+
+4. "Añade un gráfico comparativo" → DEBES preguntar qué métricas comparar
+   Respuesta adecuada:
+   \`\`\`
+   {
+     "userMessage": "Para crear el gráfico comparativo necesito definir qué métricas quieres comparar",
+     "needsMoreInfo": {
+       "question": "¿Qué métricas deseas comparar en el gráfico?",
+       "context": "Puedes comparar diferentes indicadores (ej: importe vs unidades) o el mismo indicador en diferentes periodos (ej: ventas actuales vs año anterior)"
+     }
+   }
+   \`\`\`
+
+## USO DE CONTEXTO DEL DASHBOARD EXISTENTE:
+
+Cuando el dashboard ya tenga widgets existentes y la petición sea ambigua, debes utilizar este contexto para hacer preguntas más relevantes:
+
+1. ANALIZA LOS WIDGETS EXISTENTES:
+   - Identifica qué indicadores predominan (importe, unidades, pedidos)
+   - Detecta los tipos de venta más usados (bruto, neto)
+   - Observa las dimensiones de análisis ya empleadas (tiempo, país, categoría)
+   
+2. UTILIZA ESTE CONTEXTO EN TUS PREGUNTAS:
+   Ejemplo: Si el usuario dice "añade un gráfico" y el dashboard ya tiene KPIs de unidades netas:
+   \`\`\`
+   {
+     "userMessage": "Para complementar tus KPIs de unidades netas, podría añadir un gráfico. Necesito algunos detalles adicionales.",
+     "needsMoreInfo": {
+       "question": "¿Quieres un gráfico que muestre la evolución de unidades netas o prefieres otra métrica?",
+       "context": "He notado que tu dashboard está enfocado en unidades netas. Puedo añadir un gráfico que muestre su evolución temporal o desglose por otra dimensión (país, categoría, etc.)."
+     }
+   }
+   \`\`\`
+
+3. SUGIERE OPCIONES CONTEXTUALES:
+   - Si el dashboard tiene métricas de valor, sugiere añadir crecimiento
+   - Si tiene datos de importe, sugiere añadir unidades como complemento
+   - Si hay datos actuales, sugiere comparaciones con períodos anteriores
 
 ## IMPORTANTE:
 - Tu respuesta debe ser SIEMPRE un JSON válido y parseable
-- NUNCA omitas el objeto "dashboard" ni sus widgets
-- DEBES incluir al menos 3 widgets en cada dashboard
-- El campo "needsMoreInfo.question" debe estar VACÍO si NO necesitas más información
-- SÓLO incluye una pregunta en "needsMoreInfo.question" si REALMENTE necesitas más información del usuario
+- NUNCA generes un dashboard con información incompleta o asumida
+- Si la petición es clara y completa, incluye al menos 3 widgets en cada dashboard
+- Si la petición es ambigua o incompleta, usa ÚNICAMENTE el formato con "needsMoreInfo"
+- RECUERDA: Es mejor preguntar que asumir incorrectamente lo que el usuario quiere
 
 ## ASPECTOS CRÍTICOS DEL FORMATO:
 1. Los widgets NO deben tener propiedades x, y, w, h directamente en ellos
@@ -628,20 +1044,56 @@ Si necesitas más información, debes indicar una pregunta específica en 'needs
 - Asegúrate de que tu respuesta sea en español. Si el usuario escribe en inglés, responde en español igualmente.
 - La estructura JSON debe ser exactamente como se indicó, ya que será procesada automáticamente.
 - NO agregues comentarios fuera del JSON, solo responde con el objeto JSON.`,
-          },
-          {
-            type: "human",
-            content:
-              prompt +
-              (isModification
-                ? `\n\nModifica el dashboard existente según esta petición.`
-                : ""),
-          },
-        ],
-        model: "gpt-41",
-      });
+        },
+        ...messages, // Incluir todos los mensajes del historial
+      ];
 
-      console.log(response);
+      // Procesar la solicitud con el sistema de reintento automático
+      let response: DashboardResponse;
+      try {
+        // Primer intento
+        response = await processIARequest(messages, kaiaMessages, context);
+        console.log("Respuesta procesada correctamente en el primer intento");
+      } catch (error) {
+        // Si el error es recuperable, hacer un segundo intento con contexto de error
+        if (isRecoverableError(error)) {
+          console.log(
+            "Error recuperable detectado, intentando reintentar:",
+            error
+          );
+
+          // Crear contexto para el reintento
+          const errorResponse =
+            error instanceof Error && (error as any).response
+              ? (error as any).response
+              : "Respuesta no disponible";
+
+          const retryContext = createRetryContext(error, errorResponse);
+
+          try {
+            // Segundo intento con contexto de error
+            response = await processIARequest(
+              messages,
+              kaiaMessages,
+              context,
+              retryContext
+            );
+            console.log(
+              "Respuesta procesada correctamente en el segundo intento"
+            );
+          } catch (secondError) {
+            // Si falla el segundo intento, registrar y lanzar el error
+            console.error("Error en el segundo intento:", secondError);
+            throw secondError;
+          }
+        } else {
+          // Si no es recuperable, relanzar el error
+          console.error("Error no recuperable:", error);
+          throw error;
+        }
+      }
+
+      console.log("Respuesta final:", response);
 
       // Extraer los datos de la respuesta según el formato recibido
       let dashboardData: DashboardIAResponse | null = null;
@@ -651,11 +1103,14 @@ Si necesitas más información, debes indicar una pregunta específica en 'needs
         response?.type === "diff_operations" &&
         Array.isArray(response.operations)
       ) {
-        // Devolver directamente las operaciones diff sin transformar el dashboard
+        // Procesar operaciones diff para asegurar que los widgets añadidos tengan ID
+        const processedOperations = processDiffOperations(response.operations);
+
+        // Devolver las operaciones diff procesadas
         return res.status(200).json({
           data: {
             type: "diff_operations",
-            operations: response.operations,
+            operations: processedOperations,
             userMessage: response.userMessage || "",
             suggestions: response.suggestions || [],
           },
@@ -685,9 +1140,46 @@ Si necesitas más información, debes indicar una pregunta específica en 'needs
             console.log("JSON extraído del bloque de código:", cleanContent);
           }
 
-          // Intentar parsear el JSON limpio
-          const parsedContent = JSON.parse(cleanContent);
-          console.log("JSON parseado:", parsedContent);
+          // Intentar parsear el JSON limpio con manejo robusto de errores
+          let parsedContent;
+          try {
+            parsedContent = JSON.parse(cleanContent);
+            console.log("JSON parseado correctamente:", parsedContent);
+          } catch (error: any) {
+            const jsonError = error;
+            console.error("Error al parsear JSON:", jsonError);
+            console.log("Intentando reparar JSON malformado...");
+
+            // Intentar algunas reparaciones comunes de JSON malformado
+            let repairAttempt = cleanContent;
+
+            // Reparar comillas simples incorrectas
+            repairAttempt = repairAttempt.replace(/(['"])(.*?)\1/g, (match) => {
+              return match.replace(/'/g, '"');
+            });
+
+            // Reparar propiedades sin comillas
+            repairAttempt = repairAttempt.replace(
+              /([{,]\s*)([a-zA-Z_][a-zA-Z0-9_]*)(\s*:)/g,
+              '$1"$2"$3'
+            );
+
+            // Reparar comillas faltantes en valores string
+            repairAttempt = repairAttempt.replace(
+              /:\s*([^",\{\}\[\]\s][^,\{\}\[\]\s]*)/g,
+              ':"$1"'
+            );
+
+            try {
+              parsedContent = JSON.parse(repairAttempt);
+              console.log("JSON reparado y parseado correctamente");
+            } catch (repairError) {
+              console.error("No se pudo reparar el JSON:", repairError);
+              throw new Error(
+                `Error al parsear JSON: ${jsonError.message}. No se pudo reparar automáticamente.`
+              );
+            }
+          }
 
           // Verificar si es una respuesta tipo diff_operations
           if (
@@ -704,7 +1196,24 @@ Si necesitas más información, debes indicar una pregunta específica en 'needs
             });
           }
 
-          // Verificar que el dashboard esté presente para formato completo
+          // PRIMERO: Verificar si es una respuesta needsMoreInfo
+          if (
+            parsedContent.needsMoreInfo?.question &&
+            parsedContent.needsMoreInfo.question.trim() !== ""
+          ) {
+            console.log(
+              "Se requiere información adicional:",
+              parsedContent.needsMoreInfo
+            );
+            return res.status(200).json({
+              data: {
+                needsMoreInfo: parsedContent.needsMoreInfo,
+                userMessage: parsedContent.userMessage || "",
+              },
+            });
+          }
+
+          // DESPUÉS: Verificar que el dashboard esté presente para formato completo
           if (!parsedContent.dashboard) {
             console.error(
               "La respuesta no contiene el objeto dashboard ni operaciones diff:",

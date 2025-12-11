@@ -4,6 +4,36 @@ import { ChatMessage } from "./ChatMessage";
 import { useIaDashboardGeneration } from "@/hooks/useIaDashboardGeneration";
 import { useUIStore } from "@/store/uiStore";
 
+// Hook personalizado para auto-resize del textarea
+const useTextareaAutoResize = (value: string, maxRows: number = 3) => {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    // Reset height to calculate scrollHeight properly
+    textarea.style.height = "auto";
+
+    // Calculate required height
+    const lineHeight = 24; // Aproximadamente 1.5rem
+    const minHeight = lineHeight;
+    const maxHeight = lineHeight * maxRows;
+    const scrollHeight = textarea.scrollHeight;
+
+    // Set appropriate height
+    if (scrollHeight <= maxHeight) {
+      textarea.style.height = `${Math.max(scrollHeight, minHeight)}px`;
+      textarea.style.overflowY = "hidden";
+    } else {
+      textarea.style.height = `${maxHeight}px`;
+      textarea.style.overflowY = "auto";
+    }
+  }, [value, maxRows]);
+
+  return textareaRef;
+};
+
 interface DashboardChatSidebarProps {
   isOpen: boolean;
   onClose: () => void;
@@ -16,7 +46,9 @@ export const DashboardChatSidebar: React.FC<DashboardChatSidebarProps> = ({
   // Input para nuevo mensaje
   const [newMessage, setNewMessage] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Usamos el hook de auto-resize para el textarea
+  const inputRef = useTextareaAutoResize(newMessage);
 
   // Hook de IA
   const {
@@ -37,6 +69,17 @@ export const DashboardChatSidebar: React.FC<DashboardChatSidebarProps> = ({
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
+
+  // Recuperar el foco en el input cuando termina la carga (la IA ha respondido)
+  useEffect(() => {
+    // Cuando isLoading cambia de true a false, significa que la IA ha respondido
+    if (!isLoading && inputRef.current) {
+      // Pequeño timeout para asegurar que todos los cambios de DOM se han completado
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 50);
+    }
+  }, [isLoading]);
 
   // Al abrir el sidebar, hacer foco en el input y establecer mensaje preparado
   useEffect(() => {
@@ -124,7 +167,7 @@ export const DashboardChatSidebar: React.FC<DashboardChatSidebarProps> = ({
         <div className="dashboard-chat-sidebar__header">
           <h3 className="dashboard-chat-sidebar__title">
             <Icon name="zap" size={20} />
-            Asistente de Dashboard
+            OneDashboard AI
           </h3>
 
           <div className="dashboard-chat-sidebar__actions">
@@ -205,6 +248,11 @@ export const DashboardChatSidebar: React.FC<DashboardChatSidebarProps> = ({
                   onRestore={handleRestoreCheckpoint}
                   onTruncateHistory={handleTruncateHistory}
                   isLastMessage={index === messages.length - 1}
+                  onSuggestionClick={(suggestion) => {
+                    if (suggestion.trim() && !isLoading) {
+                      sendMessage(suggestion);
+                    }
+                  }}
                 />
               ))}
               <div ref={messagesEndRef} />

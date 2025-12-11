@@ -55,7 +55,7 @@ export const detailTemplate: DashboardTemplate = {
         size: "medium",
         alignment: "center",
         visualization: {
-          showTitle: true,
+          showTitle: false,
           filterDisplayMode: "badges",
         },
       },
@@ -95,7 +95,7 @@ export const detailTemplate: DashboardTemplate = {
         size: "medium",
         alignment: "center",
         visualization: {
-          showTitle: true,
+          showTitle: false,
           filterDisplayMode: "badges",
         },
       },
@@ -133,7 +133,7 @@ export const detailTemplate: DashboardTemplate = {
         size: "medium",
         alignment: "center",
         visualization: {
-          showTitle: true,
+          showTitle: false,
           filterDisplayMode: "badges",
         },
       },
@@ -173,7 +173,7 @@ export const detailTemplate: DashboardTemplate = {
         size: "medium",
         alignment: "center",
         visualization: {
-          showTitle: true,
+          showTitle: false,
           filterDisplayMode: "badges",
         },
       },
@@ -264,7 +264,7 @@ export const detailTemplate: DashboardTemplate = {
         data: [], // Se generará dinámicamente
         breakdownLevels: ["section", "category", "product"],
         visualization: {
-          showTitle: true,
+          showTitle: false,
           compact: false,
           showBorders: true,
           alternateRowColors: true,

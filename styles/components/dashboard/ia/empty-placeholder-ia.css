@@ -39,6 +39,13 @@
   font-size: 1rem;
   outline: none;
   width: 100%;
+  resize: none;
+  line-height: 1.5;
+  min-height: 24px; /* Una línea */
+  max-height: 72px; /* Tres líneas */
+  transition: height var(--transition-fast);
+  overflow-y: hidden;
+  font-family: inherit;
 }
 
 .dashboard-empty-placeholder__ia-input::placeholder {

@@ -35,6 +35,7 @@ export const WidgetConfigSidebar: React.FC = () => {
   }
 
   const widget = widgets[selectedWidgetId];
+  console.log(widget, selectedWidgetId);
   if (!widget) {
     return null;
   }

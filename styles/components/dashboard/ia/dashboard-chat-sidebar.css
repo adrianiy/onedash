@@ -36,6 +36,7 @@
 .dashboard-chat-sidebar__header {
   padding: var(--spacing-md) var(--spacing-lg);
   border-bottom: 1px solid var(--color-border);
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -171,6 +172,7 @@
   background-color: var(--color-surface-secondary);
   border-radius: var(--radius-md);
   padding: var(--spacing-sm);
+  align-items: center;
   position: relative;
 }
 
@@ -184,10 +186,15 @@
   font-size: 1rem;
   font-family: inherit;
   outline: none;
+  line-height: 1.5;
+  min-height: 24px; /* Una línea */
+  max-height: 72px; /* Tres líneas */
+  transition: height var(--transition-fast);
 }
 
 .dashboard-chat-sidebar__input::placeholder {
   color: var(--color-text-tertiary);
+  opacity: 0.5;
 }
 
 .dashboard-chat-sidebar__send-button {
@@ -262,7 +269,6 @@
 [data-theme="itx"] .dashboard-chat-sidebar__input {
   background-color: var(--color-surface);
   color: var(--color-text-primary);
-  border: 1px solid var(--color-border);
 }
 
 [data-theme="itx"] .dashboard-chat-sidebar__input-container {

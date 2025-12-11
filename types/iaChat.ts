@@ -8,7 +8,7 @@ import { Widget } from "./widget";
 /**
  * Tipo de mensaje en la conversación de IA
  */
-export type MessageType = "user" | "assistant" | "system";
+export type MessageType = "human" | "ai" | "system";
 
 /**
  * Estado del sistema de IA para dashboard
@@ -28,8 +28,11 @@ export interface ChatMessage {
   timestamp: Date;
   isLoading?: boolean;
   error?: string;
+  isRetryable?: boolean; // Indica si el error puede ser reintentado (ej: error 500)
+  onRetry?: () => void; // Función para reintentar la acción
   checkpoint?: DashboardCheckpointState;
   isCurrentState?: boolean;
+  suggestions?: string[];
 }
 
 /**
@@ -62,4 +65,14 @@ export interface IaDashboardResponse {
     question: string;
     context: string;
   };
+}
+
+/**
+ * Contexto para reintento automático cuando falla el procesamiento
+ */
+export interface RetryContext {
+  originalMessage: string;
+  errorDetails: string;
+  failedResponse: string;
+  attempt: number;
 }

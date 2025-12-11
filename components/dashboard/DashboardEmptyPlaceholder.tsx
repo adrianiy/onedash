@@ -1,7 +1,38 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Icon } from "@/components/common/Icon";
 import { useIaDashboardGeneration } from "@/hooks/useIaDashboardGeneration";
+import { useTemplateApplication } from "@/hooks/useTemplateApplication";
 import { useUIStore } from "@/store/uiStore";
+
+// Hook personalizado para auto-resize del textarea
+const useTextareaAutoResize = (value: string, maxRows: number = 3) => {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    // Reset height to calculate scrollHeight properly
+    textarea.style.height = "auto";
+
+    // Calculate required height
+    const lineHeight = 24; // Aproximadamente 1.5rem
+    const minHeight = lineHeight;
+    const maxHeight = lineHeight * maxRows;
+    const scrollHeight = textarea.scrollHeight;
+
+    // Set appropriate height
+    if (scrollHeight <= maxHeight) {
+      textarea.style.height = `${Math.max(scrollHeight, minHeight)}px`;
+      textarea.style.overflowY = "hidden";
+    } else {
+      textarea.style.height = `${maxHeight}px`;
+      textarea.style.overflowY = "auto";
+    }
+  }, [value, maxRows]);
+
+  return textareaRef;
+};
 
 interface DashboardEmptyPlaceholderProps {
   isEditing: boolean;
@@ -13,14 +44,15 @@ export const DashboardEmptyPlaceholder: React.FC<
   // Estado local para el texto del input
   const [inputValue, setInputValue] = useState<string>("");
 
-  // Referencia al input para poder hacer foco en él
-  const inputRef = useRef<HTMLInputElement>(null);
+  // Usamos el hook de auto-resize para el textarea
+  const inputRef = useTextareaAutoResize(inputValue);
 
   // Hook para la gestión de estado global del UI
   const { openIaChat, setPreparedMessage } = useUIStore();
 
-  // Hook para la generación de dashboards con IA
+  // Hooks para la generación de dashboards con IA y aplicación de plantillas
   const { showIaInput } = useIaDashboardGeneration();
+  const { applyTemplate } = useTemplateApplication();
 
   // Abrir el sidebar de chat de IA y enviar mensaje si existe
   const handleOpenIaChat = (message?: string) => {
@@ -46,38 +78,32 @@ export const DashboardEmptyPlaceholder: React.FC<
     }
   };
 
-  // Iniciar una conversación rápida para un dashboard ejecutivo
-  const handleQuickStart = (type: string) => {
-    let prompt = "";
+  // Aplicar una plantilla directamente al dashboard
+  const handleApplyTemplate = (type: string) => {
+    let templateId = "";
 
     switch (type) {
       case "simple":
-        prompt =
-          "Crea un dashboard simple con métricas básicas en formato minimalista";
+        templateId = "simple-dashboard";
         break;
       case "advanced":
-        prompt =
-          "Crea un dashboard avanzado con múltiples visualizaciones y análisis detallado";
+        templateId = "advanced-dashboard";
         break;
       case "detail":
-        prompt =
-          "Crea un dashboard de detalle con KPIs y tabla de análisis a ancho completo";
+        templateId = "detail-dashboard";
         break;
       default:
-        prompt =
-          "Crea un dashboard con métricas clave y visualizaciones que aproveche el ancho total de 24 columnas en desktop, 18 en tablet y 8 en móvil";
+        templateId = "simple-dashboard";
     }
 
-    // Establecer el mensaje en el input y hacer foco para que el usuario pueda editarlo
-    console.log("Preparando mensaje:", prompt);
-    setInputValue(prompt);
+    console.log(`Aplicando plantilla directamente: ${templateId}`);
 
-    // Hacer foco en el input para que el usuario pueda editarlo
-    setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    }, 100);
+    // Aplicar la plantilla utilizando el hook
+    const success = applyTemplate(templateId);
+
+    if (!success) {
+      console.error(`Error al aplicar plantilla: ${templateId}`);
+    }
   };
 
   if (isEditing) {
@@ -97,14 +123,14 @@ export const DashboardEmptyPlaceholder: React.FC<
         {showIaInput && (
           <div className="dashboard-empty-placeholder__ia-section">
             <div className="dashboard-empty-placeholder__ia-input-container">
-              <input
-                type="text"
+              <textarea
                 className="dashboard-empty-placeholder__ia-input"
                 placeholder="Describe el dashboard que necesitas..."
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyDown}
                 ref={inputRef}
+                rows={1}
               />
               <button
                 className="dashboard-empty-placeholder__ia-send-button"
@@ -121,7 +147,7 @@ export const DashboardEmptyPlaceholder: React.FC<
               <div className="dashboard-empty-placeholder__quick-buttons">
                 <button
                   className="dashboard-empty-placeholder__quick-button"
-                  onClick={() => handleQuickStart("simple")}
+                  onClick={() => handleApplyTemplate("simple")}
                   title="Dashboard con 6 métricas clave organizadas en 2 filas"
                 >
                   <Icon name="layout-dashboard" size={16} />
@@ -130,7 +156,7 @@ export const DashboardEmptyPlaceholder: React.FC<
 
                 <button
                   className="dashboard-empty-placeholder__quick-button"
-                  onClick={() => handleQuickStart("advanced")}
+                  onClick={() => handleApplyTemplate("advanced")}
                   title="Dashboard completo con KPIs, gráficos y tabla de análisis"
                 >
                   <Icon name="bar-chart" size={16} />
@@ -139,7 +165,7 @@ export const DashboardEmptyPlaceholder: React.FC<
 
                 <button
                   className="dashboard-empty-placeholder__quick-button"
-                  onClick={() => handleQuickStart("detail")}
+                  onClick={() => handleApplyTemplate("detail")}
                   title="Dashboard con KPIs y tabla detallada a ancho completo"
                 >
                   <Icon name="table" size={16} />

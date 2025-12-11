@@ -56,7 +56,7 @@ export const useIaDashboardGeneration = () => {
       // Crear mensaje de usuario
       const userMessage: ChatMessage = {
         id: uuidv4(),
-        type: "user",
+        type: "human",
         content: prompt,
         timestamp: new Date(),
       };
@@ -65,20 +65,28 @@ export const useIaDashboardGeneration = () => {
       const assistantMessageId = uuidv4();
       const assistantMessage: ChatMessage = {
         id: assistantMessageId,
-        type: "assistant",
+        type: "ai",
         content: "",
         timestamp: new Date(),
         isLoading: true,
       };
 
-      setMessages([userMessage, assistantMessage]);
+      // Array inicial de mensajes
+      const initialMessages = [userMessage];
+      setMessages(initialMessages.concat(assistantMessage));
 
       try {
+        // Convertir mensajes al formato para la API
+        const apiMessages = initialMessages.map((msg) => ({
+          type: msg.type,
+          content: msg.content,
+        }));
+
         // Llamar a la API de IA
         const response = await apiService.post<IaDashboardResponse>(
           "/ia/dashboard",
           {
-            prompt,
+            messages: apiMessages,
             context: null, // Se puede añadir contexto si es necesario
           }
         );
@@ -93,7 +101,8 @@ export const useIaDashboardGeneration = () => {
             content:
               response.data.needsMoreInfo.question ||
               "Necesito más información",
-            error: "Necesito más información para generar el dashboard",
+            // Ya no añadimos el campo error para evitar la alerta roja
+            // error: "Necesito más información para generar el dashboard",
           };
 
           setMessages([userMessage, updatedAssistantMessage]);
@@ -133,7 +142,7 @@ export const useIaDashboardGeneration = () => {
             widgetsState: newState.widgets,
           };
 
-          // Actualizar mensaje con el checkpoint
+          // Actualizar mensaje con el checkpoint y sugerencias
           const updatedAssistantMessage: ChatMessage = {
             ...assistantMessage,
             isLoading: false,
@@ -142,6 +151,7 @@ export const useIaDashboardGeneration = () => {
               "He actualizado el dashboard según tu petición.",
             checkpoint,
             isCurrentState: true,
+            suggestions: response.data.suggestions,
           };
 
           setMessages([userMessage, updatedAssistantMessage]);
@@ -163,7 +173,7 @@ export const useIaDashboardGeneration = () => {
             ),
           };
 
-          // Actualizar mensaje con el checkpoint
+          // Actualizar mensaje con el checkpoint y sugerencias
           const updatedAssistantMessage: ChatMessage = {
             ...assistantMessage,
             isLoading: false,
@@ -172,6 +182,7 @@ export const useIaDashboardGeneration = () => {
               "He generado el dashboard según tu petición.",
             checkpoint,
             isCurrentState: true,
+            suggestions: response.data.suggestions,
           };
 
           setMessages([userMessage, updatedAssistantMessage]);
@@ -186,13 +197,27 @@ export const useIaDashboardGeneration = () => {
       } catch (err) {
         console.error("Error al generar el dashboard:", err);
 
+        // Verificar si es un error reintentable (ej: error 500)
+        const isRetryable =
+          err instanceof Error && (err as any).isRetryable === true;
         const errorMessage =
           err instanceof Error ? err.message : "Error desconocido";
+
+        // Función para reintentar la misma operación
+        const retryFunction = isRetryable
+          ? () => {
+              console.log("Reintentando operación...");
+              startConversation(prompt);
+            }
+          : undefined;
+
         const updatedAssistantMessage: ChatMessage = {
           ...assistantMessage,
           isLoading: false,
-          content: "No he podido generar el dashboard.",
+          content: "No he podido actualizar el dashboard.",
           error: errorMessage,
+          isRetryable: isRetryable,
+          onRetry: retryFunction,
         };
 
         setMessages([userMessage, updatedAssistantMessage]);
@@ -217,7 +242,7 @@ export const useIaDashboardGeneration = () => {
       // Crear mensaje de usuario
       const userMessage: ChatMessage = {
         id: uuidv4(),
-        type: "user",
+        type: "human",
         content: message,
         timestamp: new Date(),
       };
@@ -226,7 +251,7 @@ export const useIaDashboardGeneration = () => {
       const assistantMessageId = uuidv4();
       const assistantMessage: ChatMessage = {
         id: assistantMessageId,
-        type: "assistant",
+        type: "ai",
         content: "",
         timestamp: new Date(),
         isLoading: true,
@@ -261,11 +286,25 @@ export const useIaDashboardGeneration = () => {
             })
           : null;
 
+        // Recopilar todos los mensajes previos más el nuevo mensaje para enviar a la API
+        const previousMessages = messages
+          .filter((msg) => !msg.isLoading)
+          .map((msg) => ({
+            type: msg.type,
+            content: msg.content,
+          }));
+
+        // Añadir el nuevo mensaje del usuario
+        const apiMessages = [
+          ...previousMessages,
+          { type: "human", content: message },
+        ];
+
         // Llamar a la API de IA
         const response = await apiService.post<IaDashboardResponse>(
           "/ia/dashboard",
           {
-            prompt: message,
+            messages: apiMessages,
             context,
           }
         );
@@ -280,7 +319,8 @@ export const useIaDashboardGeneration = () => {
             content:
               response.data.needsMoreInfo.question ||
               "Necesito más información",
-            error: "Necesito más información para actualizar el dashboard",
+            // Ya no añadimos el campo error para evitar la alerta roja
+            // error: "Necesito más información para actualizar el dashboard",
           };
 
           setMessages((prevMessages) => [
@@ -334,7 +374,7 @@ export const useIaDashboardGeneration = () => {
             widgetsState: newState.widgets,
           };
 
-          // Actualizar mensaje con el checkpoint
+          // Actualizar mensaje con el checkpoint y sugerencias
           const updatedAssistantMessage: ChatMessage = {
             ...assistantMessage,
             isLoading: false,
@@ -343,6 +383,7 @@ export const useIaDashboardGeneration = () => {
               "He actualizado el dashboard según tu petición.",
             checkpoint,
             isCurrentState: true,
+            suggestions: response.data.suggestions,
           };
 
           setMessages((prevMessages) => [
@@ -367,7 +408,7 @@ export const useIaDashboardGeneration = () => {
             ),
           };
 
-          // Actualizar mensaje con el checkpoint
+          // Actualizar mensaje con el checkpoint y sugerencias
           const updatedAssistantMessage: ChatMessage = {
             ...assistantMessage,
             isLoading: false,
@@ -376,6 +417,7 @@ export const useIaDashboardGeneration = () => {
               "He actualizado el dashboard según tu petición.",
             checkpoint,
             isCurrentState: true,
+            suggestions: response.data.suggestions,
           };
 
           setMessages((prevMessages) => [
@@ -393,13 +435,27 @@ export const useIaDashboardGeneration = () => {
       } catch (err) {
         console.error("Error al actualizar el dashboard:", err);
 
+        // Verificar si es un error reintentable (ej: error 500)
+        const isRetryable =
+          err instanceof Error && (err as any).isRetryable === true;
         const errorMessage =
           err instanceof Error ? err.message : "Error desconocido";
+
+        // Función para reintentar la misma operación
+        const retryFunction = isRetryable
+          ? () => {
+              console.log("Reintentando operación...");
+              sendMessage(message);
+            }
+          : undefined;
+
         const updatedAssistantMessage: ChatMessage = {
           ...assistantMessage,
           isLoading: false,
           content: "No he podido actualizar el dashboard.",
           error: errorMessage,
+          isRetryable: isRetryable,
+          onRetry: retryFunction,
         };
 
         setMessages((prevMessages) => [

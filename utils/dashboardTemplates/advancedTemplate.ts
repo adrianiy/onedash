@@ -52,7 +52,7 @@ export const advancedTemplate: DashboardTemplate = {
         size: "medium",
         alignment: "center",
         visualization: {
-          showTitle: true,
+          showTitle: false,
           filterDisplayMode: "badges",
         },
       },
@@ -92,7 +92,7 @@ export const advancedTemplate: DashboardTemplate = {
         size: "medium",
         alignment: "center",
         visualization: {
-          showTitle: true,
+          showTitle: false,
           filterDisplayMode: "badges",
         },
       },
@@ -130,7 +130,7 @@ export const advancedTemplate: DashboardTemplate = {
         size: "medium",
         alignment: "center",
         visualization: {
-          showTitle: true,
+          showTitle: false,
           filterDisplayMode: "badges",
         },
       },
@@ -173,7 +173,7 @@ export const advancedTemplate: DashboardTemplate = {
         ],
         data: [], // Se generará dinámicamente
         visualization: {
-          showTitle: true,
+          showTitle: false,
           showLegend: true,
           showGrid: true,
           showValues: false,
@@ -224,7 +224,7 @@ export const advancedTemplate: DashboardTemplate = {
         ],
         data: [], // Se generará dinámicamente
         visualization: {
-          showTitle: true,
+          showTitle: false,
           showLegend: true,
           showGrid: true,
           showValues: true,
@@ -264,7 +264,7 @@ export const advancedTemplate: DashboardTemplate = {
         ],
         data: [], // Se generará dinámicamente
         visualization: {
-          showTitle: true,
+          showTitle: false,
           showLegend: true,
           showGrid: false,
           showValues: true,
@@ -351,7 +351,7 @@ export const advancedTemplate: DashboardTemplate = {
         data: [], // Se generará dinámicamente
         breakdownLevels: ["section", "category", "product"],
         visualization: {
-          showTitle: true,
+          showTitle: false,
           compact: false,
           showBorders: true,
           alternateRowColors: true,

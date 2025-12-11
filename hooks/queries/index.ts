@@ -24,6 +24,12 @@ export {
   type ApiTableResponse,
 } from "./useTableDataQuery";
 
+export {
+  useComparisonDataQuery,
+  type ComparisonData,
+  type ApiComparisonResponse,
+} from "./useComparisonDataQuery";
+
 // Exportar hooks de dashboards
 export {
   useDashboardsQuery,
