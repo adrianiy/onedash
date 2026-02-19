@@ -1,6 +1,6 @@
 import type { MetricDefinition } from "./metricConfig";
 
-export type WidgetType = "chart" | "metric" | "table" | "text";
+export type WidgetType = "chart" | "metric" | "table" | "text" | "comparison";
 export type ChartType = "bar" | "line" | "pie" | "scatter" | "area";
 
 export interface WidgetEvent {
@@ -151,6 +151,53 @@ export interface TextWidgetConfig {
   minHeight?: number;
 }
 
+export interface ComparisonWidgetConfig {
+  // Dimensión para distribuir los datos
+  dimension?: "time" | "product" | "section" | "category" | "custom";
+
+  // Métricas cuando dimension != "custom"
+  primaryMetric?: MetricDefinition;
+  secondaryMetric?: MetricDefinition;
+
+  // Métricas cuando dimension == "custom"
+  comparisonMetrics?: Array<{
+    id: string; // Identificador único para cada par de métricas
+    group: string; // Nombre del grupo (A, B, C, etc.)
+    primaryMetric?: MetricDefinition;
+    secondaryMetric?: MetricDefinition;
+  }>;
+
+  // Tipo de visualización
+  visualizationType?: "bars" | "stacked" | "progress" | "line";
+
+  // Filtros específicos del widget
+  widgetFilters?: {
+    products?: string[];
+    sections?: string[];
+    dateRange?: {
+      start: string | null;
+      end: string | null;
+    };
+  };
+
+  // Configuración visual
+  visualization?: {
+    showTitle?: boolean;
+    showLegend?: boolean;
+    showGrid?: boolean;
+    showValues?: boolean;
+    showXAxis?: boolean;
+    showYAxis?: boolean;
+    colorMode?: "default" | "palette" | "custom";
+    colorPalette?: "default" | "black" | "blue" | "violet" | "green";
+    customColors?: string[];
+    positiveColor?: string;
+    negativeColor?: string;
+    filterDisplayMode?: "badges" | "info" | "hidden";
+    valueFormat?: "auto" | "currency" | "percent" | "integer" | "decimal";
+  };
+}
+
 export interface BaseWidget {
   _id: string;
   type: WidgetType;
@@ -186,4 +233,14 @@ export interface TextWidget extends BaseWidget {
   config: TextWidgetConfig;
 }
 
-export type Widget = ChartWidget | MetricWidget | TableWidget | TextWidget;
+export interface ComparisonWidget extends BaseWidget {
+  type: "comparison";
+  config: ComparisonWidgetConfig;
+}
+
+export type Widget =
+  | ChartWidget
+  | MetricWidget
+  | TableWidget
+  | TextWidget
+  | ComparisonWidget;

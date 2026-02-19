@@ -191,6 +191,89 @@
   color: var(--color-primary);
 }
 
+/* Dropdown button */
+.edit-toolbar__button--with-dropdown {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+.edit-toolbar__button-chevron {
+  position: absolute;
+  bottom: -9px;
+  font-size: 0.75rem;
+}
+
+/* Dropdown menu */
+.edit-toolbar__dropdown-menu {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  min-width: 160px;
+  padding: var(--spacing-xs);
+  z-index: 1000;
+}
+
+.edit-toolbar__dropdown-menu--grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  min-width: 220px;
+  gap: var(--spacing-xs);
+}
+
+.edit-toolbar__dropdown-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.edit-toolbar__dropdown-item--grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md) var(--spacing-sm);
+}
+
+.edit-toolbar__dropdown-item:hover {
+  background-color: var(--color-surface-hover);
+}
+
+.edit-toolbar__dropdown-item:active {
+  background-color: var(--color-surface-secondary);
+}
+
+/* Dark theme adjustments for dropdown */
+[data-theme="dark"] .edit-toolbar__dropdown-menu {
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .edit-toolbar__dropdown-item {
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .edit-toolbar__dropdown-item:hover {
+  background-color: var(--color-surface-hover);
+}
+
 .edit-toolbar__separator {
   width: 1px;
   height: 80px;

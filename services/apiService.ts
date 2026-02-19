@@ -11,8 +11,17 @@ export interface ApiResponse<T = unknown> {
 }
 
 /**
+ * Define si un error HTTP es recuperable (puede ser reintentado)
+ */
+const isRetryableError = (status: number): boolean => {
+  // Errores del servidor (500, 502, 503, 504) son generalmente recuperables
+  return status >= 500 && status < 600;
+};
+
+/**
  * Maneja los errores de las respuestas de la API
  * Si el error es 401 (Unauthorized), redirige automáticamente a la página de login
+ * Si el error es 5xx, lo marca como reintentable
  */
 const handleApiError = (response: Response, endpoint?: string) => {
   if (response.status === 401) {
@@ -46,7 +55,22 @@ const handleApiError = (response: Response, endpoint?: string) => {
     throw new Error("Sesión expirada o no válida");
   }
 
-  throw new Error(`HTTP Error: ${response.status} - ${response.statusText}`);
+  // Verificar si es un error recuperable (5xx)
+  const isRetryable = isRetryableError(response.status);
+
+  // Crear un error personalizado con información adicional
+  const error = new Error(
+    isRetryable
+      ? "Ha ocurrido un error temporal. Puedes reintentar la operación."
+      : `HTTP Error: ${response.status} - ${response.statusText}`
+  );
+
+  // Añadir propiedades adicionales al error
+  (error as any).status = response.status;
+  (error as any).isRetryable = isRetryable;
+  (error as any).originalResponse = response;
+
+  throw error;
 };
 
 export const apiService = {

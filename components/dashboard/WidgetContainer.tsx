@@ -91,6 +91,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
   };
 
   const handleEdit = () => {
+    console.log("Editing widget:", widget._id);
     selectWidget(widget._id);
     openConfigSidebar();
   };

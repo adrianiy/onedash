@@ -26,6 +26,7 @@
 @import "./components/dashboard/share-section.css";
 @import "./components/dashboard/shared-indicator.css";
 @import "./components/dashboard/dashboard-tabs.css";
+@import "./components/dashboard/ia/index.css";
 
 /* Common components */
 @import "./components/common/modal.css";
@@ -60,6 +61,7 @@
 @import "./components/widgets/render/metric-widget.css";
 @import "./components/widgets/render/text-widget.css";
 @import "./components/widgets/render/widget-skeleton.css";
+@import "./components/widgets/comparison-widget.css";
 
 /* Auth styles */
 @import "./auth/auth.css";
